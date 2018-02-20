@@ -1,0 +1,32 @@
+apply plugin: 'java'
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+group = 'me.jamiemansfield'
+version = '0.0.1-indev'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+}
+
+processResources {
+    from 'LICENSE.txt'
+}
+
+jar {
+    manifest {
+        attributes(
+                'Implementation-Title': name,
+                'Implementation-Version': version,
+                'Main-Class': 'me.jamiemansfield.symphony.SymphonyMain'
+        )
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.5.1'
+}
