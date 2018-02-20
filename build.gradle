@@ -8,9 +8,20 @@ version = '0.0.1-indev'
 
 repositories {
     mavenCentral()
+    maven {
+        url 'https://repo.jamiemansfield.me'
+    }
 }
 
 dependencies {
+    // CLI
+    compile 'net.sf.jopt-simple:jopt-simple:5.0.3'
+
+    // Bytecode Analysis
+    compile 'org.ow2.asm:asm-commons:6.0'
+
+    // Mappings IO
+    compile 'me.jamiemansfield:lorenz:0.0.1-20180218.233046-24'
 }
 
 processResources {
