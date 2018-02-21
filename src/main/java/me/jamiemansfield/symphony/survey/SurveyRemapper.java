@@ -36,24 +36,26 @@ public class SurveyRemapper extends Remapper {
                 .orElse(typeName);
     }
 
-    private String getFieldName(final String owner, final String name) {
+    private Optional<String> getFieldMapping(final String owner, final String name) {
+        // First, check the current class
+        final Optional<String> fieldName = this.mappings.getClassMapping(owner)
+                .flatMap(mapping -> mapping.getFieldMapping(name)
+                        .map(Mapping::getDeobfuscatedName));
+        if (fieldName.isPresent()) return fieldName;
+
+        // Now, check the parent class
         final Optional<InheritanceMap.ClassInfo> info = this.inheritanceMap.classInfo(owner);
-        if (info.isPresent()) {
-            final Optional<InheritanceMap.ClassInfo> parentInfo = this.inheritanceMap.classInfo(info.get().getSuperName());
-            if (parentInfo.isPresent()) {
-                return this.getFieldName(parentInfo.get().getName(), name);
-            }
+        if (info.isPresent() && info.get().getSuperName() != null) {
+            return this.getFieldMapping(info.get().getSuperName(), name);
         }
 
-        return this.mappings.getClassMapping(owner)
-                .flatMap(mapping -> mapping.getFieldMapping(name)
-                        .map(Mapping::getDeobfuscatedName))
-                .orElse(name);
+        // The field seemingly has no mapping
+        return Optional.empty();
     }
 
     @Override
     public String mapFieldName(final String owner, final String name, final String desc) {
-        return this.getFieldName(owner, name);
+        return this.getFieldMapping(owner, name).orElse(name);
     }
 
     @Override
