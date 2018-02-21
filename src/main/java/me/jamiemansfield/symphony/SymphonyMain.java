@@ -7,16 +7,31 @@
 
 package me.jamiemansfield.symphony;
 
+import static com.google.common.io.Resources.getResource;
+
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+
 /**
  * The Main-Class behind Symphony.
  */
-public final class SymphonyMain {
+public final class SymphonyMain extends Application {
 
     public static void main(final String[] args) {
-        System.out.println("Symphony v" + SharedConstants.VERSION);
+        launch(args);
     }
 
-    private SymphonyMain() {
+    @Override
+    public void start(final Stage primaryStage) throws Exception {
+        final FXMLLoader loader = new FXMLLoader(getResource("fxml/Main.fxml"));
+        final Parent root = loader.load();
+        final Scene scene = new Scene(root);
+        primaryStage.setTitle("Symphony v" + SharedConstants.VERSION);
+        primaryStage.setScene(scene);
+        primaryStage.show();
     }
 
 }

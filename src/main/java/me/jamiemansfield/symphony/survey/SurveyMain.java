@@ -121,7 +121,7 @@ public final class SurveyMain {
             try (final JarOutputStream jos = new JarOutputStream(Files.newOutputStream(jarOutPath))) {
                 for (final JarEntry entry : jarFile.stream().collect(Collectors.toSet())) {
                     try (final InputStream is = jarFile.getInputStream(entry)) {
-                        if (!entry.getName().endsWith(".class")) {
+                        if (!entry.getName().endsWith(".class") && !entry.isDirectory()) {
                             final ByteArrayOutputStream baos = new ByteArrayOutputStream();
                             ByteStreams.copy(is, baos);
 
