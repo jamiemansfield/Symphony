@@ -21,7 +21,7 @@ dependencies {
     compile 'org.ow2.asm:asm-commons:6.0'
 
     // Mappings IO
-    compile 'me.jamiemansfield:lorenz:0.0.1-20180218.233046-24'
+    compile 'me.jamiemansfield:lorenz:0.0.1-20180221.141219-25'
 }
 
 processResources {
