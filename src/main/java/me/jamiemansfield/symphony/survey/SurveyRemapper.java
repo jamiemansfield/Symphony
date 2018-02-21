@@ -13,6 +13,8 @@ import me.jamiemansfield.lorenz.model.jar.MethodDescriptor;
 import me.jamiemansfield.symphony.analysis.InheritanceMap;
 import org.objectweb.asm.commons.Remapper;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -36,6 +38,13 @@ public class SurveyRemapper extends Remapper {
                 .orElse(typeName);
     }
 
+    /**
+     * Gets a de-obfuscated field name, wrapped in an {@link Optional}, with respect to inheritance.
+     *
+     * @param owner The owner of the field
+     * @param name The name of the field
+     * @return The de-obfuscated field name, wrapped in an {@link Optional}
+     */
     private Optional<String> getFieldMapping(final String owner, final String name) {
         // First, check the current class
         final Optional<String> fieldName = this.mappings.getClassMapping(owner)
@@ -58,12 +67,43 @@ public class SurveyRemapper extends Remapper {
         return this.getFieldMapping(owner, name).orElse(name);
     }
 
+    /**
+     * Gets a de-obfuscated method name, wrapped in an {@link Optional}, with respect to inheritance.
+     *
+     * @param owner The owner of the method
+     * @param descriptor The descriptor of the method
+     * @return The de-obfuscated method name, wrapped in an {@link Optional}
+     */
+    private Optional<String> getMethodMapping(final String owner, final MethodDescriptor descriptor) {
+        // First, check the current class
+        final Optional<String> methodName = this.mappings.getClassMapping(owner)
+                .flatMap(mapping -> mapping.getMethodMapping(descriptor)
+                        .map(Mapping::getDeobfuscatedName));
+        if (methodName.isPresent()) return methodName;
+
+        // Now, check the parent classes
+        final Optional<InheritanceMap.ClassInfo> info = this.inheritanceMap.classInfo(owner);
+        if (info.isPresent()) {
+            final List<String> parents = new ArrayList<String>() {
+                {
+                    if (info.get().getSuperName() != null) this.add(info.get().getSuperName());
+                    this.addAll(info.get().getInterfaces());
+                }
+            };
+
+            for (final String parent : parents) {
+                final Optional<String> name = this.getMethodMapping(parent, descriptor);
+                if (name.isPresent()) return name;
+            }
+        }
+
+        // The method seemingly has no mapping
+        return Optional.empty();
+    }
+
     @Override
     public String mapMethodName(final String owner, final String name, final String desc) {
-        return this.mappings.getClassMapping(owner)
-                .flatMap(mapping -> mapping.getMethodMapping(new MethodDescriptor(name, desc))
-                        .map(Mapping::getDeobfuscatedName))
-                .orElse(name);
+        return this.getMethodMapping(owner, new MethodDescriptor(name, desc)).orElse(name);
     }
 
 }
