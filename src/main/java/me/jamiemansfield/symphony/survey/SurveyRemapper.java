@@ -10,7 +10,10 @@ package me.jamiemansfield.symphony.survey;
 import me.jamiemansfield.lorenz.MappingSet;
 import me.jamiemansfield.lorenz.model.Mapping;
 import me.jamiemansfield.lorenz.model.jar.MethodDescriptor;
+import me.jamiemansfield.symphony.analysis.InheritanceMap;
 import org.objectweb.asm.commons.Remapper;
+
+import java.util.Optional;
 
 /**
  * A simple implementation of {@link Remapper} to remap based
@@ -19,9 +22,11 @@ import org.objectweb.asm.commons.Remapper;
 public class SurveyRemapper extends Remapper {
 
     private final MappingSet mappings;
+    private final InheritanceMap inheritanceMap;
 
-    public SurveyRemapper(final MappingSet mappings) {
+    public SurveyRemapper(final MappingSet mappings, final InheritanceMap inheritanceMap) {
         this.mappings = mappings;
+        this.inheritanceMap = inheritanceMap;
     }
 
     @Override
@@ -31,12 +36,24 @@ public class SurveyRemapper extends Remapper {
                 .orElse(typeName);
     }
 
-    @Override
-    public String mapFieldName(final String owner, final String name, final String desc) {
+    private String getFieldName(final String owner, final String name) {
+        final Optional<InheritanceMap.ClassInfo> info = this.inheritanceMap.classInfo(owner);
+        if (info.isPresent()) {
+            final Optional<InheritanceMap.ClassInfo> parentInfo = this.inheritanceMap.classInfo(info.get().getSuperName());
+            if (parentInfo.isPresent()) {
+                return this.getFieldName(parentInfo.get().getName(), name);
+            }
+        }
+
         return this.mappings.getClassMapping(owner)
                 .flatMap(mapping -> mapping.getFieldMapping(name)
                         .map(Mapping::getDeobfuscatedName))
                 .orElse(name);
+    }
+
+    @Override
+    public String mapFieldName(final String owner, final String name, final String desc) {
+        return this.getFieldName(owner, name);
     }
 
     @Override

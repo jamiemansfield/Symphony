@@ -16,7 +16,9 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import me.jamiemansfield.lorenz.MappingSet;
 import me.jamiemansfield.lorenz.io.parser.SrgReader;
-import me.jamiemansfield.lorenz.model.ClassMapping;
+import me.jamiemansfield.lorenz.model.Mapping;
+import me.jamiemansfield.symphony.analysis.InheritanceMap;
+import me.jamiemansfield.symphony.analysis.SourceSet;
 import me.jamiemansfield.symphony.util.PathValueConverter;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -26,6 +28,7 @@ import org.objectweb.asm.tree.ClassNode;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -94,27 +97,53 @@ public final class SurveyMain {
         }
 
         try (final JarFile jarFile = new JarFile(jarInPath.toFile())) {
+            final SourceSet sources = new SourceSet();
+            final InheritanceMap inheritanceMap = new InheritanceMap(sources);
+
+            jarFile.stream()
+                    // Filter out directories
+                    .filter(entry -> !entry.isDirectory())
+                    // I only want to get classes
+                    .filter(entry -> entry.getName().endsWith(".class"))
+                    // Now to read the class
+                    .forEach(entry -> {
+                        try (final InputStream in = jarFile.getInputStream(entry)) {
+                            final ClassReader reader = new ClassReader(ByteStreams.toByteArray(in));
+                            final ClassNode node = new ClassNode();
+                            reader.accept(node, 0);
+                            sources.add(node);
+                        } catch (final IOException ex) {
+                            System.err.println("Failed to get an input stream for " + entry.getName() + "!");
+                            ex.printStackTrace(System.err);
+                        }
+                    });
+
             try (final JarOutputStream jos = new JarOutputStream(Files.newOutputStream(jarOutPath))) {
                 for (final JarEntry entry : jarFile.stream().collect(Collectors.toSet())) {
-                    if (entry.getName().endsWith(".class")) {
-                        final ClassReader reader = new ClassReader(ByteStreams.toByteArray(jarFile.getInputStream(entry)));
-                        final ClassNode newNode = new ClassNode();
-                        reader.accept(new ClassRemapper(newNode, new SurveyRemapper(mappings)), 0);
+                    try (final InputStream is = jarFile.getInputStream(entry)) {
+                        if (!entry.getName().endsWith(".class")) {
+                            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                            ByteStreams.copy(is, baos);
 
-                        final ClassWriter writer = new ClassWriter(0);
-                        newNode.accept(writer);
-
-                        final ClassMapping mapping = mappings.getOrCreateClassMapping(newNode.name);
-
-                        jos.putNextEntry(new JarEntry(mapping.getFullDeobfuscatedName() + ".class"));
-                        jos.write(writer.toByteArray());
-                    } else {
-                        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        ByteStreams.copy(jarFile.getInputStream(entry), baos);
-
-                        jos.putNextEntry(new JarEntry(entry.getName()));
-                        jos.write(baos.toByteArray());
+                            jos.putNextEntry(new JarEntry(entry.getName()));
+                            jos.write(baos.toByteArray());
+                        }
                     }
+                }
+
+                for (final ClassNode node : sources.getClasses()) {
+                    final ClassNode newNode = new ClassNode();
+                    node.accept(new ClassRemapper(newNode, new SurveyRemapper(mappings, inheritanceMap)));
+
+                    final ClassWriter writer = new ClassWriter(0);
+                    newNode.accept(writer);
+
+                    final String name = mappings.getClassMapping(newNode.name)
+                            .map(Mapping::getFullDeobfuscatedName)
+                            .orElse(newNode.name);
+
+                    jos.putNextEntry(new JarEntry(name + ".class"));
+                    jos.write(writer.toByteArray());
                 }
             }
             catch (final IOException ex) {
