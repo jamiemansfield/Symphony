@@ -8,11 +8,25 @@
 package me.jamiemansfield.symphony.gui;
 
 import javafx.event.ActionEvent;
+import javafx.scene.control.TabPane;
+import me.jamiemansfield.symphony.gui.control.WelcomeTab;
 
 public class SymphonyController {
+
+    public TabPane tabs;
+
+    public void openWelcomeTab(final ActionEvent event) {
+        this.tabs.getSelectionModel().select(this.tabs.getTabs().stream()
+                .filter(tab -> tab instanceof WelcomeTab)
+                .findFirst()
+                .orElseGet(() -> {
+            final WelcomeTab tab = new WelcomeTab();
+            this.tabs.getTabs().add(tab);
+            return tab;
+                }));
+    }
 
     public void onQuit(final ActionEvent event) {
         System.exit(0);
     }
-
 }

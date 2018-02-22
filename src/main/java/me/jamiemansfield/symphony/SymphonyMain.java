@@ -7,6 +7,7 @@
 
 package me.jamiemansfield.symphony;
 
+import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.io.Resources.getResource;
 
 import javafx.application.Application;
@@ -20,18 +21,52 @@ import javafx.stage.Stage;
  */
 public final class SymphonyMain extends Application {
 
-    public static void main(final String[] args) {
-        launch(args);
+    private static SymphonyMain instance;
+
+    /**
+     * Gets the currently running instance of Symphony.
+     *
+     * @return The symphony instance
+     */
+    public static SymphonyMain getInstance() {
+        checkState(instance != null, "Symphony was already initialised");
+        return instance;
+    }
+
+    private Stage primaryStage;
+    private Scene scene;
+
+    public SymphonyMain() {
+        checkState(instance == null, "Symphony was already initialised");
+        instance = this;
+    }
+
+    public Stage getPrimaryStage() {
+        return this.primaryStage;
+    }
+
+    public Scene getScene() {
+        return this.scene;
     }
 
     @Override
     public void start(final Stage primaryStage) throws Exception {
+        // Set the primary stage
+        this.primaryStage = primaryStage;
+
+        // Load the FXML
         final FXMLLoader loader = new FXMLLoader(getResource("fxml/Main.fxml"));
         final Parent root = loader.load();
-        final Scene scene = new Scene(root);
-        primaryStage.setTitle("Symphony v" + SharedConstants.VERSION);
-        primaryStage.setScene(scene);
-        primaryStage.show();
+
+        // "Set the scene"
+        this.scene = new Scene(root);
+        this.primaryStage.setTitle("Symphony v" + SharedConstants.VERSION);
+        this.primaryStage.setScene(this.scene);
+        this.primaryStage.show();
+    }
+
+    public static void main(final String[] args) {
+        launch(args);
     }
 
 }
