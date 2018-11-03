@@ -8,20 +8,16 @@ version = '0.0.1-indev'
 
 repositories {
     mavenCentral()
-    maven {
-        url 'https://repo.jamiemansfield.me'
+    if (surveyVersion.endsWith('-SNAPSHOT')) {
+        maven {
+            url 'https://oss.sonatype.org/content/groups/public/'
+        }
     }
 }
 
 dependencies {
-    // CLI
-    compile 'net.sf.jopt-simple:jopt-simple:5.0.3'
-
-    // Bytecode Analysis
-    compile 'org.ow2.asm:asm-commons:6.0'
-
-    // Mappings IO
-    compile 'me.jamiemansfield:lorenz:0.0.1-20180221.141219-25'
+    // Survey (binary remapper)
+    compile "org.cadixdev:survey:$surveyVersion"
 }
 
 processResources {

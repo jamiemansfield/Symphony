@@ -7,8 +7,7 @@
 
 package me.jamiemansfield.symphony;
 
-import static com.google.common.base.Preconditions.checkState;
-import static com.google.common.io.Resources.getResource;
+import static java.util.Objects.requireNonNull;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -29,7 +28,7 @@ public final class SymphonyMain extends Application {
      * @return The symphony instance
      */
     public static SymphonyMain getInstance() {
-        checkState(instance != null, "Symphony was already initialised");
+        requireNonNull(instance, "Symphony was already initialised");
         return instance;
     }
 
@@ -37,7 +36,7 @@ public final class SymphonyMain extends Application {
     private Scene scene;
 
     public SymphonyMain() {
-        checkState(instance == null, "Symphony was already initialised");
+        if (instance != null) throw new RuntimeException("Symphony was already initialised");
         instance = this;
     }
 
@@ -55,7 +54,7 @@ public final class SymphonyMain extends Application {
         this.primaryStage = primaryStage;
 
         // Load the FXML
-        final FXMLLoader loader = new FXMLLoader(getResource("fxml/Main.fxml"));
+        final FXMLLoader loader = new FXMLLoader(SymphonyMain.class.getClassLoader().getResource("fxml/Main.fxml"));
         final Parent root = loader.load();
 
         // "Set the scene"
