@@ -12,6 +12,9 @@ import javafx.scene.text.Text;
 
 /**
  * A simple welcome tab to display when a user starts Symphony.
+ *
+ * @author Jamie Mansfield
+ * @since 0.1.0
  */
 public class WelcomeTab extends Tab {
 

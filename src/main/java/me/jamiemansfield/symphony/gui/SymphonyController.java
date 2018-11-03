@@ -11,13 +11,19 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.TabPane;
 import me.jamiemansfield.symphony.gui.control.WelcomeTab;
 
+/**
+ * The GUI controller for Symphony.
+ *
+ * @author Jamie Mansfield
+ * @since 0.1.0
+ */
 public class SymphonyController {
 
     public TabPane tabs;
 
     public void openWelcomeTab(final ActionEvent event) {
         this.tabs.getSelectionModel().select(this.tabs.getTabs().stream()
-                .filter(tab -> tab instanceof WelcomeTab)
+                .filter(WelcomeTab.class::isInstance)
                 .findFirst()
                 .orElseGet(() -> {
                     final WelcomeTab tab = new WelcomeTab();

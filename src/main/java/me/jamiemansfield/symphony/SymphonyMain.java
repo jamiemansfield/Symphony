@@ -17,6 +17,9 @@ import javafx.stage.Stage;
 
 /**
  * The Main-Class behind Symphony.
+ *
+ * @author Jamie Mansfield
+ * @since 0.1.0
  */
 public final class SymphonyMain extends Application {
 

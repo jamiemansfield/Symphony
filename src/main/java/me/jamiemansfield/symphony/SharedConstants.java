@@ -11,6 +11,9 @@ import java.util.Objects;
 
 /**
  * A class populated with constants used throughout Symphony.
+ *
+ * @author Jamie Mansfield
+ * @since 0.1.0
  */
 public final class SharedConstants {
 
