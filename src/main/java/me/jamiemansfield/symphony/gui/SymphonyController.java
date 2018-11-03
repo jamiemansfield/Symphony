@@ -20,13 +20,14 @@ public class SymphonyController {
                 .filter(tab -> tab instanceof WelcomeTab)
                 .findFirst()
                 .orElseGet(() -> {
-            final WelcomeTab tab = new WelcomeTab();
-            this.tabs.getTabs().add(tab);
-            return tab;
+                    final WelcomeTab tab = new WelcomeTab();
+                    this.tabs.getTabs().add(tab);
+                    return tab;
                 }));
     }
 
     public void onQuit(final ActionEvent event) {
         System.exit(0);
     }
+
 }
