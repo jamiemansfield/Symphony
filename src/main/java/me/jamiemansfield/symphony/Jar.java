@@ -16,6 +16,7 @@ import org.cadixdev.bombe.asm.analysis.ClassProviderInheritanceProvider;
 import org.cadixdev.bombe.asm.jar.ClassProvider;
 import org.cadixdev.bombe.asm.jar.JarEntryRemappingTransformer;
 import org.cadixdev.bombe.jar.AbstractJarEntry;
+import org.cadixdev.bombe.jar.JarClassEntry;
 import org.cadixdev.bombe.jar.Jars;
 import org.cadixdev.bombe.util.ByteStreams;
 import org.cadixdev.lorenz.MappingSet;
@@ -61,10 +62,6 @@ public class Jar implements ClassProvider, Closeable {
 
     public Jar(final JarFile jar) {
         this.jar = jar;
-
-        // TODO: test code
-        this.mappings.getOrCreateClassMapping("a")
-                .setDeobfuscatedName("net/minecraft/text/Format");
     }
 
     /**
@@ -107,12 +104,35 @@ public class Jar implements ClassProvider, Closeable {
                     SharedConstants.DECOMPILER_OPTTIONS,
                     SimpleFernflowerLogger.INSTANCE
             );
+            // Provide immediate class
             fernflower.getStructContext().addData(
                     klass.getDeobfuscatedPackage(),
                     klass.getSimpleDeobfuscatedName() + ".class",
                     deobfBytes,
                     true
             );
+            // Provide inner classes
+            this.entries().filter(JarClassEntry.class::isInstance).map(JarClassEntry.class::cast)
+                    .map(JarClassEntry::getName)
+                    .map(name -> name.substring(0, name.length() - ".class".length()))
+                    .filter(name -> name.startsWith(klass.getFullObfuscatedName() + "$"))
+                    .map(this.mappings::getOrCreateClassMapping)
+                    .forEach(mapping -> {
+                        final byte[] innerDeobfBytes = this.getDeobfuscated(mapping);
+                        if (innerDeobfBytes == null) return;
+
+                        try {
+                            fernflower.getStructContext().addData(
+                                    mapping.getDeobfuscatedPackage(),
+                                    mapping.getSimpleDeobfuscatedName() + ".class",
+                                    innerDeobfBytes,
+                                    true
+                            );
+                        }
+                        catch (final IOException ex) {
+                            ex.printStackTrace();
+                        }
+                    });
             fernflower.decompileContext();
             return fernflower.getClassContent(fernflower.getStructContext().getClass(klass.getFullDeobfuscatedName()));
         }

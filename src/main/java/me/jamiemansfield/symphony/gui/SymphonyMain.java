@@ -28,6 +28,7 @@ import me.jamiemansfield.symphony.Jar;
 import me.jamiemansfield.symphony.SharedConstants;
 import me.jamiemansfield.symphony.gui.tab.CodeTab;
 import me.jamiemansfield.symphony.gui.tab.WelcomeTab;
+import org.cadixdev.lorenz.io.MappingFormats;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,6 +63,7 @@ public final class SymphonyMain extends Application {
 
     // File choosers
     private FileChooser openJarFileChooser;
+    private FileChooser loadMappingsFileChooser;
     private FileChooser exportJarFileChooser;
 
     @Override
@@ -106,6 +108,7 @@ public final class SymphonyMain extends Application {
                 {
                     this.loadMappings = new MenuItem("Load Mappings...");
                     this.loadMappings.setDisable(true);
+                    this.loadMappings.addEventHandler(ActionEvent.ACTION, this::loadMappings);
                     file.getItems().add(this.loadMappings);
 
                     this.saveMappings = new MenuItem("Save Mappings");
@@ -215,6 +218,26 @@ public final class SymphonyMain extends Application {
         this.saveMappingsAs.setDisable(false);
         this.exportRemappedJar.setDisable(false);
         this.navigateKlass.setDisable(false);
+    }
+
+    private void loadMappings(final ActionEvent event) {
+        if (this.loadMappingsFileChooser == null) {
+            this.loadMappingsFileChooser = new FileChooser();
+            this.loadMappingsFileChooser.setTitle("Load Mappings");
+            this.loadMappingsFileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("SRG", "*.srg")
+            );
+        }
+
+        final File mappingsPath = this.loadMappingsFileChooser.showOpenDialog(this.stage);
+        if (mappingsPath == null) return;
+
+        try {
+            MappingFormats.SRG.read(this.jar.getMappings(), mappingsPath.toPath());
+        }
+        catch (final IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     private void exportRemappedJar(final ActionEvent event) {
