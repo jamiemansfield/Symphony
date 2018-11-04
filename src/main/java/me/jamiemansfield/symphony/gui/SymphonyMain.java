@@ -17,13 +17,19 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import me.jamiemansfield.symphony.Jar;
 import me.jamiemansfield.symphony.SharedConstants;
 import me.jamiemansfield.symphony.gui.control.WelcomeTab;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.jar.JarFile;
 import java.util.stream.Stream;
 
 /**
@@ -37,8 +43,33 @@ public final class SymphonyMain extends Application {
     private Stage stage;
     private TabPane tabs;
 
+    // File menu
+    private MenuItem openJar;
+    private MenuItem closeJar;
+    private MenuItem loadMappings;
+    private MenuItem saveMappings;
+    private MenuItem saveMappingsAs;
+    private MenuItem exportRemappedJar;
+    private MenuItem close;
+
+    // Active jar
+    private Jar jar;
+
+    // File choosers
+    private FileChooser openJarFileChooser;
+
     @Override
     public void start(final Stage primaryStage) {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            if (this.jar == null) return;
+            try {
+                this.jar.close();
+            }
+            catch (final IOException ex) {
+                ex.printStackTrace();
+            }
+        }));
+
         // Set the primary stage
         this.stage = primaryStage;
         this.stage.setTitle("Symphony v" + SharedConstants.VERSION);
@@ -55,36 +86,42 @@ public final class SymphonyMain extends Application {
             {
                 // Jar related
                 {
-                    final MenuItem openJar = new MenuItem("Open Jar...");
-                    file.getItems().add(openJar);
+                    this.openJar = new MenuItem("Open Jar...");
+                    this.openJar.addEventHandler(ActionEvent.ACTION, this::openJar);
+                    file.getItems().add(this.openJar);
 
-                    final MenuItem closeJar = new MenuItem("Close Jar...");
-                    file.getItems().add(closeJar);
+                    this.closeJar = new MenuItem("Close Jar...");
+                    this.closeJar.setDisable(true);
+                    file.getItems().add(this.closeJar);
                 }
                 file.getItems().add(new SeparatorMenuItem());
                 // Mapping related
                 {
-                    final MenuItem loadMappings = new MenuItem("Load Mappings...");
-                    file.getItems().add(loadMappings);
+                    this.loadMappings = new MenuItem("Load Mappings...");
+                    this.loadMappings.setDisable(true);
+                    file.getItems().add(this.loadMappings);
 
-                    final MenuItem saveMappings = new MenuItem("Save Mappings");
-                    file.getItems().add(saveMappings);
+                    this.saveMappings = new MenuItem("Save Mappings");
+                    this.saveMappings.setDisable(true);
+                    file.getItems().add(this.saveMappings);
 
-                    final MenuItem saveMappingsAs = new MenuItem("Save Mappings As...");
-                    file.getItems().add(saveMappingsAs);
+                    this.saveMappingsAs = new MenuItem("Save Mappings As...");
+                    this.saveMappingsAs.setDisable(true);
+                    file.getItems().add(this.saveMappingsAs);
                 }
                 file.getItems().add(new SeparatorMenuItem());
                 // Binary related
                 {
-                    final MenuItem exportRemappedJar = new MenuItem("Export Remapped Jar...");
-                    file.getItems().add(exportRemappedJar);
+                    this.exportRemappedJar = new MenuItem("Export Remapped Jar...");
+                    this.exportRemappedJar.setDisable(true);
+                    file.getItems().add(this.exportRemappedJar);
                 }
                 file.getItems().add(new SeparatorMenuItem());
                 // Program related
                 {
-                    final MenuItem close = new MenuItem("Quit");
-                    close.addEventHandler(ActionEvent.ACTION, event -> Platform.exit());
-                    file.getItems().add(close);
+                    this.close = new MenuItem("Quit");
+                    this.close.addEventHandler(ActionEvent.ACTION, event -> Platform.exit());
+                    file.getItems().add(this.close);
                 }
             }
             mainMenu.getMenus().add(file);
@@ -107,6 +144,15 @@ public final class SymphonyMain extends Application {
         }
         root.setTop(mainMenu);
 
+        // Classes view
+        final BorderPane classesView = new BorderPane();
+        {
+            final TextField search = new TextField();
+            search.setPromptText("Search");
+            classesView.setTop(search);
+        }
+        root.setLeft(classesView);
+
         // Tabs
         this.tabs = new TabPane();
         {
@@ -118,6 +164,34 @@ public final class SymphonyMain extends Application {
         final Scene scene = new Scene(root);
         this.stage.setScene(scene);
         this.stage.show();
+    }
+
+    private void openJar(final ActionEvent event) {
+        if (this.openJarFileChooser == null) {
+            this.openJarFileChooser = new FileChooser();
+            this.openJarFileChooser.setTitle("Select JAR File");
+            this.openJarFileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("JAR file", "*.jar")
+            );
+        }
+
+        final File jarPath = this.openJarFileChooser.showOpenDialog(this.stage);
+        if (jarPath == null) return;
+
+        try {
+            this.jar = new Jar(new JarFile(jarPath));
+        }
+        catch (final IOException ex) {
+            ex.printStackTrace();
+            return;
+        }
+
+        // Enable menu items
+        this.closeJar.setDisable(false);
+        this.loadMappings.setDisable(false);
+        this.saveMappings.setDisable(false);
+        this.saveMappingsAs.setDisable(false);
+        this.exportRemappedJar.setDisable(false);
     }
 
     private void displayWelcomeTab(final ActionEvent event) {
