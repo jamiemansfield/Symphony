@@ -83,6 +83,10 @@ public class Jar implements ClassProvider, Closeable {
         return Jars.walk(this.jar);
     }
 
+    public boolean hasClass(final String klass) {
+        return this.jar.getEntry(klass + ".class") != null;
+    }
+
     public void exportRemapped(final File exportPath) {
         try (final JarOutputStream jos = new JarOutputStream(new FileOutputStream(exportPath))) {
             Jars.transform(this.jar, jos, new JarEntryRemappingTransformer(this.remapper));

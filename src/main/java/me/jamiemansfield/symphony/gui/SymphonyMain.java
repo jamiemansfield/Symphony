@@ -18,6 +18,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -52,6 +53,9 @@ public final class SymphonyMain extends Application {
     private MenuItem saveMappingsAs;
     private MenuItem exportRemappedJar;
     private MenuItem close;
+
+    // Navigate menu
+    private MenuItem navigateKlass;
 
     // Active jar
     private Jar jar;
@@ -130,6 +134,18 @@ public final class SymphonyMain extends Application {
             }
             mainMenu.getMenus().add(file);
 
+            final Menu navigate = new Menu("_Navigate");
+            navigate.setMnemonicParsing(true);
+            {
+                {
+                    this.navigateKlass = new MenuItem("Class");
+                    this.navigateKlass.setDisable(true);
+                    this.navigateKlass.addEventHandler(ActionEvent.ACTION, this::navigateToClass);
+                    navigate.getItems().add(navigateKlass);
+                }
+            }
+            mainMenu.getMenus().add(navigate);
+
             final Menu help = new Menu("_Help");
             help.setMnemonicParsing(true);
             {
@@ -156,7 +172,8 @@ public final class SymphonyMain extends Application {
             search.setPromptText("Search");
             classesView.setTop(search);
         }
-        root.setLeft(classesView);
+        // TODO: implement
+        //root.setLeft(classesView);
 
         // Tabs
         this.tabs = new TabPane();
@@ -197,9 +214,7 @@ public final class SymphonyMain extends Application {
         this.saveMappings.setDisable(false);
         this.saveMappingsAs.setDisable(false);
         this.exportRemappedJar.setDisable(false);
-
-        // TODO: test code
-        this.tabs.getTabs().add(new CodeTab(this.jar, this.jar.getMappings().getOrCreateTopLevelClassMapping("a")));
+        this.navigateKlass.setDisable(false);
     }
 
     private void exportRemappedJar(final ActionEvent event) {
@@ -215,6 +230,21 @@ public final class SymphonyMain extends Application {
         if (jarPath == null) return;
 
         this.jar.exportRemapped(jarPath);
+    }
+
+    private void navigateToClass(final ActionEvent event) {
+        final TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Navigate to Class");
+        dialog.setHeaderText("Navigate to Class");
+        dialog.setContentText("Please enter class:");
+
+        dialog.showAndWait().ifPresent(klass -> {
+            if (!this.jar.hasClass(klass)) return;
+            final CodeTab tab = new CodeTab(this.jar,
+                    this.jar.getMappings().getOrCreateTopLevelClassMapping(klass));
+            this.tabs.getTabs().add(tab);
+            this.tabs.getSelectionModel().select(tab);
+        });
     }
 
     private void displayWelcomeTab(final ActionEvent event) {
