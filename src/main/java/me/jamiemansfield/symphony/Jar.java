@@ -7,6 +7,9 @@
 
 package me.jamiemansfield.symphony;
 
+import me.jamiemansfield.symphony.decompiler.JarBytecodeProvider;
+import me.jamiemansfield.symphony.decompiler.NoopResultSaver;
+import me.jamiemansfield.symphony.decompiler.SimpleFernflowerLogger;
 import org.cadixdev.bombe.analysis.CachingInheritanceProvider;
 import org.cadixdev.bombe.analysis.InheritanceProvider;
 import org.cadixdev.bombe.asm.analysis.ClassProviderInheritanceProvider;
@@ -17,15 +20,22 @@ import org.cadixdev.bombe.util.ByteStreams;
 import org.cadixdev.lorenz.MappingSet;
 import org.cadixdev.lorenz.model.ClassMapping;
 import org.cadixdev.survey.remapper.SurveyRemapper;
+import org.jetbrains.java.decompiler.main.Fernflower;
+import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.commons.ClassRemapper;
+import org.objectweb.asm.commons.MethodRemapper;
 import org.objectweb.asm.commons.Remapper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Stream;
@@ -44,9 +54,19 @@ public class Jar implements ClassProvider, Closeable {
     private final InheritanceProvider inheritanceProvider =
             new CachingInheritanceProvider(new ClassProviderInheritanceProvider(this));
     private final Remapper remapper = new SurveyRemapper(this.mappings, this.inheritanceProvider);
+    private final Fernflower fernflower = new Fernflower(
+            new JarBytecodeProvider(this),
+            NoopResultSaver.INSTANCE,
+            SharedConstants.DECOMPILER_OPTTIONS,
+            SimpleFernflowerLogger.INSTANCE
+    );
 
     public Jar(final JarFile jar) {
         this.jar = jar;
+
+        // TODO: test code
+        this.mappings.getOrCreateClassMapping("a")
+                .setDeobfuscatedName("net/minecraft/text/Format");
     }
 
     /**
@@ -65,7 +85,43 @@ public class Jar implements ClassProvider, Closeable {
         return Jars.walk(this.jar);
     }
 
-    private byte[] getObfuscated(final String klass) {
+    public String decompile(final ClassMapping<?, ?> klass) {
+        final byte[] deobfBytes = this.getDeobfuscated(klass);
+        if (deobfBytes == null) return "Well... this is embarrassing.";
+
+        try {
+            this.fernflower.getStructContext().addData(
+                    klass.getDeobfuscatedPackage(),
+                    klass.getSimpleDeobfuscatedName() + ".class",
+                    deobfBytes,
+                    true
+            );
+            this.fernflower.decompileContext();
+            return this.fernflower.getClassContent(this.fernflower.getStructContext().getClass(klass.getFullDeobfuscatedName()));
+        }
+        catch (final IOException ex) {
+            ex.printStackTrace();
+            return "Well... this is embarrassing.";
+        }
+    }
+
+    public byte[] getDeobfuscated(final ClassMapping<?, ?> klass) {
+        // Get obfuscated bytecode
+        final byte[] obfuscated = this.get(klass.getFullObfuscatedName());
+        if (obfuscated == null) return null;
+
+        // Remap the class
+        final ClassReader reader = new ClassReader(obfuscated);
+        final ClassWriter writer = new ClassWriter(reader, 0);
+        reader.accept(new LvtWipingClassRemapper(
+                writer,
+                this.remapper
+        ), 0);
+        return writer.toByteArray();
+    }
+
+    @Override
+    public byte[] get(final String klass) {
         final String internalName = klass + ".class";
 
         final JarEntry entry = this.jar.getJarEntry(internalName);
@@ -82,27 +138,31 @@ public class Jar implements ClassProvider, Closeable {
     }
 
     @Override
-    public byte[] get(final String klass) {
-        // deobf -> obf
-        final ClassMapping<?, ?> mapping = this.mappings.reverse().getOrCreateClassMapping(klass);
-
-        // Get obfuscated bytecode
-        final byte[] obfuscated = this.getObfuscated(mapping.getFullDeobfuscatedName());
-        if (obfuscated == null) return null;
-
-        // Remap the class
-        final ClassReader reader = new ClassReader(obfuscated);
-        final ClassWriter writer = new ClassWriter(reader, 0);
-        reader.accept(new ClassRemapper(
-                writer,
-                this.remapper
-        ), 0);
-        return writer.toByteArray();
-    }
-
-    @Override
     public void close() throws IOException {
         this.jar.close();
+    }
+
+    private static class LvtWipingClassRemapper extends ClassRemapper {
+
+        public LvtWipingClassRemapper(final ClassVisitor classVisitor, final Remapper remapper) {
+            super(classVisitor, remapper);
+        }
+
+        @Override
+        protected MethodVisitor createMethodRemapper(final MethodVisitor methodVisitor) {
+            return new MethodRemapper(methodVisitor, this.remapper) {
+                @Override
+                public void visitAttribute(final Attribute attribute) {
+                    if (Objects.equals("LocalVariableTable", attribute.type)) return;
+                    super.visitAttribute(attribute);
+                }
+
+                @Override
+                public void visitLocalVariable(final String name, final String descriptor, final String signature, final Label start, final Label end, final int index) {
+                }
+            };
+        }
+
     }
 
 }

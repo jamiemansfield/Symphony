@@ -24,6 +24,9 @@ dependencies {
 
     // ForgeFlower (decompiler)
     compile 'net.minecraftforge:forgeflower:1.5.380.24'
+
+    // RichTextFX (syntax highlighting)
+    compile 'org.fxmisc.richtext:richtextfx:0.6.10'
 }
 
 processResources {

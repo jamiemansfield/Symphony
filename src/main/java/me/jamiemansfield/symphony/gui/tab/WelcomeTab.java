@@ -5,7 +5,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 //******************************************************************************
 
-package me.jamiemansfield.symphony.gui.control;
+package me.jamiemansfield.symphony.gui.tab;
 
 import javafx.scene.control.Tab;
 import javafx.scene.text.Text;

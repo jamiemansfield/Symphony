@@ -7,6 +7,10 @@
 
 package me.jamiemansfield.symphony;
 
+import org.jetbrains.java.decompiler.main.extern.IFernflowerPreferences;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -22,6 +26,16 @@ public final class SharedConstants {
      */
     public static final String VERSION = Objects.toString(
             SharedConstants.class.getPackage().getImplementationVersion(), "dev");
+
+    public static final Map<String, Object> DECOMPILER_OPTTIONS = new HashMap<String, Object>(){
+        {
+            this.put(IFernflowerPreferences.DECOMPILE_GENERIC_SIGNATURES, "1");
+            this.put(IFernflowerPreferences.ASCII_STRING_CHARACTERS, "1");
+            this.put(IFernflowerPreferences.REMOVE_SYNTHETIC, "1");
+            this.put(IFernflowerPreferences.USE_JAD_VARNAMING, "1");
+            this.put(IFernflowerPreferences.INDENT_STRING, "    ");
+        }
+    };
 
     private SharedConstants() {
     }

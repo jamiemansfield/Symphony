@@ -25,7 +25,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import me.jamiemansfield.symphony.Jar;
 import me.jamiemansfield.symphony.SharedConstants;
-import me.jamiemansfield.symphony.gui.control.WelcomeTab;
+import me.jamiemansfield.symphony.gui.tab.CodeTab;
+import me.jamiemansfield.symphony.gui.tab.WelcomeTab;
 
 import java.io.File;
 import java.io.IOException;
@@ -192,6 +193,9 @@ public final class SymphonyMain extends Application {
         this.saveMappings.setDisable(false);
         this.saveMappingsAs.setDisable(false);
         this.exportRemappedJar.setDisable(false);
+
+        // TODO: test code
+        this.tabs.getTabs().add(new CodeTab(this.jar, this.jar.getMappings().getOrCreateTopLevelClassMapping("a")));
     }
 
     private void displayWelcomeTab(final ActionEvent event) {
