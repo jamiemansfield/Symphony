@@ -21,7 +21,7 @@ public final class SharedConstants {
      * The version of Symphony, that is running (will be {@code "dev"} in dev env).
      */
     public static final String VERSION = Objects.toString(
-            SymphonyMain.class.getPackage().getImplementationVersion(), "dev");
+            SharedConstants.class.getPackage().getImplementationVersion(), "dev");
 
     private SharedConstants() {
     }

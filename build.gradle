@@ -29,7 +29,7 @@ jar {
         attributes(
                 'Implementation-Title': name,
                 'Implementation-Version': version,
-                'Main-Class': 'me.jamiemansfield.symphony.SymphonyMain'
+                'Main-Class': 'me.jamiemansfield.symphony.gui.SymphonyMain'
         )
     }
 }
