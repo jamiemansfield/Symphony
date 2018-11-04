@@ -14,6 +14,7 @@ import org.cadixdev.bombe.analysis.CachingInheritanceProvider;
 import org.cadixdev.bombe.analysis.InheritanceProvider;
 import org.cadixdev.bombe.asm.analysis.ClassProviderInheritanceProvider;
 import org.cadixdev.bombe.asm.jar.ClassProvider;
+import org.cadixdev.bombe.asm.jar.JarEntryRemappingTransformer;
 import org.cadixdev.bombe.jar.AbstractJarEntry;
 import org.cadixdev.bombe.jar.Jars;
 import org.cadixdev.bombe.util.ByteStreams;
@@ -33,11 +34,14 @@ import org.objectweb.asm.commons.Remapper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.jar.JarOutputStream;
 import java.util.stream.Stream;
 
 /**
@@ -54,12 +58,6 @@ public class Jar implements ClassProvider, Closeable {
     private final InheritanceProvider inheritanceProvider =
             new CachingInheritanceProvider(new ClassProviderInheritanceProvider(this));
     private final Remapper remapper = new SurveyRemapper(this.mappings, this.inheritanceProvider);
-    private final Fernflower fernflower = new Fernflower(
-            new JarBytecodeProvider(this),
-            NoopResultSaver.INSTANCE,
-            SharedConstants.DECOMPILER_OPTTIONS,
-            SimpleFernflowerLogger.INSTANCE
-    );
 
     public Jar(final JarFile jar) {
         this.jar = jar;
@@ -85,19 +83,34 @@ public class Jar implements ClassProvider, Closeable {
         return Jars.walk(this.jar);
     }
 
+    public void exportRemapped(final File exportPath) {
+        try (final JarOutputStream jos = new JarOutputStream(new FileOutputStream(exportPath))) {
+            Jars.transform(this.jar, jos, new JarEntryRemappingTransformer(this.remapper));
+        }
+        catch (final IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
     public String decompile(final ClassMapping<?, ?> klass) {
         final byte[] deobfBytes = this.getDeobfuscated(klass);
         if (deobfBytes == null) return "Well... this is embarrassing.";
 
         try {
-            this.fernflower.getStructContext().addData(
+            final Fernflower fernflower = new Fernflower(
+                    new JarBytecodeProvider(this),
+                    NoopResultSaver.INSTANCE,
+                    SharedConstants.DECOMPILER_OPTTIONS,
+                    SimpleFernflowerLogger.INSTANCE
+            );
+            fernflower.getStructContext().addData(
                     klass.getDeobfuscatedPackage(),
                     klass.getSimpleDeobfuscatedName() + ".class",
                     deobfBytes,
                     true
             );
-            this.fernflower.decompileContext();
-            return this.fernflower.getClassContent(this.fernflower.getStructContext().getClass(klass.getFullDeobfuscatedName()));
+            fernflower.decompileContext();
+            return fernflower.getClassContent(fernflower.getStructContext().getClass(klass.getFullDeobfuscatedName()));
         }
         catch (final IOException ex) {
             ex.printStackTrace();

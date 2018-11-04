@@ -58,6 +58,7 @@ public final class SymphonyMain extends Application {
 
     // File choosers
     private FileChooser openJarFileChooser;
+    private FileChooser exportJarFileChooser;
 
     @Override
     public void start(final Stage primaryStage) {
@@ -83,7 +84,8 @@ public final class SymphonyMain extends Application {
         // Main Menu
         final MenuBar mainMenu = new MenuBar();
         {
-            final Menu file = new Menu("File");
+            final Menu file = new Menu("_File");
+            file.setMnemonicParsing(true);
             {
                 // Jar related
                 {
@@ -115,6 +117,7 @@ public final class SymphonyMain extends Application {
                 {
                     this.exportRemappedJar = new MenuItem("Export Remapped Jar...");
                     this.exportRemappedJar.setDisable(true);
+                    this.exportRemappedJar.addEventHandler(ActionEvent.ACTION, this::exportRemappedJar);
                     file.getItems().add(this.exportRemappedJar);
                 }
                 file.getItems().add(new SeparatorMenuItem());
@@ -127,7 +130,8 @@ public final class SymphonyMain extends Application {
             }
             mainMenu.getMenus().add(file);
 
-            final Menu help = new Menu("Help");
+            final Menu help = new Menu("_Help");
+            help.setMnemonicParsing(true);
             {
                 {
                     final MenuItem welcomeTab = new MenuItem("Open Welcome Tab");
@@ -196,6 +200,21 @@ public final class SymphonyMain extends Application {
 
         // TODO: test code
         this.tabs.getTabs().add(new CodeTab(this.jar, this.jar.getMappings().getOrCreateTopLevelClassMapping("a")));
+    }
+
+    private void exportRemappedJar(final ActionEvent event) {
+        if (this.exportJarFileChooser == null) {
+            this.exportJarFileChooser = new FileChooser();
+            this.exportJarFileChooser.setTitle("Export Remapped Jar");
+            this.exportJarFileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("JAR file", "*.jar")
+            );
+        }
+
+        final File jarPath = this.exportJarFileChooser.showSaveDialog(this.stage);
+        if (jarPath == null) return;
+
+        this.jar.exportRemapped(jarPath);
     }
 
     private void displayWelcomeTab(final ActionEvent event) {
