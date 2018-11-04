@@ -11,15 +11,20 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import me.jamiemansfield.symphony.SharedConstants;
 import me.jamiemansfield.symphony.gui.control.WelcomeTab;
+
+import java.util.stream.Stream;
 
 /**
  * The Main-Class behind Symphony.
@@ -94,6 +99,7 @@ public final class SymphonyMain extends Application {
                 help.getItems().add(new SeparatorMenuItem());
                 {
                     final MenuItem about = new MenuItem("About Symphony");
+                    about.addEventHandler(ActionEvent.ACTION, this::displayAbout);
                     help.getItems().add(about);
                 }
             }
@@ -123,6 +129,27 @@ public final class SymphonyMain extends Application {
                     this.tabs.getTabs().add(tab);
                     return tab;
                 }));
+    }
+
+    private void displayAbout(final ActionEvent event) {
+        final Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("About Symphony");
+        alert.setHeaderText("Symphony v" + SharedConstants.VERSION);
+
+        final TextFlow textFlow = new TextFlow();
+        {
+            Stream.of(
+                    "Copyright (c) 2018 Jamie Mansfield <https://www.jamiemansfield.me/>\n\n",
+                    // The following is adapted from a similar statement Mozilla make for Firefox
+                    // See about:rights
+                    "Symphony is made available under the terms of the Mozilla Public License, giving\n",
+                    "you the freedom to use, copy, and distribute Symphony to others, in addition to\n",
+                    "the right to distribute modified versions."
+            ).map(Text::new).forEach(textFlow.getChildren()::add);
+        }
+        alert.getDialogPane().setContent(textFlow);
+
+        alert.showAndWait();
     }
 
     public static void main(final String[] args) {
