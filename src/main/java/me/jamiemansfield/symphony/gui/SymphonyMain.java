@@ -17,19 +17,24 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import me.jamiemansfield.symphony.jar.Jar;
 import me.jamiemansfield.symphony.SharedConstants;
+import me.jamiemansfield.symphony.decompiler.IDecompiler;
+import me.jamiemansfield.symphony.decompiler.forgeflower.ForgeFlowerDecompiler;
+import me.jamiemansfield.symphony.decompiler.procyon.ProcyonDecompiler;
 import me.jamiemansfield.symphony.gui.tab.CodeTab;
 import me.jamiemansfield.symphony.gui.tab.WelcomeTab;
+import me.jamiemansfield.symphony.jar.Jar;
 import org.cadixdev.lorenz.io.MappingFormats;
 
 import java.io.File;
@@ -44,6 +49,12 @@ import java.util.stream.Stream;
  * @since 0.1.0
  */
 public final class SymphonyMain extends Application {
+
+    private static IDecompiler DECOMPILER = ForgeFlowerDecompiler.INSTANCE;
+
+    public static IDecompiler decompiler() {
+        return DECOMPILER;
+    }
 
     private Stage stage;
     private TabPane tabs;
@@ -128,6 +139,45 @@ public final class SymphonyMain extends Application {
                     this.exportRemappedJar.setDisable(true);
                     this.exportRemappedJar.addEventHandler(ActionEvent.ACTION, this::exportRemappedJar);
                     file.getItems().add(this.exportRemappedJar);
+                }
+                file.getItems().add(new SeparatorMenuItem());
+                // Settings
+                {
+                    final Menu settings = new Menu("Settings");
+                    // Decompiler
+                    {
+                        final ToggleGroup decompilerGroup = new ToggleGroup();
+                        final Menu decompilerMenu = new Menu("Decompiler");
+                        // ForgeFlower
+                        {
+                            final RadioMenuItem forgeFlower = new RadioMenuItem("ForgeFlower");
+                            forgeFlower.addEventHandler(ActionEvent.ACTION, event -> {
+                                // Set the decompiler
+                                DECOMPILER = ForgeFlowerDecompiler.INSTANCE;
+
+                                // Update the views
+                                this.update();
+                            });
+                            decompilerGroup.getToggles().add(forgeFlower);
+                            decompilerMenu.getItems().add(forgeFlower);
+                            decompilerGroup.selectToggle(forgeFlower);
+                        }
+                        // Procyon
+                        {
+                            final RadioMenuItem procyon = new RadioMenuItem("Procyon");
+                            procyon.addEventHandler(ActionEvent.ACTION, event -> {
+                                // Set the decompiler
+                                DECOMPILER = ProcyonDecompiler.INSTANCE;
+
+                                // Update the views
+                                this.update();
+                            });
+                            decompilerGroup.getToggles().add(procyon);
+                            decompilerMenu.getItems().add(procyon);
+                        }
+                        settings.getItems().add(decompilerMenu);
+                    }
+                    file.getItems().add(settings);
                 }
                 file.getItems().add(new SeparatorMenuItem());
                 // Program related
