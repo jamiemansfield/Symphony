@@ -7,9 +7,8 @@
 
 package me.jamiemansfield.symphony;
 
-import me.jamiemansfield.symphony.decompiler.JarBytecodeProvider;
-import me.jamiemansfield.symphony.decompiler.NoopResultSaver;
-import me.jamiemansfield.symphony.decompiler.SimpleFernflowerLogger;
+import me.jamiemansfield.symphony.decompiler.IDecompiler;
+import me.jamiemansfield.symphony.decompiler.WrappedBytecode;
 import org.cadixdev.bombe.analysis.CachingInheritanceProvider;
 import org.cadixdev.bombe.analysis.InheritanceProvider;
 import org.cadixdev.bombe.asm.analysis.ClassProviderInheritanceProvider;
@@ -20,9 +19,9 @@ import org.cadixdev.bombe.jar.JarClassEntry;
 import org.cadixdev.bombe.jar.Jars;
 import org.cadixdev.bombe.util.ByteStreams;
 import org.cadixdev.lorenz.MappingSet;
+import org.cadixdev.lorenz.model.ClassMapping;
 import org.cadixdev.lorenz.model.TopLevelClassMapping;
 import org.cadixdev.survey.remapper.SurveyRemapper;
-import org.jetbrains.java.decompiler.main.Fernflower;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -95,55 +94,34 @@ public class Jar implements ClassProvider, Closeable {
         }
     }
 
-    public String decompile(final TopLevelClassMapping klass) {
-        synchronized (this.jar) {
-            final byte[] deobfBytes = this.deobfuscate(klass.getFullObfuscatedName());
-            if (deobfBytes == null) return "Well... this is embarrassing.";
+    public synchronized String decompile(final IDecompiler decompiler, final TopLevelClassMapping klass) {
+        // Get the top-level class
+        final byte[] deobfBytes = this.deobfuscate(klass.getFullObfuscatedName());
+        if (deobfBytes == null) return "Well... this is embarrassing.";
+        final WrappedBytecode rootKlass = new WrappedBytecode(
+                klass.getFullDeobfuscatedName() + ".class",
+                deobfBytes
+        );
 
-            try {
-                final Fernflower fernflower = new Fernflower(
-                        new JarBytecodeProvider(this),
-                        NoopResultSaver.INSTANCE,
-                        SharedConstants.DECOMPILER_OPTTIONS,
-                        SimpleFernflowerLogger.INSTANCE
-                );
-                // Provide immediate class
-                fernflower.getStructContext().addData(
-                        klass.getDeobfuscatedPackage(),
-                        klass.getSimpleDeobfuscatedName() + ".class",
-                        deobfBytes,
-                        true
-                );
-                // Provide inner classes
-                this.entries().filter(JarClassEntry.class::isInstance).map(JarClassEntry.class::cast)
-                        .map(JarClassEntry::getName)
-                        .map(name -> name.substring(0, name.length() - ".class".length()))
-                        .filter(name -> name.startsWith(klass.getFullObfuscatedName() + "$"))
-                        .map(this.mappings::getOrCreateClassMapping)
-                        .forEach(mapping -> {
-                            final byte[] innerDeobfBytes = this.deobfuscate(mapping.getFullObfuscatedName());
-                            if (innerDeobfBytes == null) return;
+        // Get the inner classes
+        final WrappedBytecode[] innerKlasses = this.entries()
+                .filter(JarClassEntry.class::isInstance).map(JarClassEntry.class::cast)
+                .filter(entry -> entry.getName().startsWith(klass.getFullObfuscatedName() + '$'))
+                .map(entry -> {
+                    final ClassMapping<?, ?> innerKlass = this.mappings.getOrCreateClassMapping(
+                            entry.getName().substring(0, entry.getName().length() - ".class".length())
+                    );
+                    final byte[] innerDeobfBytes = this.deobfuscate(innerKlass.getFullObfuscatedName());
+                    if (innerDeobfBytes == null) return null;
+                    return new WrappedBytecode(
+                            innerKlass.getFullDeobfuscatedName() + ".class",
+                            innerDeobfBytes
+                    );
+                })
+                .toArray(WrappedBytecode[]::new);
 
-                            try {
-                                fernflower.getStructContext().addData(
-                                        mapping.getDeobfuscatedPackage(),
-                                        mapping.getSimpleDeobfuscatedName() + ".class",
-                                        innerDeobfBytes,
-                                        true
-                                );
-                            }
-                            catch (final IOException ex) {
-                                ex.printStackTrace();
-                            }
-                        });
-                fernflower.decompileContext();
-                return fernflower.getClassContent(fernflower.getStructContext().getClass(klass.getFullDeobfuscatedName()));
-            }
-            catch (final IOException ex) {
-                ex.printStackTrace();
-                return "Well... this is embarrassing.";
-            }
-        }
+        // Decompile
+        return decompiler.decompile(this, rootKlass, innerKlasses);
     }
 
     public byte[] deobfuscate(final String klass) {
@@ -163,18 +141,20 @@ public class Jar implements ClassProvider, Closeable {
 
     @Override
     public byte[] get(final String klass) {
-        final String internalName = klass + ".class";
+        synchronized (this.jar) {
+            final String internalName = klass + ".class";
 
-        final JarEntry entry = this.jar.getJarEntry(internalName);
-        if (entry == null) return null;
+            final JarEntry entry = this.jar.getJarEntry(internalName);
+            if (entry == null) return null;
 
-        try (final InputStream in = this.jar.getInputStream(entry)) {
-            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ByteStreams.copy(in, baos);
-            return baos.toByteArray();
-        }
-        catch (final IOException ignored) {
-            return null;
+            try (final InputStream in = this.jar.getInputStream(entry)) {
+                final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ByteStreams.copy(in, baos);
+                return baos.toByteArray();
+            }
+            catch (final IOException ignored) {
+                return null;
+            }
         }
     }
 

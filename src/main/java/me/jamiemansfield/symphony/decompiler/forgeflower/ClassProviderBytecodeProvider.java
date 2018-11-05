@@ -5,31 +5,29 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 //******************************************************************************
 
-package me.jamiemansfield.symphony.decompiler;
+package me.jamiemansfield.symphony.decompiler.forgeflower;
 
-import me.jamiemansfield.symphony.Jar;
+import org.cadixdev.bombe.asm.jar.ClassProvider;
 import org.jetbrains.java.decompiler.main.extern.IBytecodeProvider;
 
 /**
- * An implementation of {@link IBytecodeProvider} fetching from
- * a {@link Jar}.
+ * An implementation of {@link IBytecodeProvider} backed by a
+ * {@link ClassProvider}.
  *
  * @author Jamie Mansfield
  * @since 0.1.0
  */
-public class JarBytecodeProvider implements IBytecodeProvider {
+class ClassProviderBytecodeProvider implements IBytecodeProvider {
 
-    private final Jar jar;
+    private final ClassProvider provider;
 
-    public JarBytecodeProvider(final Jar jar) {
-        this.jar = jar;
+    ClassProviderBytecodeProvider(final ClassProvider provider) {
+        this.provider = provider;
     }
 
     @Override
     public byte[] getBytecode(final String externalPath, final String internalPath) {
-        return this.jar.deobfuscate(
-                this.jar.getMappings().getOrCreateClassMapping(internalPath).getFullObfuscatedName()
-        );
+        return this.provider.get(internalPath);
     }
 
 }

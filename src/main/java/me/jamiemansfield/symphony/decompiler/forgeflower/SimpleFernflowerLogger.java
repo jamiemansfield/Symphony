@@ -5,7 +5,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 //******************************************************************************
 
-package me.jamiemansfield.symphony.decompiler;
+package me.jamiemansfield.symphony.decompiler.forgeflower;
 
 import org.jetbrains.java.decompiler.main.extern.IFernflowerLogger;
 
@@ -16,7 +16,7 @@ import org.jetbrains.java.decompiler.main.extern.IFernflowerLogger;
  * @author Jamie Mansfield
  * @since 0.1.0
  */
-public class SimpleFernflowerLogger extends IFernflowerLogger {
+class SimpleFernflowerLogger extends IFernflowerLogger {
 
     public static final IFernflowerLogger INSTANCE = new SimpleFernflowerLogger();
 

@@ -5,7 +5,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 //******************************************************************************
 
-package me.jamiemansfield.symphony.decompiler;
+package me.jamiemansfield.symphony.decompiler.forgeflower;
 
 import org.jetbrains.java.decompiler.main.extern.IResultSaver;
 
@@ -17,7 +17,7 @@ import java.util.jar.Manifest;
  * @author Jamie Mansfield
  * @since 0.1.0
  */
-public class NoopResultSaver implements IResultSaver {
+class NoopResultSaver implements IResultSaver {
 
     public static final IResultSaver INSTANCE = new NoopResultSaver();
 
