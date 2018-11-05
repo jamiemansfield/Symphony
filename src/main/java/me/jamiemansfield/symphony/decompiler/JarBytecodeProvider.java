@@ -27,7 +27,9 @@ public class JarBytecodeProvider implements IBytecodeProvider {
 
     @Override
     public byte[] getBytecode(final String externalPath, final String internalPath) {
-        return this.jar.getDeobfuscated(this.jar.getMappings().getOrCreateClassMapping(internalPath));
+        return this.jar.deobfuscate(
+                this.jar.getMappings().getOrCreateClassMapping(internalPath).getFullObfuscatedName()
+        );
     }
 
 }

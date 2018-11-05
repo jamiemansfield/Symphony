@@ -20,7 +20,7 @@ import org.cadixdev.bombe.jar.JarClassEntry;
 import org.cadixdev.bombe.jar.Jars;
 import org.cadixdev.bombe.util.ByteStreams;
 import org.cadixdev.lorenz.MappingSet;
-import org.cadixdev.lorenz.model.ClassMapping;
+import org.cadixdev.lorenz.model.TopLevelClassMapping;
 import org.cadixdev.survey.remapper.SurveyRemapper;
 import org.jetbrains.java.decompiler.main.Fernflower;
 import org.objectweb.asm.Attribute;
@@ -93,8 +93,8 @@ public class Jar implements ClassProvider, Closeable {
         }
     }
 
-    public String decompile(final ClassMapping<?, ?> klass) {
-        final byte[] deobfBytes = this.getDeobfuscated(klass);
+    public String decompile(final TopLevelClassMapping klass) {
+        final byte[] deobfBytes = this.deobfuscate(klass.getFullObfuscatedName());
         if (deobfBytes == null) return "Well... this is embarrassing.";
 
         try {
@@ -118,7 +118,7 @@ public class Jar implements ClassProvider, Closeable {
                     .filter(name -> name.startsWith(klass.getFullObfuscatedName() + "$"))
                     .map(this.mappings::getOrCreateClassMapping)
                     .forEach(mapping -> {
-                        final byte[] innerDeobfBytes = this.getDeobfuscated(mapping);
+                        final byte[] innerDeobfBytes = this.deobfuscate(mapping.getFullObfuscatedName());
                         if (innerDeobfBytes == null) return;
 
                         try {
@@ -142,9 +142,9 @@ public class Jar implements ClassProvider, Closeable {
         }
     }
 
-    public byte[] getDeobfuscated(final ClassMapping<?, ?> klass) {
+    public byte[] deobfuscate(final String klass) {
         // Get obfuscated bytecode
-        final byte[] obfuscated = this.get(klass.getFullObfuscatedName());
+        final byte[] obfuscated = this.get(klass);
         if (obfuscated == null) return null;
 
         // Remap the class
