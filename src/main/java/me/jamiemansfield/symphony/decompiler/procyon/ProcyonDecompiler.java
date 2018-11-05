@@ -32,6 +32,7 @@ public class ProcyonDecompiler extends AbstractDecompiler {
         final String name = klass.getName().substring(0, klass.getName().length() - ".class".length());
 
         final DecompilerSettings settings = DecompilerSettings.javaDefaults();
+        settings.setForceExplicitImports(true);
         settings.setTypeLoader(new CompositeTypeLoader(
                 new ClassProviderTypeLoader(classProvider),
                 new ClasspathTypeLoader()

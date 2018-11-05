@@ -32,6 +32,7 @@ import me.jamiemansfield.symphony.SharedConstants;
 import me.jamiemansfield.symphony.decompiler.IDecompiler;
 import me.jamiemansfield.symphony.decompiler.forgeflower.ForgeFlowerDecompiler;
 import me.jamiemansfield.symphony.decompiler.procyon.ProcyonDecompiler;
+import me.jamiemansfield.symphony.gui.concurrent.TaskManager;
 import me.jamiemansfield.symphony.gui.tab.CodeTab;
 import me.jamiemansfield.symphony.gui.tab.WelcomeTab;
 import me.jamiemansfield.symphony.jar.Jar;
@@ -209,6 +210,13 @@ public final class SymphonyMain extends Application {
                     welcomeTab.addEventHandler(ActionEvent.ACTION, this::displayWelcomeTab);
                     help.getItems().add(welcomeTab);
                 }
+                {
+                    final MenuItem tasksWindow = new MenuItem("Open Tasks Window");
+                    tasksWindow.addEventHandler(ActionEvent.ACTION, event -> {
+                        TaskManager.INSTANCE.display();
+                    });
+                    help.getItems().add(tasksWindow);
+                }
                 help.getItems().add(new SeparatorMenuItem());
                 {
                     final MenuItem about = new MenuItem("About Symphony");
@@ -312,7 +320,8 @@ public final class SymphonyMain extends Application {
         final File jarPath = this.exportJarFileChooser.showSaveDialog(this.stage);
         if (jarPath == null) return;
 
-        new RemapperService(this.jar, jarPath).start();
+        final RemapperService remapperService = new RemapperService(this.jar, jarPath);
+        remapperService.start();
     }
 
     private void navigateToClass(final ActionEvent event) {
@@ -366,7 +375,7 @@ public final class SymphonyMain extends Application {
         launch(args);
     }
 
-    private static class RemapperService extends Service<Void> {
+    private class RemapperService extends Service<Void> {
 
         private final Jar jar;
         private final File to;
@@ -378,9 +387,13 @@ public final class SymphonyMain extends Application {
 
         @Override
         protected Task<Void> createTask() {
-            return new Task<Void>() {
+            return TaskManager.INSTANCE.new TrackedTask<Void>() {
+                {
+                    this.updateTitle("remap: " + RemapperService.this.to.getName());
+                }
+
                 @Override
-                protected Void call() throws Exception {
+                protected Void call() {
                     RemapperService.this.jar.exportRemapped(RemapperService.this.to);
                     return null;
                 }

@@ -23,6 +23,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import me.jamiemansfield.symphony.gui.SymphonyMain;
+import me.jamiemansfield.symphony.gui.concurrent.TaskManager;
 import me.jamiemansfield.symphony.jar.Jar;
 import org.cadixdev.lorenz.model.TopLevelClassMapping;
 import org.fxmisc.richtext.CodeArea;
@@ -137,7 +138,10 @@ public class CodeTab extends Tab {
 
         @Override
         protected Task<String> createTask() {
-            return new Task<String>() {
+            return TaskManager.INSTANCE.new TrackedTask<String>() {
+                {
+                    this.updateTitle("decompile: " + DecompileService.this.klass.getSimpleDeobfuscatedName());
+                }
                 @Override
                 protected String call() {
                     return DecompileService.this.jar.decompile(SymphonyMain.decompiler(), DecompileService.this.klass);
