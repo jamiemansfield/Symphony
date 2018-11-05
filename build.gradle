@@ -22,8 +22,9 @@ dependencies {
     // Survey (binary remapper)
     compile "org.cadixdev:survey:$surveyVersion"
 
-    // ForgeFlower (decompiler)
+    // Decompilers
     compile 'net.minecraftforge:forgeflower:1.5.380.24'
+    compile 'org.bitbucket.mstrobel:procyon-compilertools:0.5.33'
 
     // RichTextFX (syntax highlighting)
     compile 'org.fxmisc.richtext:richtextfx:0.6.10'
