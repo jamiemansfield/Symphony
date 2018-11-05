@@ -19,6 +19,7 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import me.jamiemansfield.symphony.Jar;
@@ -82,6 +83,10 @@ public class CodeTab extends Tab {
         final BorderPane root = new BorderPane();
 
         // Code display
+        final Text notice = new Text("Decompiling...");
+        notice.setFont(new Font(24));
+        root.setCenter(notice);
+
         final DecompileService decompileService = new DecompileService(this.jar, this.klass);
         decompileService.setOnSucceeded(event -> {
             final CodeArea code = new CodeArea(event.getSource().getValue().toString());
