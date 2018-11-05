@@ -22,7 +22,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import me.jamiemansfield.symphony.Jar;
+import me.jamiemansfield.symphony.jar.Jar;
 import me.jamiemansfield.symphony.decompiler.procyon.ProcyonDecompiler;
 import org.cadixdev.lorenz.model.TopLevelClassMapping;
 import org.fxmisc.richtext.CodeArea;

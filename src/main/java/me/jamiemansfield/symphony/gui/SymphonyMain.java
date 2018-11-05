@@ -26,7 +26,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import me.jamiemansfield.symphony.Jar;
+import me.jamiemansfield.symphony.jar.Jar;
 import me.jamiemansfield.symphony.SharedConstants;
 import me.jamiemansfield.symphony.gui.tab.CodeTab;
 import me.jamiemansfield.symphony.gui.tab.WelcomeTab;
