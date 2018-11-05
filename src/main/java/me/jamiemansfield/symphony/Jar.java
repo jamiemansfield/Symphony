@@ -85,60 +85,64 @@ public class Jar implements ClassProvider, Closeable {
     }
 
     public void exportRemapped(final File exportPath) {
-        try (final JarOutputStream jos = new JarOutputStream(new FileOutputStream(exportPath))) {
-            Jars.transform(this.jar, jos, new JarEntryRemappingTransformer(this.remapper));
-        }
-        catch (final IOException ex) {
-            ex.printStackTrace();
+        synchronized (this.jar) {
+            try (final JarOutputStream jos = new JarOutputStream(new FileOutputStream(exportPath))) {
+                Jars.transform(this.jar, jos, new JarEntryRemappingTransformer(this.remapper));
+            }
+            catch (final IOException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
     public String decompile(final TopLevelClassMapping klass) {
-        final byte[] deobfBytes = this.deobfuscate(klass.getFullObfuscatedName());
-        if (deobfBytes == null) return "Well... this is embarrassing.";
+        synchronized (this.jar) {
+            final byte[] deobfBytes = this.deobfuscate(klass.getFullObfuscatedName());
+            if (deobfBytes == null) return "Well... this is embarrassing.";
 
-        try {
-            final Fernflower fernflower = new Fernflower(
-                    new JarBytecodeProvider(this),
-                    NoopResultSaver.INSTANCE,
-                    SharedConstants.DECOMPILER_OPTTIONS,
-                    SimpleFernflowerLogger.INSTANCE
-            );
-            // Provide immediate class
-            fernflower.getStructContext().addData(
-                    klass.getDeobfuscatedPackage(),
-                    klass.getSimpleDeobfuscatedName() + ".class",
-                    deobfBytes,
-                    true
-            );
-            // Provide inner classes
-            this.entries().filter(JarClassEntry.class::isInstance).map(JarClassEntry.class::cast)
-                    .map(JarClassEntry::getName)
-                    .map(name -> name.substring(0, name.length() - ".class".length()))
-                    .filter(name -> name.startsWith(klass.getFullObfuscatedName() + "$"))
-                    .map(this.mappings::getOrCreateClassMapping)
-                    .forEach(mapping -> {
-                        final byte[] innerDeobfBytes = this.deobfuscate(mapping.getFullObfuscatedName());
-                        if (innerDeobfBytes == null) return;
+            try {
+                final Fernflower fernflower = new Fernflower(
+                        new JarBytecodeProvider(this),
+                        NoopResultSaver.INSTANCE,
+                        SharedConstants.DECOMPILER_OPTTIONS,
+                        SimpleFernflowerLogger.INSTANCE
+                );
+                // Provide immediate class
+                fernflower.getStructContext().addData(
+                        klass.getDeobfuscatedPackage(),
+                        klass.getSimpleDeobfuscatedName() + ".class",
+                        deobfBytes,
+                        true
+                );
+                // Provide inner classes
+                this.entries().filter(JarClassEntry.class::isInstance).map(JarClassEntry.class::cast)
+                        .map(JarClassEntry::getName)
+                        .map(name -> name.substring(0, name.length() - ".class".length()))
+                        .filter(name -> name.startsWith(klass.getFullObfuscatedName() + "$"))
+                        .map(this.mappings::getOrCreateClassMapping)
+                        .forEach(mapping -> {
+                            final byte[] innerDeobfBytes = this.deobfuscate(mapping.getFullObfuscatedName());
+                            if (innerDeobfBytes == null) return;
 
-                        try {
-                            fernflower.getStructContext().addData(
-                                    mapping.getDeobfuscatedPackage(),
-                                    mapping.getSimpleDeobfuscatedName() + ".class",
-                                    innerDeobfBytes,
-                                    true
-                            );
-                        }
-                        catch (final IOException ex) {
-                            ex.printStackTrace();
-                        }
-                    });
-            fernflower.decompileContext();
-            return fernflower.getClassContent(fernflower.getStructContext().getClass(klass.getFullDeobfuscatedName()));
-        }
-        catch (final IOException ex) {
-            ex.printStackTrace();
-            return "Well... this is embarrassing.";
+                            try {
+                                fernflower.getStructContext().addData(
+                                        mapping.getDeobfuscatedPackage(),
+                                        mapping.getSimpleDeobfuscatedName() + ".class",
+                                        innerDeobfBytes,
+                                        true
+                                );
+                            }
+                            catch (final IOException ex) {
+                                ex.printStackTrace();
+                            }
+                        });
+                fernflower.decompileContext();
+                return fernflower.getClassContent(fernflower.getStructContext().getClass(klass.getFullDeobfuscatedName()));
+            }
+            catch (final IOException ex) {
+                ex.printStackTrace();
+                return "Well... this is embarrassing.";
+            }
         }
     }
 

@@ -9,6 +9,8 @@ package me.jamiemansfield.symphony.gui;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -191,6 +193,11 @@ public final class SymphonyMain extends Application {
         this.stage.show();
     }
 
+    public void update() {
+        this.tabs.getTabs().stream().filter(CodeTab.class::isInstance).map(CodeTab.class::cast)
+                .forEach(CodeTab::update);
+    }
+
     private void openJar(final ActionEvent event) {
         if (this.openJarFileChooser == null) {
             this.openJarFileChooser = new FileChooser();
@@ -238,6 +245,9 @@ public final class SymphonyMain extends Application {
         catch (final IOException ex) {
             ex.printStackTrace();
         }
+
+        // Update views
+        this.update();
     }
 
     private void exportRemappedJar(final ActionEvent event) {
@@ -252,7 +262,7 @@ public final class SymphonyMain extends Application {
         final File jarPath = this.exportJarFileChooser.showSaveDialog(this.stage);
         if (jarPath == null) return;
 
-        this.jar.exportRemapped(jarPath);
+        new RemapperService(this.jar, jarPath).start();
     }
 
     private void navigateToClass(final ActionEvent event) {
@@ -304,6 +314,29 @@ public final class SymphonyMain extends Application {
 
     public static void main(final String[] args) {
         launch(args);
+    }
+
+    private static class RemapperService extends Service<Void> {
+
+        private final Jar jar;
+        private final File to;
+
+        public RemapperService(final Jar jar, final File to) {
+            this.jar = jar;
+            this.to = to;
+        }
+
+        @Override
+        protected Task<Void> createTask() {
+            return new Task<Void>() {
+                @Override
+                protected Void call() throws Exception {
+                    RemapperService.this.jar.exportRemapped(RemapperService.this.to);
+                    return null;
+                }
+            };
+        }
+
     }
 
 }

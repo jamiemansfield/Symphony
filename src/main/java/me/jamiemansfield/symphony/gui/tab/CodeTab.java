@@ -7,8 +7,11 @@
 
 package me.jamiemansfield.symphony.gui.tab;
 
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Tab;
@@ -79,18 +82,23 @@ public class CodeTab extends Tab {
         final BorderPane root = new BorderPane();
 
         // Code display
-        final CodeArea code = new CodeArea(this.jar.decompile(this.klass));
-        code.setParagraphGraphicFactory(LineNumberFactory.get(code));
-        code.setEditable(false);
-        root.setCenter(code);
+        final DecompileService decompileService = new DecompileService(this.jar, this.klass);
+        decompileService.setOnSucceeded(event -> {
+            final CodeArea code = new CodeArea(event.getSource().getValue().toString());
+            code.setParagraphGraphicFactory(LineNumberFactory.get(code));
+            code.setEditable(false);
+            root.setCenter(code);
+        });
+        decompileService.start();
 
         // Bottom tool bar
         final ToolBar bar = new ToolBar();
         bar.getItems().add(new TextFlow() {
             {
-                final Text deobfName = new Text(CodeTab.this.klass.getSimpleDeobfuscatedName());
+                final Label deobfName = new Label(CodeTab.this.klass.getSimpleDeobfuscatedName());
+                deobfName.setTooltip(new Tooltip(CodeTab.this.klass.getFullDeobfuscatedName()));
                 deobfName.setStyle("-fx-font-weight: bold");
-                final Text obfName = new Text(CodeTab.this.klass.getFullObfuscatedName());
+                final Label obfName = new Label(CodeTab.this.klass.getFullObfuscatedName());
                 obfName.setStyle("-fx-font-style: italic");
 
                 this.getChildren().addAll(
@@ -109,6 +117,28 @@ public class CodeTab extends Tab {
         root.setBottom(bar);
 
         this.setContent(root);
+    }
+
+    private static class DecompileService extends Service<String> {
+
+        private final Jar jar;
+        private final TopLevelClassMapping klass;
+
+        DecompileService(final Jar jar, final TopLevelClassMapping klass) {
+            this.jar = jar;
+            this.klass = klass;
+        }
+
+        @Override
+        protected Task<String> createTask() {
+            return new Task<String>() {
+                @Override
+                protected String call() {
+                    return DecompileService.this.jar.decompile(DecompileService.this.klass);
+                }
+            };
+        }
+
     }
 
 }
