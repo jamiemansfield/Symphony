@@ -35,8 +35,8 @@ import me.jamiemansfield.symphony.decompiler.procyon.ProcyonDecompiler;
 import me.jamiemansfield.symphony.gui.concurrent.TaskManager;
 import me.jamiemansfield.symphony.gui.tab.CodeTab;
 import me.jamiemansfield.symphony.gui.tab.WelcomeTab;
+import me.jamiemansfield.symphony.gui.util.MappingsHelper;
 import me.jamiemansfield.symphony.jar.Jar;
-import org.cadixdev.lorenz.io.MappingFormats;
 
 import java.io.File;
 import java.io.IOException;
@@ -77,7 +77,6 @@ public final class SymphonyMain extends Application {
 
     // File choosers
     private FileChooser openJarFileChooser;
-    private FileChooser loadMappingsFileChooser;
     private FileChooser exportJarFileChooser;
 
     @Override
@@ -131,6 +130,7 @@ public final class SymphonyMain extends Application {
 
                     this.saveMappingsAs = new MenuItem("Save Mappings As...");
                     this.saveMappingsAs.setDisable(true);
+                    this.saveMappingsAs.addEventHandler(ActionEvent.ACTION, this::saveMappingsAs);
                     file.getItems().add(this.saveMappingsAs);
                 }
                 file.getItems().add(new SeparatorMenuItem());
@@ -286,26 +286,14 @@ public final class SymphonyMain extends Application {
     }
 
     private void loadMappings(final ActionEvent event) {
-        if (this.loadMappingsFileChooser == null) {
-            this.loadMappingsFileChooser = new FileChooser();
-            this.loadMappingsFileChooser.setTitle("Load Mappings");
-            this.loadMappingsFileChooser.getExtensionFilters().addAll(
-                    new FileChooser.ExtensionFilter("SRG", "*.srg")
-            );
+        if (MappingsHelper.loadMappings(this.stage, this.jar.getMappings())) {
+            // Update views
+            this.update();
         }
+    }
 
-        final File mappingsPath = this.loadMappingsFileChooser.showOpenDialog(this.stage);
-        if (mappingsPath == null) return;
-
-        try {
-            MappingFormats.SRG.read(this.jar.getMappings(), mappingsPath.toPath());
-        }
-        catch (final IOException ex) {
-            ex.printStackTrace();
-        }
-
-        // Update views
-        this.update();
+    private void saveMappingsAs(final ActionEvent event) {
+        MappingsHelper.saveMappingsAs(this.stage, this.jar.getMappings());
     }
 
     private void exportRemappedJar(final ActionEvent event) {
