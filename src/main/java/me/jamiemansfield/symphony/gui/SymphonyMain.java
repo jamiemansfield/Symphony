@@ -31,9 +31,8 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import me.jamiemansfield.symphony.SharedConstants;
+import me.jamiemansfield.symphony.decompiler.DecompilerManager;
 import me.jamiemansfield.symphony.decompiler.IDecompiler;
-import me.jamiemansfield.symphony.decompiler.forgeflower.ForgeFlowerDecompiler;
-import me.jamiemansfield.symphony.decompiler.procyon.ProcyonDecompiler;
 import me.jamiemansfield.symphony.gui.concurrent.TaskManager;
 import me.jamiemansfield.symphony.gui.tab.CodeTab;
 import me.jamiemansfield.symphony.gui.tab.WelcomeTab;
@@ -53,7 +52,7 @@ import java.util.stream.Stream;
  */
 public final class SymphonyMain extends Application {
 
-    private static IDecompiler DECOMPILER = ForgeFlowerDecompiler.INSTANCE;
+    private static IDecompiler DECOMPILER = DecompilerManager.getDefault();
 
     public static IDecompiler decompiler() {
         return DECOMPILER;
@@ -151,33 +150,23 @@ public final class SymphonyMain extends Application {
                     {
                         final ToggleGroup decompilerGroup = new ToggleGroup();
                         final Menu decompilerMenu = new Menu("Decompiler");
-                        // ForgeFlower
-                        {
-                            final RadioMenuItem forgeFlower = new RadioMenuItem("ForgeFlower");
-                            forgeFlower.addEventHandler(ActionEvent.ACTION, event -> {
+
+                        for (final IDecompiler decompiler : DecompilerManager.getDecompilers()) {
+                            final RadioMenuItem menuItem = new RadioMenuItem(decompiler.getName());
+                            menuItem.addEventHandler(ActionEvent.ACTION, event -> {
                                 // Set the decompiler
-                                DECOMPILER = ForgeFlowerDecompiler.INSTANCE;
+                                DECOMPILER = decompiler;
 
                                 // Update the views
                                 this.update();
                             });
-                            decompilerGroup.getToggles().add(forgeFlower);
-                            decompilerMenu.getItems().add(forgeFlower);
-                            decompilerGroup.selectToggle(forgeFlower);
+                            decompilerGroup.getToggles().add(menuItem);
+                            decompilerMenu.getItems().add(menuItem);
+                            if (decompiler == DecompilerManager.getDefault()) {
+                                decompilerGroup.selectToggle(menuItem);
+                            }
                         }
-                        // Procyon
-                        {
-                            final RadioMenuItem procyon = new RadioMenuItem("Procyon");
-                            procyon.addEventHandler(ActionEvent.ACTION, event -> {
-                                // Set the decompiler
-                                DECOMPILER = ProcyonDecompiler.INSTANCE;
 
-                                // Update the views
-                                this.update();
-                            });
-                            decompilerGroup.getToggles().add(procyon);
-                            decompilerMenu.getItems().add(procyon);
-                        }
                         settings.getItems().add(decompilerMenu);
                     }
                     file.getItems().add(settings);

@@ -25,7 +25,7 @@ import org.cadixdev.bombe.asm.jar.ClassProvider;
  */
 public class ProcyonDecompiler extends AbstractDecompiler {
 
-    public static final IDecompiler INSTANCE = new ProcyonDecompiler();
+    private static final String NAME =  "Procyon";
 
     @Override
     public String decompile(final ClassProvider classProvider, final WrappedBytecode klass, final WrappedBytecode... innerKlasses) {
@@ -46,6 +46,11 @@ public class ProcyonDecompiler extends AbstractDecompiler {
         );
 
         return output.toString();
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
 }

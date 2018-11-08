@@ -19,7 +19,7 @@ import org.controlsfx.control.TaskProgressView;
  * @author Jamie Mansfield
  * @since 0.1.0
  */
-public class TaskManager {
+public final class TaskManager {
 
     public static final TaskManager INSTANCE = new TaskManager();
 

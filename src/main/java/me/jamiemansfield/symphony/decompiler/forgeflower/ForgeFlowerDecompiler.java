@@ -24,10 +24,7 @@ import java.io.IOException;
  */
 public class ForgeFlowerDecompiler extends AbstractDecompiler {
 
-    public static final IDecompiler INSTANCE = new ForgeFlowerDecompiler();
-
-    private ForgeFlowerDecompiler() {
-    }
+    private static final String NAME =  "ForgeFlower";
 
     @Override
     public String decompile(final ClassProvider classProvider, final WrappedBytecode klass, final WrappedBytecode... innerKlasses) {
@@ -48,6 +45,11 @@ public class ForgeFlowerDecompiler extends AbstractDecompiler {
         final String name = klass.getName().substring(0, klass.getName().length() - ".class".length());
         fernflower.decompileContext();
         return fernflower.getClassContent(fernflower.getStructContext().getClass(name));
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     private static void provideClass(final Fernflower fernflower, final WrappedBytecode klass) {

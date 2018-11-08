@@ -28,4 +28,11 @@ public interface IDecompiler {
      */
     String decompile(final ClassProvider classProvider, final WrappedBytecode klass, final WrappedBytecode... innerKlasses);
 
+    /**
+     * Gets the name of the decompiler.
+     *
+     * @return The name
+     */
+    String getName();
+
 }
