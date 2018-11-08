@@ -18,11 +18,13 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -235,8 +237,15 @@ public final class SymphonyMain extends Application {
             search.setPromptText("Search");
             classesView.setTop(search);
         }
-        // TODO: implement
-        //root.setLeft(classesView);
+        {
+            final TreeView<?> treeView = new TreeView<>();
+            final ScrollPane scrollPane = new ScrollPane(treeView);
+            scrollPane.setFitToWidth(true);
+            scrollPane.setFitToHeight(true);
+
+            classesView.setCenter(scrollPane);
+        }
+        root.setLeft(classesView);
 
         // Tabs
         this.tabs = new TabPane();
