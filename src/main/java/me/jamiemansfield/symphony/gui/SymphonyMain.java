@@ -234,7 +234,7 @@ public final class SymphonyMain extends Application {
 
             classesView.setCenter(scrollPane);
         }
-        root.setLeft(classesView);
+        //root.setLeft(classesView);
 
         // Tabs
         this.tabs = new TabPane();
@@ -245,6 +245,7 @@ public final class SymphonyMain extends Application {
 
         // Set the scene
         final Scene scene = new Scene(root);
+        scene.getStylesheets().add("css/highlighting.css");
         this.stage.setScene(scene);
         this.stage.show();
     }

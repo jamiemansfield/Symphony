@@ -22,6 +22,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import me.jamiemansfield.symphony.gui.JavaSyntaxHighlighting;
 import me.jamiemansfield.symphony.gui.SymphonyMain;
 import me.jamiemansfield.symphony.gui.concurrent.TaskManager;
 import me.jamiemansfield.symphony.jar.Jar;
@@ -94,6 +95,7 @@ public class CodeTab extends Tab {
             final CodeArea code = new CodeArea(event.getSource().getValue().toString());
             code.setParagraphGraphicFactory(LineNumberFactory.get(code));
             code.setEditable(false);
+            JavaSyntaxHighlighting.highlight(code);
             root.setCenter(code);
         });
         decompileService.start();
