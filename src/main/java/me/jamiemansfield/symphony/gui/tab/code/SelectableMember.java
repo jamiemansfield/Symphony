@@ -5,24 +5,16 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 //******************************************************************************
 
-package me.jamiemansfield.symphony.gui.tab;
+package me.jamiemansfield.symphony.gui.tab.code;
 
-import javafx.scene.control.Tab;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
-/**
- * A simple welcome tab to display when a user starts Symphony.
- *
- * @author Jamie Mansfield
- * @since 0.1.0
- */
-public class WelcomeTab extends Tab {
+public class SelectableMember extends Text {
 
-    public WelcomeTab() {
-        super("Welcome");
-
-        final Text welcome = new Text("Welcome to Symphony...");
-        this.setContent(welcome);
+    public SelectableMember(final String name) {
+        super(name);
+        this.setFill(Color.web("orange"));
     }
 
 }

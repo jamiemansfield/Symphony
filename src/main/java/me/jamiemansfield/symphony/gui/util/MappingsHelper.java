@@ -47,9 +47,6 @@ public final class MappingsHelper {
         register(Formats.SRG, MappingFormats.SRG, true);
         register(Formats.CSRG, MappingFormats.CSRG);
         register(Formats.TSRG, MappingFormats.TSRG);
-        register(Formats.KIN, MappingFormats.KIN);
-        register(Formats.JAM, MappingFormats.JAM);
-        register(Formats.ENIGMA, MappingFormats.ENIGMA);
     }
 
     /**
@@ -129,21 +126,6 @@ public final class MappingsHelper {
         public static final FileChooser.ExtensionFilter TSRG = new FileChooser.ExtensionFilter(
                 "TSRG Files",
                 "*.tsrg"
-        );
-
-        public static final FileChooser.ExtensionFilter KIN = new FileChooser.ExtensionFilter(
-                "Kin Files",
-                "*.kin"
-        );
-
-        public static final FileChooser.ExtensionFilter JAM = new FileChooser.ExtensionFilter(
-                "JAM Files",
-                "*.jam"
-        );
-
-        public static final FileChooser.ExtensionFilter ENIGMA = new FileChooser.ExtensionFilter(
-                "Enigma Files",
-                "*.enigma", "*.mapping"
         );
 
         private Formats() {

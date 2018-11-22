@@ -12,6 +12,7 @@ import org.jetbrains.java.decompiler.main.extern.IFernflowerPreferences;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
  * A class populated with constants used throughout Symphony.
@@ -38,6 +39,26 @@ public final class SharedConstants {
     };
 
     private SharedConstants() {
+    }
+
+    public static class Processing {
+
+        public static final String DELIMITER = "-";
+
+        public static final String CLASS_PREFIX = "&SYMPHONY+";
+        public static final String CLASS_SUFFIX = "&";
+        public static final Pattern CLASS_REGEX = Pattern.compile(Pattern.quote(CLASS_PREFIX) + "(.+?)"
+                + Pattern.quote(CLASS_SUFFIX));
+
+        public static final String MEMBER_PREFIX = "%SYMPHONY+";
+        public static final String MEMBER_SUFFIX = "%";
+        public static final Pattern MEMBER_REGEX = Pattern.compile(Pattern.quote(MEMBER_PREFIX) + "(.+?)"
+                + Pattern.quote(DELIMITER) + "(.+?)" + Pattern.quote(DELIMITER) + "(.+?)"
+                + Pattern.quote(MEMBER_SUFFIX));
+
+        private Processing() {
+        }
+
     }
 
 }

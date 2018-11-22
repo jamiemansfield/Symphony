@@ -5,11 +5,19 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 //******************************************************************************
 
-package me.jamiemansfield.symphony.gui.tab;
+package me.jamiemansfield.symphony.gui.tab.code;
 
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.expr.FieldAccessExpr;
+import com.github.javaparser.ast.expr.SimpleName;
+import com.github.javaparser.printer.PrettyPrintVisitor;
+import com.github.javaparser.printer.PrettyPrinter;
+import com.github.javaparser.printer.PrettyPrinterConfiguration;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -22,6 +30,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import me.jamiemansfield.symphony.SharedConstants;
 import me.jamiemansfield.symphony.gui.JavaSyntaxHighlighting;
 import me.jamiemansfield.symphony.gui.SymphonyMain;
 import me.jamiemansfield.symphony.gui.concurrent.TaskManager;
@@ -29,6 +38,11 @@ import me.jamiemansfield.symphony.jar.Jar;
 import org.cadixdev.lorenz.model.TopLevelClassMapping;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A tab used to display the code of a file.
@@ -92,11 +106,27 @@ public class CodeTab extends Tab {
 
         final DecompileService decompileService = new DecompileService(this.jar, this.klass);
         decompileService.setOnSucceeded(event -> {
-            final CodeArea code = new CodeArea(event.getSource().getValue().toString());
+            final CompilationUnit compilationUnit = JavaParser.parse(event.getSource().getValue().toString());
+            final String source = new PrettyPrinter(new PrettyPrinterConfiguration()
+                    .setIndentSize(4).setIndentType(PrettyPrinterConfiguration.IndentType.SPACES)
+                    .setMaxEnumConstantsToAlignHorizontally(0)
+                    .setOrderImports(true)
+                    .setVisitorFactory(Visitor::new)
+            ).print(compilationUnit);
+
+            final CodeArea code = new CodeArea();
+
+            final List<Node> nodes = new ArrayList<>();
+            nodes.add(new Text(source));
+
+            this.parseItems(nodes, SharedConstants.Processing.MEMBER_REGEX, 2);
+
+            final TextFlow flow = new TextFlow(nodes.toArray(new Node[0]));
+
             code.setParagraphGraphicFactory(LineNumberFactory.get(code));
             code.setEditable(false);
             JavaSyntaxHighlighting.highlight(code);
-            root.setCenter(code);
+            root.setCenter(flow);
         });
         decompileService.start();
 
@@ -126,6 +156,44 @@ public class CodeTab extends Tab {
         root.setBottom(bar);
 
         this.setContent(root);
+    }
+
+    public void parseItems(List<Node> nodes, Pattern pattern, int defaultGroup) {
+        final List<Node> newNodes = new ArrayList<>();
+
+        for (final Node node : nodes) {
+            if (node.getClass() != Text.class) {
+                newNodes.add(node);
+                continue;
+            }
+
+            String str = ((Text) node).getText();
+            Matcher matcher = pattern.matcher(str);
+            int lastIndex = 0;
+            while (matcher.find()) {
+                newNodes.add(new Text(str.substring(lastIndex, matcher.start())));
+                newNodes.add(new SelectableMember(matcher.group(defaultGroup)));
+                lastIndex = matcher.end();
+            }
+            newNodes.add(new Text(str.substring(lastIndex)));
+        }
+
+        nodes.clear();
+        nodes.addAll(newNodes);
+    }
+
+    private static class Visitor extends PrettyPrintVisitor {
+
+        public Visitor(final PrettyPrinterConfiguration prettyPrinterConfiguration) {
+            super(prettyPrinterConfiguration);
+        }
+
+        @Override
+        public void visit(final FieldAccessExpr n, final Void arg) {
+            n.setName(new SimpleName(SharedConstants.Processing.MEMBER_PREFIX + "fake-fake-" + n.getName().asString() + SharedConstants.Processing.MEMBER_SUFFIX));
+            super.visit(n, arg);
+        }
+
     }
 
     private static class DecompileService extends Service<String> {
