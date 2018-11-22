@@ -5,7 +5,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 //******************************************************************************
 
-package me.jamiemansfield.symphony.gui.tab;
+package me.jamiemansfield.symphony.gui.tab.code;
 
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;

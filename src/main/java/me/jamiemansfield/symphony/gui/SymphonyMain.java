@@ -34,8 +34,8 @@ import me.jamiemansfield.symphony.SharedConstants;
 import me.jamiemansfield.symphony.decompiler.DecompilerManager;
 import me.jamiemansfield.symphony.decompiler.IDecompiler;
 import me.jamiemansfield.symphony.gui.concurrent.TaskManager;
-import me.jamiemansfield.symphony.gui.tab.CodeTab;
-import me.jamiemansfield.symphony.gui.tab.WelcomeTab;
+import me.jamiemansfield.symphony.gui.tab.code.CodeTab;
+import me.jamiemansfield.symphony.gui.tab.welcome.WelcomeTab;
 import me.jamiemansfield.symphony.gui.util.MappingsHelper;
 import me.jamiemansfield.symphony.jar.Jar;
 
