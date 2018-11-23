@@ -181,6 +181,17 @@ public final class SymphonyMain extends Application {
             }
             mainMenu.getMenus().add(file);
 
+            final Menu view = new Menu("_View");
+            view.setMnemonicParsing(true);
+            {
+                {
+                    final MenuItem closeAllTabs = new MenuItem("Close all tabs");
+                    closeAllTabs.addEventHandler(ActionEvent.ACTION, event -> this.tabs.getTabs().clear());
+                    view.getItems().add(closeAllTabs);
+                }
+            }
+            mainMenu.getMenus().add(view);
+
             final Menu navigate = new Menu("_Navigate");
             navigate.setMnemonicParsing(true);
             {

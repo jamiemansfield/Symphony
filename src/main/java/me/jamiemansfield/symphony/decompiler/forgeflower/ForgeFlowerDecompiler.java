@@ -7,14 +7,16 @@
 
 package me.jamiemansfield.symphony.decompiler.forgeflower;
 
-import me.jamiemansfield.symphony.SharedConstants;
 import me.jamiemansfield.symphony.decompiler.AbstractDecompiler;
 import me.jamiemansfield.symphony.decompiler.IDecompiler;
 import me.jamiemansfield.symphony.decompiler.WrappedBytecode;
 import org.cadixdev.bombe.asm.jar.ClassProvider;
 import org.jetbrains.java.decompiler.main.Fernflower;
+import org.jetbrains.java.decompiler.main.extern.IFernflowerPreferences;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * An implementation of {@link IDecompiler} for ForgeFlower.
@@ -25,6 +27,15 @@ import java.io.IOException;
 public class ForgeFlowerDecompiler extends AbstractDecompiler {
 
     private static final String NAME =  "ForgeFlower";
+    private static final Map<String, Object> DECOMPILER_OPTIONS = new HashMap<String, Object>(){
+        {
+            this.put(IFernflowerPreferences.DECOMPILE_GENERIC_SIGNATURES, "1");
+            this.put(IFernflowerPreferences.ASCII_STRING_CHARACTERS, "1");
+            this.put(IFernflowerPreferences.REMOVE_SYNTHETIC, "1");
+            this.put(IFernflowerPreferences.USE_JAD_VARNAMING, "1");
+            this.put(IFernflowerPreferences.INDENT_STRING, "    ");
+        }
+    };
 
     @Override
     public String decompile(final ClassProvider classProvider, final WrappedBytecode klass, final WrappedBytecode... innerKlasses) {
@@ -32,7 +43,7 @@ public class ForgeFlowerDecompiler extends AbstractDecompiler {
         final Fernflower fernflower = new Fernflower(
                 new ClassProviderBytecodeProvider(classProvider),
                 NoopResultSaver.INSTANCE,
-                SharedConstants.DECOMPILER_OPTTIONS,
+                DECOMPILER_OPTIONS,
                 SimpleFernflowerLogger.INSTANCE
         );
         // Provide the top-level class
