@@ -50,7 +50,7 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Objects;
 import java.util.jar.JarFile;
 import java.util.stream.Stream;
 
@@ -295,43 +295,40 @@ public final class SymphonyMain extends Application {
         this.treeRoot.getChildren().clear();
         if (this.jar == null) return;
 
-        final Map<String, TreeItem<TreeElement>> packageMap = new HashMap<>();
+        final Map<String, TreeItem<TreeElement>> packageCache = new HashMap<>();
 
         this.jar.entries()
                 .filter(JarClassEntry.class::isInstance).map(JarClassEntry.class::cast)
+                .filter(entry -> !entry.getSimpleName().contains("$"))
                 .forEach(entry -> {
             final String klassName = entry.getName().substring(0, entry.getName().length() - ".class".length());
             final TopLevelClassMapping klass = this.jar.getMappings().getOrCreateTopLevelClassMapping(klassName);
 
-            final TreeItem<TreeElement> klassItem = new TreeItem<>(new ClassElement(klass, this));
-            final String packageName = klass.getDeobfuscatedPackage();
-
-            if (!packageName.isEmpty()) {
-                final AtomicReference<TreeItem<TreeElement>> packageItem = new AtomicReference<>(null);
-                for (final String part : packageName.split("/")) {
-                    packageItem.set(packageMap.computeIfAbsent(part, (name) -> {
-                        final TreeItem<TreeElement> item = new TreeItem<>(new PackageElement(name));
-                        if (packageItem.get() != null) {
-                            packageItem.get().getChildren().add(item);
-                        }
-                        else {
-                            this.treeRoot.getChildren().add(item);
-                        }
-                        return item;
-                    }));
-                }
-                packageItem.get().getChildren().add(klassItem);
-            }
-            else {
-                this.treeRoot.getChildren().add(klassItem);
-            }
+            this.getPackageItem(packageCache, klass.getDeobfuscatedPackage()).getChildren()
+                    .add(new TreeItem<>(new ClassElement(klass, this)));
         });
 
-        packageMap.values().forEach(item -> {
+        packageCache.values().forEach(item -> {
             item.getChildren().setAll(item.getChildren().sorted(Comparator.comparing(TreeItem::getValue)));
         });
 
         this.treeRoot.getChildren().setAll(this.treeRoot.getChildren().sorted(Comparator.comparing(TreeItem::getValue)));
+    }
+
+    private TreeItem<TreeElement> getPackageItem(final Map<String, TreeItem<TreeElement>> cache, final String packageName) {
+        if (packageName.isEmpty()) return this.treeRoot;
+        return cache.computeIfAbsent(packageName, name -> {
+            final TreeItem<TreeElement> parent;
+            if (name.lastIndexOf('/') != -1) {
+                parent = this.getPackageItem(cache, name.substring(0, name.lastIndexOf('/')));
+            }
+            else {
+                parent = this.treeRoot;
+            }
+            final TreeItem<TreeElement> packageItem = new TreeItem<>(new PackageElement(name));
+            parent.getChildren().add(packageItem);
+            return packageItem;
+        });
     }
 
     public void update() {
@@ -407,10 +404,7 @@ public final class SymphonyMain extends Application {
 
         dialog.showAndWait().ifPresent(klass -> {
             if (!this.jar.hasClass(klass)) return;
-            final CodeTab tab = new CodeTab(this.jar,
-                    this.jar.getMappings().getOrCreateTopLevelClassMapping(klass));
-            this.tabs.getTabs().add(tab);
-            this.tabs.getSelectionModel().select(tab);
+            this.displayCodeTab(this.jar.getMappings().getOrCreateTopLevelClassMapping(klass));
         });
     }
 
@@ -420,6 +414,19 @@ public final class SymphonyMain extends Application {
                 .findFirst()
                 .orElseGet(() -> {
                     final WelcomeTab tab = new WelcomeTab();
+                    this.tabs.getTabs().add(tab);
+                    return tab;
+                }));
+    }
+
+    public void displayCodeTab(final TopLevelClassMapping klass) {
+        this.tabs.getSelectionModel().select(this.tabs.getTabs().stream()
+                .filter(CodeTab.class::isInstance)
+                .map(CodeTab.class::cast)
+                .filter(tab -> Objects.equals(tab.getKlass(), klass))
+                .findFirst()
+                .orElseGet(() -> {
+                    final CodeTab tab = new CodeTab(this.jar, klass);
                     this.tabs.getTabs().add(tab);
                     return tab;
                 }));

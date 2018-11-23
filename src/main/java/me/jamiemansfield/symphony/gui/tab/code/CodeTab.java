@@ -128,6 +128,10 @@ public class CodeTab extends Tab {
         this.setContent(root);
     }
 
+    public TopLevelClassMapping getKlass() {
+        return this.klass;
+    }
+
     private static class DecompileService extends Service<String> {
 
         private final Jar jar;

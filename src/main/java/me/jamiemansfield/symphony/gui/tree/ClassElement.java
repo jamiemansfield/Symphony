@@ -8,7 +8,6 @@
 package me.jamiemansfield.symphony.gui.tree;
 
 import me.jamiemansfield.symphony.gui.SymphonyMain;
-import me.jamiemansfield.symphony.gui.tab.code.CodeTab;
 import org.cadixdev.lorenz.model.TopLevelClassMapping;
 
 /**
@@ -29,9 +28,7 @@ public class ClassElement implements TreeElement {
 
     @Override
     public void activate() {
-        final CodeTab tab = new CodeTab(this.symphony.getJar(), klass);
-        this.symphony.getTabs().getTabs().add(tab);
-        this.symphony.getTabs().getSelectionModel().select(tab);
+        this.symphony.displayCodeTab(this.klass);
     }
 
     @Override

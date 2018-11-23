@@ -15,10 +15,10 @@ package me.jamiemansfield.symphony.gui.tree;
  */
 public class PackageElement implements TreeElement {
 
-    private final String name;
+    private final String simpleName;
 
     public PackageElement(final String name) {
-        this.name = name;
+        this.simpleName = name.substring(name.lastIndexOf('/') + 1);
     }
 
     @Override
@@ -33,7 +33,7 @@ public class PackageElement implements TreeElement {
 
     @Override
     public String toString() {
-        return this.name;
+        return this.simpleName;
     }
 
 }
