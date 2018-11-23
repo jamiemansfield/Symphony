@@ -24,6 +24,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
@@ -36,11 +37,20 @@ import me.jamiemansfield.symphony.decompiler.IDecompiler;
 import me.jamiemansfield.symphony.gui.concurrent.TaskManager;
 import me.jamiemansfield.symphony.gui.tab.code.CodeTab;
 import me.jamiemansfield.symphony.gui.tab.welcome.WelcomeTab;
+import me.jamiemansfield.symphony.gui.tree.ClassElement;
+import me.jamiemansfield.symphony.gui.tree.PackageElement;
+import me.jamiemansfield.symphony.gui.tree.TreeElement;
 import me.jamiemansfield.symphony.gui.util.MappingsHelper;
 import me.jamiemansfield.symphony.jar.Jar;
+import org.cadixdev.bombe.jar.JarClassEntry;
+import org.cadixdev.lorenz.model.TopLevelClassMapping;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.jar.JarFile;
 import java.util.stream.Stream;
 
@@ -79,6 +89,9 @@ public final class SymphonyMain extends Application {
     // File choosers
     private FileChooser openJarFileChooser;
     private FileChooser exportJarFileChooser;
+
+    // Classes View
+    private TreeItem<TreeElement> treeRoot;
 
     @Override
     public void start(final Stage primaryStage) {
@@ -238,14 +251,23 @@ public final class SymphonyMain extends Application {
             classesView.setTop(search);
         }
         {
-            final TreeView<?> treeView = new TreeView<>();
+            final TreeView<TreeElement> treeView = new TreeView<>();
+            treeView.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2) {
+                    treeView.getSelectionModel().getSelectedItems().get(0).getValue().activate();
+                }
+            });
+            this.treeRoot = new TreeItem<>(new PackageElement("root"));
+            this.treeRoot.setExpanded(true);
+            treeView.setRoot(this.treeRoot);
+
             final ScrollPane scrollPane = new ScrollPane(treeView);
             scrollPane.setFitToWidth(true);
             scrollPane.setFitToHeight(true);
 
             classesView.setCenter(scrollPane);
         }
-        //root.setLeft(classesView);
+        root.setLeft(classesView);
 
         // Tabs
         this.tabs = new TabPane();
@@ -261,7 +283,59 @@ public final class SymphonyMain extends Application {
         this.stage.show();
     }
 
+    public Jar getJar() {
+        return this.jar;
+    }
+
+    public TabPane getTabs() {
+        return this.tabs;
+    }
+
+    private void refreshClasses() {
+        this.treeRoot.getChildren().clear();
+        if (this.jar == null) return;
+
+        final Map<String, TreeItem<TreeElement>> packageMap = new HashMap<>();
+
+        this.jar.entries()
+                .filter(JarClassEntry.class::isInstance).map(JarClassEntry.class::cast)
+                .forEach(entry -> {
+            final String klassName = entry.getName().substring(0, entry.getName().length() - ".class".length());
+            final TopLevelClassMapping klass = this.jar.getMappings().getOrCreateTopLevelClassMapping(klassName);
+
+            final TreeItem<TreeElement> klassItem = new TreeItem<>(new ClassElement(klass, this));
+            final String packageName = klass.getDeobfuscatedPackage();
+
+            if (!packageName.isEmpty()) {
+                final AtomicReference<TreeItem<TreeElement>> packageItem = new AtomicReference<>(null);
+                for (final String part : packageName.split("/")) {
+                    packageItem.set(packageMap.computeIfAbsent(part, (name) -> {
+                        final TreeItem<TreeElement> item = new TreeItem<>(new PackageElement(name));
+                        if (packageItem.get() != null) {
+                            packageItem.get().getChildren().add(item);
+                        }
+                        else {
+                            this.treeRoot.getChildren().add(item);
+                        }
+                        return item;
+                    }));
+                }
+                packageItem.get().getChildren().add(klassItem);
+            }
+            else {
+                this.treeRoot.getChildren().add(klassItem);
+            }
+        });
+
+        packageMap.values().forEach(item -> {
+            item.getChildren().setAll(item.getChildren().sorted(Comparator.comparing(TreeItem::getValue)));
+        });
+
+        this.treeRoot.getChildren().setAll(this.treeRoot.getChildren().sorted(Comparator.comparing(TreeItem::getValue)));
+    }
+
     public void update() {
+        this.refreshClasses();
         this.tabs.getTabs().stream().filter(CodeTab.class::isInstance).map(CodeTab.class::cast)
                 .forEach(CodeTab::update);
     }
@@ -293,6 +367,9 @@ public final class SymphonyMain extends Application {
         this.saveMappingsAs.setDisable(false);
         this.exportRemappedJar.setDisable(false);
         this.navigateKlass.setDisable(false);
+
+        // Refresh classes view
+        this.refreshClasses();
     }
 
     private void loadMappings(final ActionEvent event) {
