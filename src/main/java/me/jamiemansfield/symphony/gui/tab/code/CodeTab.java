@@ -11,7 +11,6 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Tab;
@@ -21,9 +20,9 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 import me.jamiemansfield.symphony.gui.concurrent.TaskManager;
 import me.jamiemansfield.symphony.gui.menu.FileMenu;
+import me.jamiemansfield.symphony.gui.util.TextFlowBuilder;
 import me.jamiemansfield.symphony.jar.Jar;
 import org.cadixdev.lorenz.model.TopLevelClassMapping;
 import org.fxmisc.richtext.CodeArea;
@@ -101,26 +100,18 @@ public class CodeTab extends Tab {
 
         // Bottom tool bar
         final ToolBar bar = new ToolBar();
-        bar.getItems().add(new TextFlow() {
-            {
-                final Label deobfName = new Label(CodeTab.this.klass.getSimpleDeobfuscatedName());
-                deobfName.setTooltip(new Tooltip(CodeTab.this.klass.getFullDeobfuscatedName()));
-                deobfName.setStyle("-fx-font-weight: bold");
-                final Label obfName = new Label(CodeTab.this.klass.getFullObfuscatedName());
-                obfName.setStyle("-fx-font-style: italic");
-
-                this.getChildren().addAll(
-                        deobfName,
-                        new Text(" ("),
-                        obfName,
-                        new Text(")")
-                );
-
-                this.setOnContextMenuRequested(event -> {
-                    CodeTab.this.classMenu.show(this, event.getScreenX(), event.getScreenY());
-                });
-            }
-        });
+        bar.getItems().add(TextFlowBuilder.create()
+                .label(this.klass.getSimpleDeobfuscatedName())
+                    .perform(lbl -> lbl.setTooltip(new Tooltip(this.klass.getFullDeobfuscatedName())))
+                    .style("-fx-font-weight: bold")
+                .text(" (")
+                .label(this.klass.getFullObfuscatedName())
+                    .style("-fx-font-style: italic")
+                .text(")")
+                .contextMenuRequested(flow -> event -> {
+                    this.classMenu.show(flow, event.getScreenX(), event.getScreenY());
+                })
+                .build());
         bar.getItems().add(new Separator());
         root.setBottom(bar);
 

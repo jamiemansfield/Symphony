@@ -7,10 +7,7 @@
 
 package me.jamiemansfield.symphony.gui.util;
 
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 import me.jamiemansfield.symphony.SharedConstants;
 
 /**
@@ -26,7 +23,7 @@ public final class AboutHelper {
     static {
         ALERT.setTitle("About Symphony");
         ALERT.setHeaderText("Symphony v" + SharedConstants.VERSION);
-        ALERT.getDialogPane().setContent(new TextFlowBuilder()
+        ALERT.getDialogPane().setContent(TextFlowBuilder.create()
                 .text("Copyright (c) 2018 Jamie Mansfield <https://www.jamiemansfield.me/>").newline().newline()
                 // The following is adapted from a similar statement Mozilla make for Firefox
                 // See about:rights
@@ -44,29 +41,6 @@ public final class AboutHelper {
     }
 
     private AboutHelper() {
-    }
-
-    private static class TextFlowBuilder {
-
-        private final TextFlow textFlow = new TextFlow();
-
-        public TextFlowBuilder append(final Node node) {
-            this.textFlow.getChildren().add(node);
-            return this;
-        }
-
-        public TextFlowBuilder text(final String text) {
-            return this.append(new Text(text));
-        }
-
-        public TextFlowBuilder newline() {
-            return this.text("\n");
-        }
-
-        public TextFlow build() {
-            return this.textFlow;
-        }
-
     }
 
 }
