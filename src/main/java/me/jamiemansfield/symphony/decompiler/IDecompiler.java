@@ -35,4 +35,22 @@ public interface IDecompiler {
      */
     String getName();
 
+    /**
+     * Gets the output type of the decompiler.
+     *
+     * @return The output type
+     */
+    OutputType getOutputType();
+
+    /**
+     * Represents the format of the decompiler output.
+     */
+    enum OutputType {
+
+        JAVA,
+        OTHER,
+        ;
+
+    }
+
 }

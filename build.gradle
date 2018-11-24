@@ -26,6 +26,7 @@ dependencies {
     compile 'net.minecraftforge:forgeflower:1.5.380.24'
     compile 'org.bitbucket.mstrobel:procyon-compilertools:0.5.33'
     compile 'org.benf:cfr:0.135'
+    compile 'org.ow2.asm:asm-util:7.0'
 
     // RichTextFX (syntax highlighting)
     compile 'org.fxmisc.richtext:richtextfx:0.6.10'

@@ -53,4 +53,9 @@ public class ProcyonDecompiler extends AbstractDecompiler {
         return NAME;
     }
 
+    @Override
+    public OutputType getOutputType() {
+        return OutputType.JAVA;
+    }
+
 }

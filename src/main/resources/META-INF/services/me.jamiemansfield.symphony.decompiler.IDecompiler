@@ -8,3 +8,4 @@
 me.jamiemansfield.symphony.decompiler.forgeflower.ForgeFlowerDecompiler
 me.jamiemansfield.symphony.decompiler.procyon.ProcyonDecompiler
 me.jamiemansfield.symphony.decompiler.cfr.CfrDecompiler
+me.jamiemansfield.symphony.decompiler.textifier.TexifierDecompiler

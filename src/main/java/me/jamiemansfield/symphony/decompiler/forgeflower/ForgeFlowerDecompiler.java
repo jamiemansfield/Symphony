@@ -63,6 +63,11 @@ public class ForgeFlowerDecompiler extends AbstractDecompiler {
         return NAME;
     }
 
+    @Override
+    public OutputType getOutputType() {
+        return OutputType.JAVA;
+    }
+
     private static void provideClass(final Fernflower fernflower, final WrappedBytecode klass) {
         final String packageName = getPackageName(klass.getName());
         final String simpleName = getSimpleName(klass.getName());

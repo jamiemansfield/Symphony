@@ -47,6 +47,11 @@ public class CfrDecompiler extends AbstractDecompiler {
         return NAME;
     }
 
+    @Override
+    public OutputType getOutputType() {
+        return OutputType.JAVA;
+    }
+
     private static final class Sink implements OutputSinkFactory {
 
         private String value;
