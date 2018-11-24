@@ -33,6 +33,9 @@ dependencies {
 
     // ControlsFX (JavaFX utility)
     compile 'org.controlsfx:controlsfx:8.40.14'
+
+    // Source processing
+    compile 'com.github.javaparser:javaparser-core:3.8.0'
 }
 
 processResources {

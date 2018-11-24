@@ -7,6 +7,8 @@
 
 package me.jamiemansfield.symphony.decompiler;
 
+import me.jamiemansfield.symphony.source.ISourceProcessor;
+import me.jamiemansfield.symphony.source.java.JavaSourceProcessor;
 import org.cadixdev.bombe.asm.jar.ClassProvider;
 
 /**
@@ -47,9 +49,19 @@ public interface IDecompiler {
      */
     enum OutputType {
 
-        JAVA,
-        OTHER,
+        JAVA(new JavaSourceProcessor()),
+        OTHER(source -> source),
         ;
+
+        private final ISourceProcessor processor;
+
+        OutputType(final ISourceProcessor processor) {
+            this.processor = processor;
+        }
+
+        public ISourceProcessor getProcessor() {
+            return this.processor;
+        }
 
     }
 

@@ -135,7 +135,9 @@ public class Jar implements Closeable {
                 .toArray(WrappedBytecode[]::new);
 
         // Decompile
-        return decompiler.decompile(this.deobfProvider, rootKlass, innerKlasses);
+        return decompiler.getOutputType().getProcessor().process(
+                decompiler.decompile(this.deobfProvider, rootKlass, innerKlasses)
+        );
     }
 
     @Override
