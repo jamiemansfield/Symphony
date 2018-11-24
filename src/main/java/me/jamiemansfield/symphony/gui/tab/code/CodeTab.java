@@ -22,9 +22,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import me.jamiemansfield.symphony.gui.JavaSyntaxHighlighting;
-import me.jamiemansfield.symphony.gui.SymphonyMain;
 import me.jamiemansfield.symphony.gui.concurrent.TaskManager;
+import me.jamiemansfield.symphony.gui.menu.FileMenu;
 import me.jamiemansfield.symphony.jar.Jar;
 import org.cadixdev.lorenz.model.TopLevelClassMapping;
 import org.fxmisc.richtext.CodeArea;
@@ -150,7 +149,7 @@ public class CodeTab extends Tab {
                 }
                 @Override
                 protected String call() {
-                    return DecompileService.this.jar.decompile(SymphonyMain.decompiler(), DecompileService.this.klass);
+                    return DecompileService.this.jar.decompile(FileMenu.decompiler(), DecompileService.this.klass);
                 }
             };
         }
