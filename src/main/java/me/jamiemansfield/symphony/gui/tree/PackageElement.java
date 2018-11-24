@@ -15,10 +15,16 @@ package me.jamiemansfield.symphony.gui.tree;
  */
 public class PackageElement implements TreeElement {
 
+    private final String name;
     private final String simpleName;
 
     public PackageElement(final String name) {
+        this.name = name;
         this.simpleName = name.substring(name.lastIndexOf('/') + 1);
+    }
+
+    public String getName() {
+        return this.name;
     }
 
     @Override

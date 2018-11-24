@@ -47,8 +47,10 @@ import org.cadixdev.lorenz.model.TopLevelClassMapping;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.jar.JarFile;
@@ -292,6 +294,7 @@ public final class SymphonyMain extends Application {
     }
 
     private void refreshClasses() {
+        final List<String> expanded = this.getExpandedPackages(new ArrayList<>(), this.treeRoot);
         this.treeRoot.getChildren().clear();
         if (this.jar == null) return;
 
@@ -308,11 +311,18 @@ public final class SymphonyMain extends Application {
                     .add(new TreeItem<>(new ClassElement(klass, this)));
         });
 
+        // sort
         packageCache.values().forEach(item -> {
             item.getChildren().setAll(item.getChildren().sorted(Comparator.comparing(TreeItem::getValue)));
         });
-
         this.treeRoot.getChildren().setAll(this.treeRoot.getChildren().sorted(Comparator.comparing(TreeItem::getValue)));
+
+        // reopen packages
+        expanded.forEach(pkg -> {
+            final TreeItem<TreeElement> packageItem = packageCache.get(pkg);
+            if (packageItem == null) return;
+            packageItem.setExpanded(true);
+        });
     }
 
     private TreeItem<TreeElement> getPackageItem(final Map<String, TreeItem<TreeElement>> cache, final String packageName) {
@@ -329,6 +339,16 @@ public final class SymphonyMain extends Application {
             parent.getChildren().add(packageItem);
             return packageItem;
         });
+    }
+
+    private List<String> getExpandedPackages(final List<String> packages, final TreeItem<TreeElement> item) {
+        item.getChildren().filtered(TreeItem::isExpanded).forEach(pkg -> {
+            this.getExpandedPackages(packages, pkg);
+            if (pkg.getValue() instanceof PackageElement) {
+                packages.add(((PackageElement) pkg.getValue()).getName());
+            }
+        });
+        return packages;
     }
 
     public void update() {
