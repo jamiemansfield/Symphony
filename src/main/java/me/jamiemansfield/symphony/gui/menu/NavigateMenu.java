@@ -12,6 +12,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
 import me.jamiemansfield.symphony.gui.SymphonyMain;
+import me.jamiemansfield.symphony.util.LocaleHelper;
 
 /**
  * The Symphony 'Navigate' menu.
@@ -27,7 +28,7 @@ public class NavigateMenu extends Menu {
 
     public NavigateMenu(final MainMenuBar mainMenuBar) {
         // Settings
-        super("_Navigate");
+        super(LocaleHelper.get("menu.navigate"));
         this.setMnemonicParsing(true);
 
         // Fields
@@ -35,7 +36,7 @@ public class NavigateMenu extends Menu {
 
         // Class
         {
-            this.klass = new MenuItem("Class");
+            this.klass = new MenuItem(LocaleHelper.get("menu.navigate.class"));
             this.klass.setDisable(true);
             this.klass.addEventHandler(ActionEvent.ACTION, this::navigateToClass);
             this.getItems().add(klass);

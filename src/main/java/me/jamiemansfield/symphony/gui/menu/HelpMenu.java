@@ -15,6 +15,7 @@ import me.jamiemansfield.symphony.gui.SymphonyMain;
 import me.jamiemansfield.symphony.gui.concurrent.TaskManager;
 import me.jamiemansfield.symphony.gui.tab.welcome.WelcomeTab;
 import me.jamiemansfield.symphony.gui.util.AboutHelper;
+import me.jamiemansfield.symphony.util.LocaleHelper;
 
 /**
  * The Symphony 'Help' menu.
@@ -28,7 +29,7 @@ public class HelpMenu extends Menu {
 
     public HelpMenu(final MainMenuBar mainMenuBar) {
         // Settings
-        super("_Help");
+        super(LocaleHelper.get("menu.help"));
         this.setMnemonicParsing(true);
 
         // Fields
@@ -36,13 +37,13 @@ public class HelpMenu extends Menu {
 
         // Items
         {
-            final MenuItem welcomeTab = new MenuItem("Open Welcome Tab");
+            final MenuItem welcomeTab = new MenuItem(LocaleHelper.get("menu.help.open_welcome_tab"));
             welcomeTab.addEventHandler(ActionEvent.ACTION, this::displayWelcomeTab);
             this.getItems().add(welcomeTab);
         }
 
         {
-            final MenuItem tasksWindow = new MenuItem("Open Tasks Window");
+            final MenuItem tasksWindow = new MenuItem(LocaleHelper.get("menu.help.open_tasks_window"));
             tasksWindow.addEventHandler(ActionEvent.ACTION, event -> {
                 TaskManager.INSTANCE.display();
             });
@@ -51,7 +52,7 @@ public class HelpMenu extends Menu {
         this.getItems().add(new SeparatorMenuItem());
 
         {
-            final MenuItem about = new MenuItem("About Symphony");
+            final MenuItem about = new MenuItem(LocaleHelper.get("menu.help.about"));
             about.addEventHandler(ActionEvent.ACTION, event -> AboutHelper.display());
             this.getItems().add(about);
         }

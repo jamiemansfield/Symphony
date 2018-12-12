@@ -10,6 +10,7 @@ package me.jamiemansfield.symphony.gui.menu;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import me.jamiemansfield.symphony.util.LocaleHelper;
 
 /**
  * The Symphony 'View' menu.
@@ -21,12 +22,12 @@ public class ViewMenu extends Menu {
 
     public ViewMenu(final MainMenuBar mainMenuBar) {
         // Settings
-        super("_View");
+        super(LocaleHelper.get("menu.view"));
         this.setMnemonicParsing(true);
 
         // Close all tabs
         {
-            final MenuItem closeAllTabs = new MenuItem("Close all tabs");
+            final MenuItem closeAllTabs = new MenuItem(LocaleHelper.get("menu.view.close_all_tabs"));
             closeAllTabs.addEventHandler(ActionEvent.ACTION, event -> mainMenuBar.getSymphony().getTabs().getTabs().clear());
             this.getItems().add(closeAllTabs);
         }

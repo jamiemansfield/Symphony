@@ -23,6 +23,7 @@ import me.jamiemansfield.symphony.gui.SymphonyMain;
 import me.jamiemansfield.symphony.gui.concurrent.TaskManager;
 import me.jamiemansfield.symphony.gui.util.MappingsHelper;
 import me.jamiemansfield.symphony.jar.Jar;
+import me.jamiemansfield.symphony.util.LocaleHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,7 +61,7 @@ public class FileMenu extends Menu {
 
     public FileMenu(final MainMenuBar mainMenuBar) {
         // Settings
-        super("_File");
+        super(LocaleHelper.get("menu.file"));
         this.setMnemonicParsing(true);
 
         // Fields
@@ -69,11 +70,11 @@ public class FileMenu extends Menu {
 
         // Jar related
         {
-            this.openJar = new MenuItem("Open Jar...");
+            this.openJar = new MenuItem(LocaleHelper.get("menu.file.open_jar"));
             this.openJar.addEventHandler(ActionEvent.ACTION, this::openJar);
             this.getItems().add(this.openJar);
 
-            this.closeJar = new MenuItem("Close Jar...");
+            this.closeJar = new MenuItem(LocaleHelper.get("menu.file.close_jar"));
             this.closeJar.setDisable(true);
             this.getItems().add(this.closeJar);
         }
@@ -81,16 +82,16 @@ public class FileMenu extends Menu {
 
         // Mapping related
         {
-            this.loadMappings = new MenuItem("Load Mappings...");
+            this.loadMappings = new MenuItem(LocaleHelper.get("menu.file.load_mappings"));
             this.loadMappings.setDisable(true);
             this.loadMappings.addEventHandler(ActionEvent.ACTION, this::loadMappings);
             this.getItems().add(this.loadMappings);
 
-            this.saveMappings = new MenuItem("Save Mappings");
+            this.saveMappings = new MenuItem(LocaleHelper.get("menu.file.save_mappings"));
             this.saveMappings.setDisable(true);
             this.getItems().add(this.saveMappings);
 
-            this.saveMappingsAs = new MenuItem("Save Mappings As...");
+            this.saveMappingsAs = new MenuItem(LocaleHelper.get("menu.file.save_mappings_as"));
             this.saveMappingsAs.setDisable(true);
             this.saveMappingsAs.addEventHandler(ActionEvent.ACTION, this::saveMappingsAs);
             this.getItems().add(this.saveMappingsAs);
@@ -99,7 +100,7 @@ public class FileMenu extends Menu {
 
         // Binary related
         {
-            this.exportRemappedJar = new MenuItem("Export Remapped Jar...");
+            this.exportRemappedJar = new MenuItem(LocaleHelper.get("menu.file.export_remapped_jar"));
             this.exportRemappedJar.setDisable(true);
             this.exportRemappedJar.addEventHandler(ActionEvent.ACTION, this::exportRemappedJar);
             this.getItems().add(this.exportRemappedJar);
@@ -108,11 +109,11 @@ public class FileMenu extends Menu {
 
         // Settings
         {
-            final Menu settings = new Menu("Settings");
+            final Menu settings = new Menu(LocaleHelper.get("menu.file.settings"));
             // Decompiler
             {
                 final ToggleGroup decompilerGroup = new ToggleGroup();
-                final Menu decompilerMenu = new Menu("Decompiler");
+                final Menu decompilerMenu = new Menu(LocaleHelper.get("menu.file.settings.decompiler"));
 
                 for (final IDecompiler decompiler : DecompilerManager.getDecompilers()) {
                     final RadioMenuItem menuItem = new RadioMenuItem(decompiler.getName());
@@ -138,7 +139,7 @@ public class FileMenu extends Menu {
 
         // Program related
         {
-            this.close = new MenuItem("Quit");
+            this.close = new MenuItem(LocaleHelper.get("menu.file.quit"));
             this.close.addEventHandler(ActionEvent.ACTION, event -> Platform.exit());
             this.getItems().add(this.close);
         }
