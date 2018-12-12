@@ -24,7 +24,7 @@ import me.jamiemansfield.symphony.gui.tree.ClassElement;
 import me.jamiemansfield.symphony.gui.tree.PackageElement;
 import me.jamiemansfield.symphony.gui.tree.TreeElement;
 import me.jamiemansfield.symphony.jar.Jar;
-import me.jamiemansfield.symphony.util.PropertiesHelper;
+import me.jamiemansfield.symphony.util.StateHelper;
 import org.cadixdev.bombe.jar.JarClassEntry;
 import org.cadixdev.lorenz.model.TopLevelClassMapping;
 
@@ -211,7 +211,7 @@ public final class SymphonyMain extends Application {
     }
 
     public static void main(final String[] args) {
-        Runtime.getRuntime().addShutdownHook(new Thread(PropertiesHelper::save));
+        Runtime.getRuntime().addShutdownHook(new Thread(StateHelper::save));
 
         launch(args);
     }

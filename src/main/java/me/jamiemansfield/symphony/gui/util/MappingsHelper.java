@@ -9,7 +9,8 @@ package me.jamiemansfield.symphony.gui.util;
 
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
-import me.jamiemansfield.symphony.util.PropertiesHelper;
+import me.jamiemansfield.symphony.util.PropertyKey;
+import me.jamiemansfield.symphony.util.StateHelper;
 import org.cadixdev.lorenz.MappingSet;
 import org.cadixdev.lorenz.io.MappingFormat;
 import org.cadixdev.lorenz.io.MappingFormats;
@@ -28,10 +29,10 @@ import java.util.Map;
  */
 public final class MappingsHelper {
 
-    private static final PropertiesHelper.Key<MappingFormat> LAST_FORMAT = PropertiesHelper.Key.create(
+    private static final PropertyKey<MappingFormat> LAST_FORMAT = PropertyKey.create(
             "last_mapping_format", MappingFormat::toString, MappingFormats::byId
     );
-    private static final PropertiesHelper.Key<File> LAST_DIRECTORY = PropertiesHelper.Key.file(
+    private static final PropertyKey<File> LAST_DIRECTORY = PropertyKey.file(
             "last_mapping_directory"
     );
 
@@ -54,11 +55,11 @@ public final class MappingsHelper {
 
         // Use the last used mapping format
         FILE_CHOOSER.setSelectedExtensionFilter(
-                BACKWARD.get(PropertiesHelper.get(LAST_FORMAT).orElse(MappingFormats.SRG))
+                BACKWARD.get(StateHelper.get(LAST_FORMAT).orElse(MappingFormats.SRG))
         );
 
         // Use the last used directory
-        PropertiesHelper.get(LAST_DIRECTORY).ifPresent(FILE_CHOOSER::setInitialDirectory);
+        StateHelper.get(LAST_DIRECTORY).ifPresent(FILE_CHOOSER::setInitialDirectory);
     }
 
     /**
@@ -88,8 +89,8 @@ public final class MappingsHelper {
         }
 
         // Update global properties
-        PropertiesHelper.set(LAST_FORMAT, format);
-        PropertiesHelper.set(LAST_DIRECTORY, mappingsPath.getParentFile());
+        StateHelper.set(LAST_FORMAT, format);
+        StateHelper.set(LAST_DIRECTORY, mappingsPath.getParentFile());
 
         return true;
     }
@@ -121,8 +122,8 @@ public final class MappingsHelper {
         }
 
         // Update global properties
-        PropertiesHelper.set(LAST_FORMAT, format);
-        PropertiesHelper.set(LAST_DIRECTORY, mappingsPath.getParentFile());
+        StateHelper.set(LAST_FORMAT, format);
+        StateHelper.set(LAST_DIRECTORY, mappingsPath.getParentFile());
 
         return true;
     }

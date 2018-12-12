@@ -29,17 +29,17 @@ public enum OperatingSystem implements Predicate<String> {
         
         @Override
         public String getConfigFolder() {
-            return configHome;
+            return this.configHome;
         }
         
         @Override
         public String getDataFolder() {
-            return dataHome;
+            return this.dataHome;
         }
         
         @Override
         public String getCacheFolder() {
-            return cacheHome;
+            return this.cacheHome;
         }
     },
     WINDOWS("win"),
@@ -92,7 +92,7 @@ public enum OperatingSystem implements Predicate<String> {
      * @return The path to the data home, as defined by the XDG Base Directory specification.
      */
     public String getDataFolder() {
-        return getConfigFolder();
+        return this.getConfigFolder();
     }
     
     /**
@@ -106,7 +106,7 @@ public enum OperatingSystem implements Predicate<String> {
      * @return The path to the cache home, as defined by the XDG Base Directory specification.
      */
     public String getCacheFolder() {
-        return getConfigFolder();
+        return this.getConfigFolder();
     }
 
     /**
