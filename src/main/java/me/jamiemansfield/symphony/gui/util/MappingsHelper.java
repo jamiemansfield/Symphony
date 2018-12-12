@@ -9,6 +9,7 @@ package me.jamiemansfield.symphony.gui.util;
 
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
+import me.jamiemansfield.symphony.util.PropertiesHelper;
 import org.cadixdev.lorenz.MappingSet;
 import org.cadixdev.lorenz.io.MappingFormat;
 import org.cadixdev.lorenz.io.MappingFormats;
@@ -27,26 +28,37 @@ import java.util.Map;
  */
 public final class MappingsHelper {
 
-    private static final Map<FileChooser.ExtensionFilter, MappingFormat> FORMATS = new HashMap<>();
+    private static final PropertiesHelper.Key<MappingFormat> LAST_FORMAT = PropertiesHelper.Key.create(
+            "last_mapping_format", MappingFormat::toString, MappingFormats::byId
+    );
+    private static final PropertiesHelper.Key<File> LAST_DIRECTORY = PropertiesHelper.Key.file(
+            "last_mapping_directory"
+    );
+
+    private static final Map<FileChooser.ExtensionFilter, MappingFormat> FORWARD = new HashMap<>();
+    private static final Map<MappingFormat, FileChooser.ExtensionFilter> BACKWARD = new HashMap<>();
     private static final FileChooser FILE_CHOOSER = new FileChooser();
 
     private static void register(final FileChooser.ExtensionFilter filter,
-                                 final MappingFormat format,
-                                 final boolean isDefault) {
-        FORMATS.put(filter, format);
-        FILE_CHOOSER.getExtensionFilters().add(filter);
-        if (isDefault) FILE_CHOOSER.setSelectedExtensionFilter(filter);
-    }
-
-    private static void register(final FileChooser.ExtensionFilter filter,
                                  final MappingFormat format) {
-        register(filter, format, false);
+        FORWARD.put(filter, format);
+        BACKWARD.put(format, filter);
+        FILE_CHOOSER.getExtensionFilters().add(filter);
     }
 
     static {
-        register(Formats.SRG, MappingFormats.SRG, true);
+        // Register the supported mapping formats
+        register(Formats.SRG, MappingFormats.SRG);
         register(Formats.CSRG, MappingFormats.CSRG);
         register(Formats.TSRG, MappingFormats.TSRG);
+
+        // Use the last used mapping format
+        FILE_CHOOSER.setSelectedExtensionFilter(
+                BACKWARD.get(PropertiesHelper.get(LAST_FORMAT).orElse(MappingFormats.SRG))
+        );
+
+        // Use the last used directory
+        PropertiesHelper.get(LAST_DIRECTORY).ifPresent(FILE_CHOOSER::setInitialDirectory);
     }
 
     /**
@@ -66,13 +78,18 @@ public final class MappingsHelper {
         if (mappingsPath == null) return false;
 
         // Reads from file
+        final MappingFormat format = FORWARD.get(FILE_CHOOSER.getSelectedExtensionFilter());
         try {
-            FORMATS.get(FILE_CHOOSER.getSelectedExtensionFilter()).read(mappings, mappingsPath.toPath());
+            format.read(mappings, mappingsPath.toPath());
         }
         catch (final IOException ex) {
             ex.printStackTrace();
             return false;
         }
+
+        // Update global properties
+        PropertiesHelper.set(LAST_FORMAT, format);
+        PropertiesHelper.set(LAST_DIRECTORY, mappingsPath.getParentFile());
 
         return true;
     }
@@ -94,13 +111,18 @@ public final class MappingsHelper {
         if (mappingsPath == null) return false;
 
         // Reads from file
+        final MappingFormat format = FORWARD.get(FILE_CHOOSER.getSelectedExtensionFilter());
         try {
-            FORMATS.get(FILE_CHOOSER.getSelectedExtensionFilter()).write(mappings, mappingsPath.toPath());
+            format.write(mappings, mappingsPath.toPath());
         }
         catch (final IOException ex) {
             ex.printStackTrace();
             return false;
         }
+
+        // Update global properties
+        PropertiesHelper.set(LAST_FORMAT, format);
+        PropertiesHelper.set(LAST_DIRECTORY, mappingsPath.getParentFile());
 
         return true;
     }

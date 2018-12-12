@@ -7,6 +7,12 @@
 
 package me.jamiemansfield.symphony;
 
+import me.jamiemansfield.symphony.util.OperatingSystem;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
 
 /**
@@ -22,6 +28,21 @@ public final class SharedConstants {
      */
     public static final String VERSION = Objects.toString(
             SharedConstants.class.getPackage().getImplementationVersion(), "dev");
+
+    /**
+     * The configuration directory used by Symphony.
+     */
+    public static final Path CONFIG_PATH = Paths.get(OperatingSystem.get().getConfigFolder(), "Symphony");
+
+    static {
+        // Ensure the config directory exists
+        try {
+            Files.createDirectories(CONFIG_PATH);
+        }
+        catch (final IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 
     private SharedConstants() {
     }
