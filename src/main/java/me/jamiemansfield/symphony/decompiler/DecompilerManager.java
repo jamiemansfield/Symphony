@@ -13,15 +13,15 @@ import java.util.List;
 import java.util.ServiceLoader;
 
 /**
- * A manager for handling {@link IDecompiler}s.
+ * A manager for handling {@link Decompiler}s.
  *
  * @author Jamie Mansfield
  * @since 0.1.0
  */
 public final class DecompilerManager {
 
-    private static IDecompiler DEFAULT;
-    private static List<IDecompiler> DECOMPILERS;
+    private static Decompiler DEFAULT;
+    private static List<Decompiler> DECOMPILERS;
 
     /**
      * Gets a immutable-view of all the decompilers on the
@@ -29,11 +29,11 @@ public final class DecompilerManager {
      *
      * @return The decompilers
      */
-    public static List<IDecompiler> getDecompilers() {
+    public static List<Decompiler> getDecompilers() {
         if (DECOMPILERS == null) {
             DECOMPILERS = new ArrayList<>();
 
-            for (final IDecompiler decompiler : ServiceLoader.load(IDecompiler.class)) {
+            for (final Decompiler decompiler : ServiceLoader.load(Decompiler.class)) {
                 if (DEFAULT == null) DEFAULT = decompiler;
                 DECOMPILERS.add(decompiler);
             }
@@ -46,7 +46,7 @@ public final class DecompilerManager {
      *
      * @return The default
      */
-    public static IDecompiler getDefault() {
+    public static Decompiler getDefault() {
         if (DEFAULT == null) getDecompilers();
         return DEFAULT;
     }

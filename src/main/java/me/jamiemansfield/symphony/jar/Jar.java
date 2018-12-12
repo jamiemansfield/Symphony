@@ -7,7 +7,7 @@
 
 package me.jamiemansfield.symphony.jar;
 
-import me.jamiemansfield.symphony.decompiler.IDecompiler;
+import me.jamiemansfield.symphony.decompiler.Decompiler;
 import me.jamiemansfield.symphony.decompiler.WrappedBytecode;
 import org.cadixdev.bombe.analysis.CachingInheritanceProvider;
 import org.cadixdev.bombe.analysis.InheritanceProvider;
@@ -108,7 +108,7 @@ public class Jar implements Closeable {
         }
     }
 
-    public synchronized String decompile(final IDecompiler decompiler, final TopLevelClassMapping klass) {
+    public synchronized String decompile(final Decompiler decompiler, final TopLevelClassMapping klass) {
         // Get the top-level class
         final byte[] deobfBytes = this.deobfProvider.get(klass.getFullObfuscatedName());
         if (deobfBytes == null) return "Well... this is embarrassing.";

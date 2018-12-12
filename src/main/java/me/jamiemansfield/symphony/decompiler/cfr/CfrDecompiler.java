@@ -8,7 +8,7 @@
 package me.jamiemansfield.symphony.decompiler.cfr;
 
 import me.jamiemansfield.symphony.decompiler.AbstractDecompiler;
-import me.jamiemansfield.symphony.decompiler.IDecompiler;
+import me.jamiemansfield.symphony.decompiler.Decompiler;
 import me.jamiemansfield.symphony.decompiler.WrappedBytecode;
 import org.benf.cfr.reader.api.CfrDriver;
 import org.benf.cfr.reader.api.OutputSinkFactory;
@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * An implementation of {@link IDecompiler} for CFR.
+ * An implementation of {@link Decompiler} for CFR.
  *
  * @author Jamie Mansfield
  * @since 0.1.0

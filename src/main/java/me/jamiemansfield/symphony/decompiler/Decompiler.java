@@ -15,7 +15,7 @@ import org.cadixdev.bombe.asm.jar.ClassProvider;
  * @author Jamie Mansfield
  * @since 0.1.0
  */
-public interface IDecompiler {
+public interface Decompiler {
 
     /**
      * Decompiles the given class, with any necessary inner

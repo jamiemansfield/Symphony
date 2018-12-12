@@ -8,7 +8,7 @@
 package me.jamiemansfield.symphony.decompiler.forgeflower;
 
 import me.jamiemansfield.symphony.decompiler.AbstractDecompiler;
-import me.jamiemansfield.symphony.decompiler.IDecompiler;
+import me.jamiemansfield.symphony.decompiler.Decompiler;
 import me.jamiemansfield.symphony.decompiler.WrappedBytecode;
 import org.cadixdev.bombe.asm.jar.ClassProvider;
 import org.jetbrains.java.decompiler.main.Fernflower;
@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * An implementation of {@link IDecompiler} for ForgeFlower.
+ * An implementation of {@link Decompiler} for ForgeFlower.
  *
  * @author Jamie Mansfield
  * @since 0.1.0

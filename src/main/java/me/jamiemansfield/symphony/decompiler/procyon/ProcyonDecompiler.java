@@ -9,16 +9,15 @@ package me.jamiemansfield.symphony.decompiler.procyon;
 
 import com.strobel.assembler.metadata.ClasspathTypeLoader;
 import com.strobel.assembler.metadata.CompositeTypeLoader;
-import com.strobel.decompiler.Decompiler;
 import com.strobel.decompiler.DecompilerSettings;
 import com.strobel.decompiler.PlainTextOutput;
 import me.jamiemansfield.symphony.decompiler.AbstractDecompiler;
-import me.jamiemansfield.symphony.decompiler.IDecompiler;
+import me.jamiemansfield.symphony.decompiler.Decompiler;
 import me.jamiemansfield.symphony.decompiler.WrappedBytecode;
 import org.cadixdev.bombe.asm.jar.ClassProvider;
 
 /**
- * An implementation of {@link IDecompiler} for Procyon.
+ * An implementation of {@link Decompiler} for Procyon.
  *
  * @author Jamie Mansfield
  * @since 0.1.0
@@ -39,7 +38,7 @@ public class ProcyonDecompiler extends AbstractDecompiler {
         ));
 
         final PlainTextOutput output = new PlainTextOutput();
-        Decompiler.decompile(
+        com.strobel.decompiler.Decompiler.decompile(
                 name,
                 output,
                 settings

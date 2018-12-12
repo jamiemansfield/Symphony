@@ -17,7 +17,7 @@ import java.util.function.Function;
  *
  * @param <T> The type of the key
  */
-public abstract class PropertyKey<T> {
+public abstract class PropertiesKey<T> {
 
     /**
      * Creates a key from the given key and de-serialiser.
@@ -28,10 +28,10 @@ public abstract class PropertyKey<T> {
      * @param <T> The type of the key
      * @return The key
      */
-    public static <T> PropertyKey<T> create(final String key,
-                                            final Function<T, String> serialiser,
-                                            final Function<String, T> deserialiser) {
-        return new PropertyKey<T>(key) {
+    public static <T> PropertiesKey<T> create(final String key,
+                                              final Function<T, String> serialiser,
+                                              final Function<String, T> deserialiser) {
+        return new PropertiesKey<T>(key) {
             @Override
             public String serialise(final T value) {
                 return serialiser.apply(value);
@@ -50,7 +50,7 @@ public abstract class PropertyKey<T> {
      * @param key The key
      * @return The key
      */
-    public static PropertyKey<String> string(final String key) {
+    public static PropertiesKey<String> string(final String key) {
         return create(key, str -> str, str -> str);
     }
 
@@ -60,7 +60,7 @@ public abstract class PropertyKey<T> {
      * @param key The key
      * @return The key
      */
-    public static PropertyKey<Integer> integer(final String key) {
+    public static PropertiesKey<Integer> integer(final String key) {
         return create(key, Object::toString, Integer::parseInt);
     }
 
@@ -70,13 +70,13 @@ public abstract class PropertyKey<T> {
      * @param key The key
      * @return The key
      */
-    public static PropertyKey<File> file(final String key) {
+    public static PropertiesKey<File> file(final String key) {
         return create(key, File::toString, File::new);
     }
 
     private final String key;
 
-    protected PropertyKey(final String key) {
+    protected PropertiesKey(final String key) {
         this.key = key;
     }
 

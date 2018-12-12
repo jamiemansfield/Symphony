@@ -18,12 +18,14 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.ToggleGroup;
 import javafx.stage.FileChooser;
 import me.jamiemansfield.symphony.decompiler.DecompilerManager;
-import me.jamiemansfield.symphony.decompiler.IDecompiler;
+import me.jamiemansfield.symphony.decompiler.Decompiler;
 import me.jamiemansfield.symphony.gui.SymphonyMain;
 import me.jamiemansfield.symphony.gui.concurrent.TaskManager;
 import me.jamiemansfield.symphony.gui.util.MappingsHelper;
 import me.jamiemansfield.symphony.jar.Jar;
 import me.jamiemansfield.symphony.util.LocaleHelper;
+import me.jamiemansfield.symphony.util.PropertiesKey;
+import me.jamiemansfield.symphony.util.StateHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,11 +39,18 @@ import java.util.jar.JarFile;
  */
 public class FileMenu extends Menu {
 
-    private static IDecompiler DECOMPILER = DecompilerManager.getDefault();
+    private static Decompiler DECOMPILER = DecompilerManager.getDefault();
 
-    public static IDecompiler decompiler() {
+    public static Decompiler decompiler() {
         return DECOMPILER;
     }
+
+    private static final PropertiesKey<File> LAST_OPEN_DIRECTORY = PropertiesKey.file(
+            "last_jar_directory"
+    );
+    private static final PropertiesKey<File> LAST_EXPORT_DIRECTORY = PropertiesKey.file(
+            "last_export_jar_directory"
+    );
 
     private final MainMenuBar mainMenu;
     private final SymphonyMain symphony;
@@ -115,7 +124,7 @@ public class FileMenu extends Menu {
                 final ToggleGroup decompilerGroup = new ToggleGroup();
                 final Menu decompilerMenu = new Menu(LocaleHelper.get("menu.file.settings.decompiler"));
 
-                for (final IDecompiler decompiler : DecompilerManager.getDecompilers()) {
+                for (final Decompiler decompiler : DecompilerManager.getDecompilers()) {
                     final RadioMenuItem menuItem = new RadioMenuItem(decompiler.getName());
                     menuItem.addEventHandler(ActionEvent.ACTION, event -> {
                         // Set the decompiler
@@ -152,6 +161,9 @@ public class FileMenu extends Menu {
             this.openJarFileChooser.getExtensionFilters().addAll(
                     new FileChooser.ExtensionFilter("JAR file", "*.jar")
             );
+
+            // Use the last used directory
+            StateHelper.get(LAST_OPEN_DIRECTORY).ifPresent(this.openJarFileChooser::setInitialDirectory);
         }
 
         final File jarPath = this.openJarFileChooser.showOpenDialog(this.symphony.getStage());
@@ -175,6 +187,9 @@ public class FileMenu extends Menu {
 
         // Refresh classes view
         this.symphony.refreshClasses();
+
+        // Update state
+        StateHelper.set(LAST_OPEN_DIRECTORY, jarPath.getParentFile());
     }
 
     private void loadMappings(final ActionEvent event) {
@@ -195,6 +210,9 @@ public class FileMenu extends Menu {
             this.exportJarFileChooser.getExtensionFilters().addAll(
                     new FileChooser.ExtensionFilter("JAR file", "*.jar")
             );
+
+            // Use the last used directory
+            StateHelper.get(LAST_EXPORT_DIRECTORY).ifPresent(this.exportJarFileChooser::setInitialDirectory);
         }
 
         final File jarPath = this.exportJarFileChooser.showSaveDialog(this.symphony.getStage());
@@ -202,6 +220,9 @@ public class FileMenu extends Menu {
 
         final RemapperService remapperService = new RemapperService(this.symphony.jar, jarPath);
         remapperService.start();
+
+        // Update state
+        StateHelper.set(LAST_EXPORT_DIRECTORY, jarPath.getParentFile());
     }
 
     private class RemapperService extends Service<Void> {

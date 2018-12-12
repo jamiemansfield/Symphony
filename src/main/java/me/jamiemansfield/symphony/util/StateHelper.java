@@ -47,7 +47,7 @@ public class StateHelper {
      * @param <T> The type of the key
      * @return The value, wrapped in an {@link Optional}
      */
-    public static <T> Optional<T> get(final PropertyKey<T> key) {
+    public static <T> Optional<T> get(final PropertiesKey<T> key) {
         return key.get(PROPERTIES);
     }
 
@@ -58,7 +58,7 @@ public class StateHelper {
      * @param value The value
      * @param <T> The type of the key
      */
-    public static <T> void set(final PropertyKey<T> key, final T value) {
+    public static <T> void set(final PropertiesKey<T> key, final T value) {
         key.set(PROPERTIES, value);
     }
 

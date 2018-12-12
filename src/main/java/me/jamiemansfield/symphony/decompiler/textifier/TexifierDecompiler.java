@@ -8,7 +8,7 @@
 package me.jamiemansfield.symphony.decompiler.textifier;
 
 import me.jamiemansfield.symphony.decompiler.AbstractDecompiler;
-import me.jamiemansfield.symphony.decompiler.IDecompiler;
+import me.jamiemansfield.symphony.decompiler.Decompiler;
 import me.jamiemansfield.symphony.decompiler.WrappedBytecode;
 import org.cadixdev.bombe.asm.jar.ClassProvider;
 import org.objectweb.asm.ClassReader;
@@ -18,7 +18,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 
 /**
- * An implementation of {@link IDecompiler} for ASM's Texifier.
+ * An implementation of {@link Decompiler} for ASM's Texifier.
  *
  * @author Jamie Mansfield
  * @since 0.1.0

@@ -9,7 +9,7 @@ package me.jamiemansfield.symphony.gui.util;
 
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
-import me.jamiemansfield.symphony.util.PropertyKey;
+import me.jamiemansfield.symphony.util.PropertiesKey;
 import me.jamiemansfield.symphony.util.StateHelper;
 import org.cadixdev.lorenz.MappingSet;
 import org.cadixdev.lorenz.io.MappingFormat;
@@ -29,10 +29,10 @@ import java.util.Map;
  */
 public final class MappingsHelper {
 
-    private static final PropertyKey<MappingFormat> LAST_FORMAT = PropertyKey.create(
+    private static final PropertiesKey<MappingFormat> LAST_FORMAT = PropertiesKey.create(
             "last_mapping_format", MappingFormat::toString, MappingFormats::byId
     );
-    private static final PropertyKey<File> LAST_DIRECTORY = PropertyKey.file(
+    private static final PropertiesKey<File> LAST_DIRECTORY = PropertiesKey.file(
             "last_mapping_directory"
     );
 
@@ -88,7 +88,7 @@ public final class MappingsHelper {
             return false;
         }
 
-        // Update global properties
+        // Update state
         StateHelper.set(LAST_FORMAT, format);
         StateHelper.set(LAST_DIRECTORY, mappingsPath.getParentFile());
 
@@ -121,7 +121,7 @@ public final class MappingsHelper {
             return false;
         }
 
-        // Update global properties
+        // Update state
         StateHelper.set(LAST_FORMAT, format);
         StateHelper.set(LAST_DIRECTORY, mappingsPath.getParentFile());
 

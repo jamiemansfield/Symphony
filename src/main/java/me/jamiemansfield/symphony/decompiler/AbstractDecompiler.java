@@ -8,13 +8,13 @@
 package me.jamiemansfield.symphony.decompiler;
 
 /**
- * An base implementation of {@link IDecompiler} with some
+ * An base implementation of {@link Decompiler} with some
  * convenience methods.
  *
  * @author Jamie Mansfield
  * @since 0.1.0
  */
-public abstract class AbstractDecompiler implements IDecompiler {
+public abstract class AbstractDecompiler implements Decompiler {
 
     /**
      * Gets the package that the class is contained within.
