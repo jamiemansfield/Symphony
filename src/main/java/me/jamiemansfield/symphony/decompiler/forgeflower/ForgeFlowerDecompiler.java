@@ -54,8 +54,13 @@ public class ForgeFlowerDecompiler extends AbstractDecompiler {
         }
         // Decompile the class
         final String name = klass.getName().substring(0, klass.getName().length() - ".class".length());
-        fernflower.decompileContext();
-        return fernflower.getClassContent(fernflower.getStructContext().getClass(name));
+        try {
+            fernflower.decompileContext();
+            return fernflower.getClassContent(fernflower.getStructContext().getClass(name));
+        }
+        finally {
+            fernflower.clearContext();
+        }
     }
 
     @Override

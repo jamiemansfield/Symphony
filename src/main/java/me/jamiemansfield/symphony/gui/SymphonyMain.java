@@ -165,18 +165,19 @@ public final class SymphonyMain extends Application {
 
     private TreeItem<TreeElement> getPackageItem(final Map<String, TreeItem<TreeElement>> cache, final String packageName) {
         if (packageName.isEmpty()) return this.treeRoot;
-        return cache.computeIfAbsent(packageName, name -> {
-            final TreeItem<TreeElement> parent;
-            if (name.lastIndexOf('/') != -1) {
-                parent = this.getPackageItem(cache, name.substring(0, name.lastIndexOf('/')));
-            }
-            else {
-                parent = this.treeRoot;
-            }
-            final TreeItem<TreeElement> packageItem = new TreeItem<>(new PackageElement(name));
-            parent.getChildren().add(packageItem);
-            return packageItem;
-        });
+        if (cache.containsKey(packageName)) return cache.get(packageName);
+
+        final TreeItem<TreeElement> parent;
+        if (packageName.lastIndexOf('/') != -1) {
+            parent = this.getPackageItem(cache, packageName.substring(0, packageName.lastIndexOf('/')));
+        }
+        else {
+            parent = this.treeRoot;
+        }
+        final TreeItem<TreeElement> packageItem = new TreeItem<>(new PackageElement(packageName));
+        parent.getChildren().add(packageItem);
+        cache.put(packageName, packageItem);
+        return packageItem;
     }
 
     private List<String> getExpandedPackages(final List<String> packages, final TreeItem<TreeElement> item) {
