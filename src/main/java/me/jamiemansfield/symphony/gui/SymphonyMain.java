@@ -10,8 +10,8 @@ package me.jamiemansfield.symphony.gui;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
@@ -50,7 +50,7 @@ public final class SymphonyMain extends Application {
     private TabPane tabs;
 
     // Active jar
-    public Jar jar;
+    private Jar jar;
 
     // Classes View
     private TreeItem<TreeElement> treeRoot;
@@ -80,13 +80,14 @@ public final class SymphonyMain extends Application {
         final MainMenuBar mainMenu = new MainMenuBar(this);
         root.setTop(mainMenu);
 
+        // Main Section
+        final SplitPane main = new SplitPane();
+
         // Classes view
         final BorderPane classesView = new BorderPane();
-        {
-            final TextField search = new TextField();
-            search.setPromptText("Search");
-            // TODO: classesView.setTop(search);
-        }
+        classesView.setMaxWidth(400);
+        classesView.setMinWidth(250);
+        // TODO: Search
         {
             final TreeView<TreeElement> treeView = new TreeView<>();
             treeView.setShowRoot(false);
@@ -108,14 +109,17 @@ public final class SymphonyMain extends Application {
 
             classesView.setCenter(scrollPane);
         }
-        root.setLeft(classesView);
+        main.getItems().add(classesView);
 
         // Tabs
         this.tabs = new TabPane();
         {
             this.tabs.getTabs().add(new WelcomeTab());
         }
-        root.setCenter(this.tabs);
+        main.getItems().add(this.tabs);
+
+        main.setDividerPositions(0.1);
+        root.setCenter(main);
 
         // Set the scene
         final Scene scene = new Scene(root);
@@ -126,6 +130,10 @@ public final class SymphonyMain extends Application {
 
     public Jar getJar() {
         return this.jar;
+    }
+
+    public void setJar(final Jar jar) {
+        this.jar = jar;
     }
 
     public TabPane getTabs() {

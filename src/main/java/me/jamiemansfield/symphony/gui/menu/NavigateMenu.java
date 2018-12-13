@@ -50,8 +50,8 @@ public class NavigateMenu extends Menu {
         dialog.setContentText("Please enter class:");
 
         dialog.showAndWait().ifPresent(klass -> {
-            if (!this.symphony.jar.hasClass(klass)) return;
-            this.symphony.displayCodeTab(this.symphony.jar.getMappings().getOrCreateTopLevelClassMapping(klass));
+            if (!this.symphony.getJar().hasClass(klass)) return;
+            this.symphony.displayCodeTab(this.symphony.getJar().getMappings().getOrCreateTopLevelClassMapping(klass));
         });
     }
 

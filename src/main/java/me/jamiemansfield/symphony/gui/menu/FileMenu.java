@@ -170,7 +170,7 @@ public class FileMenu extends Menu {
         if (jarPath == null) return;
 
         try {
-            this.symphony.jar = new Jar(new JarFile(jarPath));
+            this.symphony.setJar(new Jar(new JarFile(jarPath)));
         }
         catch (final IOException ex) {
             ex.printStackTrace();
@@ -193,14 +193,14 @@ public class FileMenu extends Menu {
     }
 
     private void loadMappings(final ActionEvent event) {
-        if (MappingsHelper.loadMappings(this.symphony.getStage(), this.symphony.jar.getMappings())) {
+        if (MappingsHelper.loadMappings(this.symphony.getStage(), this.symphony.getJar().getMappings())) {
             // Update views
             this.symphony.update();
         }
     }
 
     private void saveMappingsAs(final ActionEvent event) {
-        MappingsHelper.saveMappingsAs(this.symphony.getStage(), this.symphony.jar.getMappings());
+        MappingsHelper.saveMappingsAs(this.symphony.getStage(), this.symphony.getJar().getMappings());
     }
 
     private void exportRemappedJar(final ActionEvent event) {
@@ -218,7 +218,7 @@ public class FileMenu extends Menu {
         final File jarPath = this.exportJarFileChooser.showSaveDialog(this.symphony.getStage());
         if (jarPath == null) return;
 
-        final RemapperService remapperService = new RemapperService(this.symphony.jar, jarPath);
+        final RemapperService remapperService = new RemapperService(this.symphony.getJar(), jarPath);
         remapperService.start();
 
         // Update state
