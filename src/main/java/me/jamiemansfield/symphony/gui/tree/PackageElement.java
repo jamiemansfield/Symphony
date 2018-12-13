@@ -8,10 +8,12 @@
 package me.jamiemansfield.symphony.gui.tree;
 
 import javafx.event.ActionEvent;
+import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
 import me.jamiemansfield.symphony.gui.SymphonyMain;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -77,6 +79,11 @@ public class PackageElement implements TreeElement {
     @Override
     public Optional<ContextMenu> getContextMenu() {
         return Optional.of(this.contextMenu);
+    }
+
+    @Override
+    public Optional<Node> getGraphic() {
+        return Optional.of(new FontIcon("fth-folder"));
     }
 
     @Override

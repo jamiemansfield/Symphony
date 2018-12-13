@@ -7,6 +7,7 @@
 
 package me.jamiemansfield.symphony.gui.tree;
 
+import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 
 import java.util.Optional;
@@ -27,6 +28,11 @@ public class RootElement implements TreeElement {
 
     @Override
     public Optional<ContextMenu> getContextMenu() {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Node> getGraphic() {
         return Optional.empty();
     }
 

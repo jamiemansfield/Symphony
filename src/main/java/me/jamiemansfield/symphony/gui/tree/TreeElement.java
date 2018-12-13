@@ -7,6 +7,7 @@
 
 package me.jamiemansfield.symphony.gui.tree;
 
+import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 
 import java.util.Optional;
@@ -39,5 +40,12 @@ public interface TreeElement extends Comparable<TreeElement> {
      * @return The context menu
      */
     Optional<ContextMenu> getContextMenu();
+
+    /**
+     * Gets the graphic of this tree element, if applicable.
+     *
+     * @return The graphic
+     */
+    Optional<Node> getGraphic();
 
 }

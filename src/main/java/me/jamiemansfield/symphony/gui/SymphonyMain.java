@@ -89,6 +89,7 @@ public final class SymphonyMain extends Application {
         }
         {
             final TreeView<TreeElement> treeView = new TreeView<>();
+            treeView.setShowRoot(false);
             treeView.setCellFactory(view -> new SymphonyTreeCell());
             treeView.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2) {

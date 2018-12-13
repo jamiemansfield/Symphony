@@ -26,8 +26,8 @@ public class SymphonyTreeCell extends TreeCell<TreeElement> {
         // Make the cell look proper
         this.setText(item.toString());
 
-        // Set the context menu, if the tree element requires
         item.getContextMenu().ifPresent(this::setContextMenu);
+        item.getGraphic().ifPresent(this::setGraphic);
     }
 
 }
