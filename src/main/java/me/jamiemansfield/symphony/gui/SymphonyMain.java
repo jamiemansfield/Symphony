@@ -22,6 +22,8 @@ import me.jamiemansfield.symphony.gui.tab.code.CodeTab;
 import me.jamiemansfield.symphony.gui.tab.welcome.WelcomeTab;
 import me.jamiemansfield.symphony.gui.tree.ClassElement;
 import me.jamiemansfield.symphony.gui.tree.PackageElement;
+import me.jamiemansfield.symphony.gui.tree.RootElement;
+import me.jamiemansfield.symphony.gui.tree.SymphonyTreeCell;
 import me.jamiemansfield.symphony.gui.tree.TreeElement;
 import me.jamiemansfield.symphony.jar.Jar;
 import me.jamiemansfield.symphony.util.StateHelper;
@@ -83,10 +85,11 @@ public final class SymphonyMain extends Application {
         {
             final TextField search = new TextField();
             search.setPromptText("Search");
-            classesView.setTop(search);
+            // TODO: classesView.setTop(search);
         }
         {
             final TreeView<TreeElement> treeView = new TreeView<>();
+            treeView.setCellFactory(view -> new SymphonyTreeCell());
             treeView.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2) {
                     final TreeItem<TreeElement> item = treeView.getSelectionModel().getSelectedItems().get(0);
@@ -94,7 +97,7 @@ public final class SymphonyMain extends Application {
                     item.getValue().activate();
                 }
             });
-            this.treeRoot = new TreeItem<>(new PackageElement("root"));
+            this.treeRoot = new TreeItem<>(new RootElement());
             this.treeRoot.setExpanded(true);
             treeView.setRoot(this.treeRoot);
 
@@ -147,7 +150,7 @@ public final class SymphonyMain extends Application {
             final TopLevelClassMapping klass = this.jar.getMappings().getOrCreateTopLevelClassMapping(klassName);
 
             this.getPackageItem(packageCache, klass.getDeobfuscatedPackage()).getChildren()
-                    .add(new TreeItem<>(new ClassElement(klass, this)));
+                    .add(new TreeItem<>(new ClassElement(this, klass)));
         });
 
         // sort
@@ -175,7 +178,7 @@ public final class SymphonyMain extends Application {
         else {
             parent = this.treeRoot;
         }
-        final TreeItem<TreeElement> packageItem = new TreeItem<>(new PackageElement(packageName));
+        final TreeItem<TreeElement> packageItem = new TreeItem<>(new PackageElement(this, packageName));
         parent.getChildren().add(packageItem);
         cache.put(packageName, packageItem);
         return packageItem;
@@ -204,7 +207,7 @@ public final class SymphonyMain extends Application {
                 .filter(tab -> Objects.equals(tab.getKlass(), klass))
                 .findFirst()
                 .orElseGet(() -> {
-                    final CodeTab tab = new CodeTab(this.jar, klass);
+                    final CodeTab tab = new CodeTab(this, klass);
                     this.tabs.getTabs().add(tab);
                     return tab;
                 }));

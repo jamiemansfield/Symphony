@@ -12,32 +12,32 @@ import javafx.scene.control.ContextMenu;
 import java.util.Optional;
 
 /**
- * An element within a tree.
+ * The root tree element.
  *
  * @author Jamie Mansfield
  * @since 0.1.0
  */
-public interface TreeElement extends Comparable<TreeElement> {
+public class RootElement implements TreeElement {
 
-    /**
-     * The name of the tree element.
-     *
-     * @return The element name
-     */
+    private static final String NAME = "root";
+
     @Override
-    String toString();
+    public void activate() {
+    }
 
-    /**
-     * Invoked when the element is double clicked, or other
-     * equivalent action.
-     */
-    void activate();
+    @Override
+    public Optional<ContextMenu> getContextMenu() {
+        return Optional.empty();
+    }
 
-    /**
-     * Gets the context menu of this tree element, if applicable.
-     *
-     * @return The context menu
-     */
-    Optional<ContextMenu> getContextMenu();
+    @Override
+    public int compareTo(final TreeElement o) {
+        return 0;
+    }
+
+    @Override
+    public String toString() {
+        return NAME;
+    }
 
 }

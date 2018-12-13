@@ -7,8 +7,12 @@
 
 package me.jamiemansfield.symphony.gui.tree;
 
+import javafx.scene.control.ContextMenu;
 import me.jamiemansfield.symphony.gui.SymphonyMain;
+import me.jamiemansfield.symphony.gui.menu.ClassContextMenu;
 import org.cadixdev.lorenz.model.TopLevelClassMapping;
+
+import java.util.Optional;
 
 /**
  * A tree element for classes.
@@ -18,17 +22,26 @@ import org.cadixdev.lorenz.model.TopLevelClassMapping;
  */
 public class ClassElement implements TreeElement {
 
-    private final TopLevelClassMapping klass;
     private final SymphonyMain symphony;
+    private final TopLevelClassMapping klass;
 
-    public ClassElement(final TopLevelClassMapping klass, final SymphonyMain symphony) {
-        this.klass = klass;
+    private final ContextMenu contextMenu;
+
+    public ClassElement(final SymphonyMain symphony, final TopLevelClassMapping klass) {
         this.symphony = symphony;
+        this.klass = klass;
+
+        this.contextMenu = new ClassContextMenu(symphony, klass);
     }
 
     @Override
     public void activate() {
         this.symphony.displayCodeTab(this.klass);
+    }
+
+    @Override
+    public Optional<ContextMenu> getContextMenu() {
+        return Optional.of(this.contextMenu);
     }
 
     @Override
