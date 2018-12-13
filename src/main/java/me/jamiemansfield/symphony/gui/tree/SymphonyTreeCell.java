@@ -21,13 +21,17 @@ public class SymphonyTreeCell extends TreeCell<TreeElement> {
     @Override
     protected void updateItem(final TreeElement item, final boolean empty) {
         super.updateItem(item, empty);
-        if (empty) return;
+        if (empty || item == null) {
+            this.setText(null);
+            this.setGraphic(null);
+            this.setContextMenu(null);
+            return;
+        }
 
         // Make the cell look proper
         this.setText(item.toString());
-
-        item.getContextMenu().ifPresent(this::setContextMenu);
         item.getGraphic().ifPresent(this::setGraphic);
+        item.getContextMenu().ifPresent(this::setContextMenu);
     }
 
 }
