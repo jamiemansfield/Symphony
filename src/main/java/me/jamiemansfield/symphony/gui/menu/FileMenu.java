@@ -52,7 +52,6 @@ public class FileMenu extends Menu {
             "last_export_jar_directory"
     );
 
-    private final MainMenuBar mainMenu;
     private final SymphonyMain symphony;
 
     // Menu items
@@ -74,17 +73,17 @@ public class FileMenu extends Menu {
         this.setMnemonicParsing(true);
 
         // Fields
-        this.mainMenu = mainMenuBar;
         this.symphony = mainMenuBar.getSymphony();
 
         // Jar related
         {
             this.openJar = new MenuItem(LocaleHelper.get("menu.file.open_jar"));
-            this.openJar.addEventHandler(ActionEvent.ACTION, this::openJar);
+            this.openJar.setOnAction(this::openJar);
             this.getItems().add(this.openJar);
 
             this.closeJar = new MenuItem(LocaleHelper.get("menu.file.close_jar"));
             this.closeJar.setDisable(true);
+            this.closeJar.setOnAction(this::closeJar);
             this.getItems().add(this.closeJar);
         }
         this.getItems().add(new SeparatorMenuItem());
@@ -93,7 +92,7 @@ public class FileMenu extends Menu {
         {
             this.loadMappings = new MenuItem(LocaleHelper.get("menu.file.load_mappings"));
             this.loadMappings.setDisable(true);
-            this.loadMappings.addEventHandler(ActionEvent.ACTION, this::loadMappings);
+            this.loadMappings.setOnAction(this::loadMappings);
             this.getItems().add(this.loadMappings);
 
             this.saveMappings = new MenuItem(LocaleHelper.get("menu.file.save_mappings"));
@@ -102,7 +101,7 @@ public class FileMenu extends Menu {
 
             this.saveMappingsAs = new MenuItem(LocaleHelper.get("menu.file.save_mappings_as"));
             this.saveMappingsAs.setDisable(true);
-            this.saveMappingsAs.addEventHandler(ActionEvent.ACTION, this::saveMappingsAs);
+            this.saveMappingsAs.setOnAction(this::saveMappingsAs);
             this.getItems().add(this.saveMappingsAs);
         }
         this.getItems().add(new SeparatorMenuItem());
@@ -111,7 +110,7 @@ public class FileMenu extends Menu {
         {
             this.exportRemappedJar = new MenuItem(LocaleHelper.get("menu.file.export_remapped_jar"));
             this.exportRemappedJar.setDisable(true);
-            this.exportRemappedJar.addEventHandler(ActionEvent.ACTION, this::exportRemappedJar);
+            this.exportRemappedJar.setOnAction(this::exportRemappedJar);
             this.getItems().add(this.exportRemappedJar);
         }
         this.getItems().add(new SeparatorMenuItem());
@@ -149,7 +148,7 @@ public class FileMenu extends Menu {
         // Program related
         {
             this.close = new MenuItem(LocaleHelper.get("menu.file.quit"));
-            this.close.addEventHandler(ActionEvent.ACTION, event -> Platform.exit());
+            this.close.setOnAction(event -> Platform.exit());
             this.getItems().add(this.close);
         }
     }
@@ -177,19 +176,12 @@ public class FileMenu extends Menu {
             return;
         }
 
-        // Enable menu items
-        this.closeJar.setDisable(false);
-        this.loadMappings.setDisable(false);
-        this.saveMappings.setDisable(false);
-        this.saveMappingsAs.setDisable(false);
-        this.exportRemappedJar.setDisable(false);
-        this.mainMenu.navigate.klass.setDisable(false);
-
-        // Refresh classes view
-        this.symphony.refreshClasses();
-
         // Update state
         StateHelper.set(LAST_OPEN_DIRECTORY, jarPath.getParentFile());
+    }
+
+    private void closeJar(final ActionEvent actionEvent) {
+        this.symphony.setJar(null);
     }
 
     private void loadMappings(final ActionEvent event) {
@@ -230,7 +222,7 @@ public class FileMenu extends Menu {
         private final Jar jar;
         private final File to;
 
-        public RemapperService(final Jar jar, final File to) {
+        RemapperService(final Jar jar, final File to) {
             this.jar = jar;
             this.to = to;
         }

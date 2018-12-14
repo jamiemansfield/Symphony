@@ -76,6 +76,13 @@ public class Jar implements Closeable {
     }
 
     /**
+     * @see JarFile#getName()
+     */
+    public String getName() {
+        return this.jar.getName();
+    }
+
+    /**
      * Gets the {@link ClassProvider} for querying obfuscated bytecode.
      *
      * @return The obfuscated class provider

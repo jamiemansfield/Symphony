@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * The Main-Class behind Symphony.
@@ -46,8 +47,13 @@ import java.util.Objects;
  */
 public final class SymphonyMain extends Application {
 
+    private static final String DEFAULT_TITLE = "Symphony v" + SharedConstants.VERSION;
+    private static final int DEFAULT_WIDTH = 1280;
+    private static final int DEFAULT_HEIGHT = 720;
+
     private Stage stage;
     private TabPane tabs;
+    private MainMenuBar mainMenu;
 
     // Active jar
     private Jar jar;
@@ -69,16 +75,16 @@ public final class SymphonyMain extends Application {
 
         // Set the primary stage
         this.stage = primaryStage;
-        this.stage.setTitle("Symphony v" + SharedConstants.VERSION);
-        this.stage.setWidth(1280);
-        this.stage.setHeight(720);
+        this.stage.setTitle(DEFAULT_TITLE);
+        this.stage.setWidth(DEFAULT_WIDTH);
+        this.stage.setHeight(DEFAULT_HEIGHT);
 
         // Root GUI container
         final BorderPane root = new BorderPane();
 
         // Main Menu
-        final MainMenuBar mainMenu = new MainMenuBar(this);
-        root.setTop(mainMenu);
+        this.mainMenu = new MainMenuBar(this);
+        root.setTop(this.mainMenu);
 
         // Main Section
         final SplitPane main = new SplitPane();
@@ -133,7 +139,37 @@ public final class SymphonyMain extends Application {
     }
 
     public void setJar(final Jar jar) {
+        // Close all current tabs
+        if (this.jar != null) {
+            this.tabs.getTabs().removeAll(
+                    this.tabs.getTabs().stream().filter(CodeTab.class::isInstance).collect(Collectors.toList())
+            );
+        }
+
+        // Set the jar
+        final boolean opening = jar != null;
         this.jar = jar;
+
+        // Enable/Disable menu buttons as required
+        {
+            this.mainMenu.file.closeJar.setDisable(!opening);
+            this.mainMenu.file.loadMappings.setDisable(!opening);
+            // this.mainMenu.file.saveMappings.setDisable(!opening); // TODO: implement
+            this.mainMenu.file.saveMappingsAs.setDisable(!opening);
+            this.mainMenu.file.exportRemappedJar.setDisable(!opening);
+            this.mainMenu.navigate.klass.setDisable(!opening);
+        }
+
+        // Correct the title, if needed
+        if (opening) {
+            this.stage.setTitle(DEFAULT_TITLE + " - " + jar.getName());
+        }
+        else {
+            this.stage.setTitle(DEFAULT_TITLE);
+        }
+
+        // Refresh classes view
+        this.refreshClasses();
     }
 
     public TabPane getTabs() {
