@@ -156,7 +156,7 @@ public class FileMenu extends Menu {
     private void openJar(final ActionEvent event) {
         if (this.openJarFileChooser == null) {
             this.openJarFileChooser = new FileChooser();
-            this.openJarFileChooser.setTitle("Select JAR File");
+            this.openJarFileChooser.setTitle(LocaleHelper.get("menu.file.open_jar.file_chooser"));
             this.openJarFileChooser.getExtensionFilters().addAll(
                     new FileChooser.ExtensionFilter("JAR file", "*.jar")
             );
@@ -198,7 +198,7 @@ public class FileMenu extends Menu {
     private void exportRemappedJar(final ActionEvent event) {
         if (this.exportJarFileChooser == null) {
             this.exportJarFileChooser = new FileChooser();
-            this.exportJarFileChooser.setTitle("Export Remapped Jar");
+            this.exportJarFileChooser.setTitle(LocaleHelper.get("menu.file.export_remapped_jar.file_chooser"));
             this.exportJarFileChooser.getExtensionFilters().addAll(
                     new FileChooser.ExtensionFilter("JAR file", "*.jar")
             );

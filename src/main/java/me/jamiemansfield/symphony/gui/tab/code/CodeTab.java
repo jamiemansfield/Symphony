@@ -52,6 +52,7 @@ public class CodeTab extends Tab {
     public void update() {
         this.setText(this.klass.getSimpleDeobfuscatedName());
         this.setTooltip(new Tooltip(this.klass.getFullDeobfuscatedName()));
+        this.setContextMenu(this.classMenu);
 
         final BorderPane root = new BorderPane();
 

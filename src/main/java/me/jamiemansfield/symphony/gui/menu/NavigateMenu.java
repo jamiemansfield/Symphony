@@ -45,9 +45,9 @@ public class NavigateMenu extends Menu {
 
     private void navigateToClass(final ActionEvent event) {
         final TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Navigate to Class");
-        dialog.setHeaderText("Navigate to Class");
-        dialog.setContentText("Please enter class:");
+        dialog.setTitle(LocaleHelper.get("menu.navigate.class.title"));
+        dialog.setHeaderText(LocaleHelper.get("menu.navigate.class.title"));
+        dialog.setContentText(LocaleHelper.get("menu.navigate.class.content"));
 
         dialog.showAndWait().ifPresent(klass -> {
             if (!this.symphony.getJar().hasClass(klass)) return;
