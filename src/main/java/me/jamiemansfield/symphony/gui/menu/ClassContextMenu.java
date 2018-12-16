@@ -24,15 +24,15 @@ import org.cadixdev.lorenz.model.TopLevelClassMapping;
 public class ClassContextMenu extends ContextMenu {
 
     public ClassContextMenu(final SymphonyMain symphony, final TopLevelClassMapping klass) {
-        final MenuItem remap = new MenuItem(LocaleHelper.get("context_menu.class.set_deobfuscated_name"));
+        final MenuItem remap = new MenuItem(LocaleHelper.get("context_menu.remappable.set_deobfuscated_name"));
         remap.addEventHandler(ActionEvent.ACTION, event -> {
             final String name = klass.getDeobfuscatedName();
 
             // Configure the dialog
             final TextInputDialog dialog = new TextInputDialog(name);
-            dialog.setTitle(LocaleHelper.get("context_menu.class.set_deobfuscated_name"));
-            dialog.setHeaderText(LocaleHelper.get("context_menu.class.set_deobfuscated_name"));
-            dialog.setContentText(LocaleHelper.get("context_menu.class.set_deobfuscated_name.content"));
+            dialog.setTitle(LocaleHelper.get("context_menu.remappable.set_deobfuscated_name"));
+            dialog.setHeaderText(LocaleHelper.get("context_menu.remappable.set_deobfuscated_name"));
+            dialog.setContentText(LocaleHelper.get("context_menu.remappable.set_deobfuscated_name.content"));
 
             dialog.showAndWait().ifPresent(deobfName -> {
                 // Set the deobf name

@@ -9,6 +9,7 @@ package me.jamiemansfield.symphony.gui.tab.welcome;
 
 import javafx.scene.control.Tab;
 import javafx.scene.text.Text;
+import me.jamiemansfield.symphony.util.LocaleHelper;
 
 /**
  * A simple welcome tab to display when a user starts Symphony.
@@ -19,9 +20,9 @@ import javafx.scene.text.Text;
 public class WelcomeTab extends Tab {
 
     public WelcomeTab() {
-        super("Welcome");
+        super(LocaleHelper.get("tab.welcome"));
 
-        final Text welcome = new Text("Welcome to Symphony...");
+        final Text welcome = new Text(LocaleHelper.get("tab.welcome.content"));
         this.setContent(welcome);
     }
 

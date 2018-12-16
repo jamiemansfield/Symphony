@@ -13,15 +13,14 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.control.ToggleGroup;
 import javafx.stage.FileChooser;
 import me.jamiemansfield.symphony.decompiler.Decompiler;
 import me.jamiemansfield.symphony.decompiler.Decompilers;
 import me.jamiemansfield.symphony.gui.SymphonyMain;
 import me.jamiemansfield.symphony.gui.concurrent.TaskManager;
 import me.jamiemansfield.symphony.gui.util.MappingsHelper;
+import me.jamiemansfield.symphony.gui.util.RadioMenuHelper;
 import me.jamiemansfield.symphony.jar.Jar;
 import me.jamiemansfield.symphony.util.LocaleHelper;
 import me.jamiemansfield.symphony.util.PropertiesKey;
@@ -114,25 +113,19 @@ public class FileMenu extends Menu {
             final Menu settings = new Menu(LocaleHelper.get("menu.file.settings"));
             // Decompiler
             {
-                final ToggleGroup decompilerGroup = new ToggleGroup();
-                final Menu decompilerMenu = new Menu(LocaleHelper.get("menu.file.settings.default_decompiler"));
+                final Menu decompilerMenu = RadioMenuHelper.create(
+                        new Menu(LocaleHelper.get("menu.file.settings.default_decompiler")),
+                        Decompilers.values(),
+                        Decompilers.getDefault(),
+                        Decompiler::getName,
+                        decompiler -> {
+                            // Set the decompiler
+                            Decompilers.setDefault(decompiler);
 
-                for (final Decompiler decompiler : Decompilers.values()) {
-                    final RadioMenuItem menuItem = new RadioMenuItem(decompiler.getName());
-                    menuItem.addEventHandler(ActionEvent.ACTION, event -> {
-                        // Set the decompiler
-                        Decompilers.setDefault(decompiler);
-
-                        // Update the views
-                        symphony.update();
-                    });
-                    decompilerGroup.getToggles().add(menuItem);
-                    decompilerMenu.getItems().add(menuItem);
-                    if (decompiler == Decompilers.getDefault()) {
-                        decompilerGroup.selectToggle(menuItem);
-                    }
-                }
-
+                            // Update the views
+                            this.symphony.update();
+                        }
+                );
                 settings.getItems().add(decompilerMenu);
             }
             this.getItems().add(settings);

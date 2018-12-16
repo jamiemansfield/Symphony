@@ -100,6 +100,10 @@ public class Jar implements Closeable {
         return this.deobfProvider;
     }
 
+    public InheritanceProvider getInheritanceProvider() {
+        return this.inheritanceProvider;
+    }
+
     public boolean hasClass(final String klass) {
         return this.jar.getEntry(klass + ".class") != null;
     }

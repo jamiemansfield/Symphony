@@ -7,15 +7,12 @@
 
 package me.jamiemansfield.symphony.gui.tree;
 
-import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextInputDialog;
 import me.jamiemansfield.symphony.gui.SymphonyMain;
+import me.jamiemansfield.symphony.gui.menu.PackageContextMenu;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -26,46 +23,16 @@ import java.util.Optional;
  */
 public class PackageElement implements TreeElement {
 
-    private final SymphonyMain symphony;
     private final String name;
     private final String simpleName;
 
-    private final ContextMenu contextMenu = new ContextMenu() {
-        {
-            final MenuItem remap = new MenuItem("Set de-obfuscated name");
-            remap.addEventHandler(ActionEvent.ACTION, event -> {
-                final TextInputDialog dialog = new TextInputDialog();
-                dialog.setTitle("Set de-obfuscated name");
-                dialog.setHeaderText("Set de-obfuscated name");
-                dialog.setContentText("Please enter name:");
-
-                dialog.showAndWait()
-                        .map(name -> name.endsWith("/") ? name : name + "/")
-                        .ifPresent(deobfName -> {
-                    final String packageName = PackageElement.this.name;
-
-                    // Set the deobf name
-                    PackageElement.this.symphony.getJar().getMappings().getTopLevelClassMappings().stream()
-                            .filter(klass -> Objects.equals(packageName, klass.getDeobfuscatedPackage()) ||
-                                    klass.getDeobfuscatedPackage().startsWith(packageName + '/'))
-                            .forEach(klass -> {
-                                final String className =
-                                        klass.getDeobfuscatedName().substring(packageName.length() + 1);
-                                klass.setDeobfuscatedName(deobfName + className);
-                            });
-
-                    // Update the view
-                    PackageElement.this.symphony.update();
-                });
-            });
-            this.getItems().add(remap);
-        }
-    };
+    private final ContextMenu contextMenu;
 
     public PackageElement(final SymphonyMain symphony, final String name) {
-        this.symphony = symphony;
         this.name = name;
         this.simpleName = name.substring(name.lastIndexOf('/') + 1);
+
+        this.contextMenu = new PackageContextMenu(symphony, name);
     }
 
     public String getName() {

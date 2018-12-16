@@ -10,6 +10,7 @@ package me.jamiemansfield.symphony.gui.tab.code;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Menu;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Tab;
 import javafx.scene.control.ToolBar;
@@ -17,12 +18,15 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import me.jamiemansfield.symphony.decompiler.Decompiler;
 import me.jamiemansfield.symphony.decompiler.Decompilers;
 import me.jamiemansfield.symphony.gui.SymphonyMain;
 import me.jamiemansfield.symphony.gui.concurrent.TaskManager;
 import me.jamiemansfield.symphony.gui.menu.ClassContextMenu;
+import me.jamiemansfield.symphony.gui.util.RadioMenuHelper;
 import me.jamiemansfield.symphony.gui.util.TextFlowBuilder;
 import me.jamiemansfield.symphony.jar.Jar;
+import me.jamiemansfield.symphony.util.LocaleHelper;
 import org.cadixdev.lorenz.model.TopLevelClassMapping;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
@@ -35,16 +39,33 @@ import org.fxmisc.richtext.LineNumberFactory;
  */
 public class CodeTab extends Tab {
 
-    private final Jar jar;
+    private final SymphonyMain symphony;
     private final TopLevelClassMapping klass;
+    private Decompiler decompiler = Decompilers.getDefault();
 
     private final ContextMenu classMenu;
 
     public CodeTab(final SymphonyMain symphony, final TopLevelClassMapping klass) {
-        this.jar = symphony.getJar();
+        this.symphony = symphony;
         this.klass = klass;
 
         this.classMenu = new ClassContextMenu(symphony, klass);
+        {
+            final Menu decompilerMenu = RadioMenuHelper.create(
+                    new Menu(LocaleHelper.get("tab.code.context_menu.decompiler")),
+                    Decompilers.values(),
+                    Decompilers.getDefault(),
+                    Decompiler::getName,
+                    decompiler -> {
+                        // Set the decompiler
+                        this.decompiler = decompiler;
+
+                        // Update the views
+                        this.update();
+                    }
+            );
+            this.classMenu.getItems().add(decompilerMenu);
+        }
 
         this.update();
     }
@@ -57,11 +78,11 @@ public class CodeTab extends Tab {
         final BorderPane root = new BorderPane();
 
         // Code display
-        final Text notice = new Text("Decompiling...");
+        final Text notice = new Text(LocaleHelper.get("tab.code.decompiling"));
         notice.setFont(new Font(24));
         root.setCenter(notice);
 
-        final DecompileService decompileService = new DecompileService(this.jar, this.klass);
+        final DecompileService decompileService = new DecompileService(this.symphony.getJar(), this.decompiler, this.klass);
         decompileService.setOnSucceeded(event -> {
             final CodeArea code = new CodeArea(event.getSource().getValue().toString());
             code.setParagraphGraphicFactory(LineNumberFactory.get(code));
@@ -98,10 +119,12 @@ public class CodeTab extends Tab {
     private static class DecompileService extends Service<String> {
 
         private final Jar jar;
+        private final Decompiler decompiler;
         private final TopLevelClassMapping klass;
 
-        DecompileService(final Jar jar, final TopLevelClassMapping klass) {
+        DecompileService(final Jar jar, final Decompiler decompiler, final TopLevelClassMapping klass) {
             this.jar = jar;
+            this.decompiler = decompiler;
             this.klass = klass;
         }
 
@@ -113,7 +136,7 @@ public class CodeTab extends Tab {
                 }
                 @Override
                 protected String call() {
-                    return DecompileService.this.jar.decompile(Decompilers.getDefault(), DecompileService.this.klass);
+                    return DecompileService.this.jar.decompile(DecompileService.this.decompiler, DecompileService.this.klass);
                 }
             };
         }
