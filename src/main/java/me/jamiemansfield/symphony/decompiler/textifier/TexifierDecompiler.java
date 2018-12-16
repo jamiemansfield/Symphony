@@ -25,17 +25,12 @@ import java.io.PrintWriter;
  */
 public class TexifierDecompiler extends AbstractDecompiler {
 
+    private static final String ID = "textifier";
     private static final String NAME = "Textifier";
 
     @Override
-    public String decompile(final ClassProvider classProvider, final WrappedBytecode klass, final WrappedBytecode... innerKlasses) {
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        final TraceClassVisitor cv = new TraceClassVisitor(null, new PrintWriter(baos));
-        new ClassReader(klass.getBytecode()).accept(cv, 0);
-        for (final WrappedBytecode bc : innerKlasses) {
-            new ClassReader(bc.getBytecode()).accept(cv, 0);
-        }
-        return baos.toString();
+    public String getId() {
+        return ID;
     }
 
     @Override
@@ -46,6 +41,17 @@ public class TexifierDecompiler extends AbstractDecompiler {
     @Override
     public OutputType getOutputType() {
         return OutputType.OTHER;
+    }
+
+    @Override
+    public String decompile(final ClassProvider classProvider, final WrappedBytecode klass, final WrappedBytecode... innerKlasses) {
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final TraceClassVisitor cv = new TraceClassVisitor(null, new PrintWriter(baos));
+        new ClassReader(klass.getBytecode()).accept(cv, 0);
+        for (final WrappedBytecode bc : innerKlasses) {
+            new ClassReader(bc.getBytecode()).accept(cv, 0);
+        }
+        return baos.toString();
     }
 
 }

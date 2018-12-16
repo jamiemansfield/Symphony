@@ -17,8 +17,8 @@ import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.ToggleGroup;
 import javafx.stage.FileChooser;
-import me.jamiemansfield.symphony.decompiler.DecompilerManager;
 import me.jamiemansfield.symphony.decompiler.Decompiler;
+import me.jamiemansfield.symphony.decompiler.Decompilers;
 import me.jamiemansfield.symphony.gui.SymphonyMain;
 import me.jamiemansfield.symphony.gui.concurrent.TaskManager;
 import me.jamiemansfield.symphony.gui.util.MappingsHelper;
@@ -38,12 +38,6 @@ import java.util.jar.JarFile;
  * @since 0.1.0
  */
 public class FileMenu extends Menu {
-
-    private static Decompiler DECOMPILER = DecompilerManager.getDefault();
-
-    public static Decompiler decompiler() {
-        return DECOMPILER;
-    }
 
     private static final PropertiesKey<File> LAST_OPEN_DIRECTORY = PropertiesKey.file(
             "last_jar_directory"
@@ -121,20 +115,20 @@ public class FileMenu extends Menu {
             // Decompiler
             {
                 final ToggleGroup decompilerGroup = new ToggleGroup();
-                final Menu decompilerMenu = new Menu(LocaleHelper.get("menu.file.settings.decompiler"));
+                final Menu decompilerMenu = new Menu(LocaleHelper.get("menu.file.settings.default_decompiler"));
 
-                for (final Decompiler decompiler : DecompilerManager.getDecompilers()) {
+                for (final Decompiler decompiler : Decompilers.values()) {
                     final RadioMenuItem menuItem = new RadioMenuItem(decompiler.getName());
                     menuItem.addEventHandler(ActionEvent.ACTION, event -> {
                         // Set the decompiler
-                        DECOMPILER = decompiler;
+                        Decompilers.setDefault(decompiler);
 
                         // Update the views
                         symphony.update();
                     });
                     decompilerGroup.getToggles().add(menuItem);
                     decompilerMenu.getItems().add(menuItem);
-                    if (decompiler == DecompilerManager.getDefault()) {
+                    if (decompiler == Decompilers.getDefault()) {
                         decompilerGroup.selectToggle(menuItem);
                     }
                 }

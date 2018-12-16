@@ -26,7 +26,23 @@ import java.util.List;
  */
 public class CfrDecompiler extends AbstractDecompiler {
 
+    private static final String ID = "cfr";
     private static final String NAME = "CFR";
+
+    @Override
+    public String getId() {
+        return ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
+    public OutputType getOutputType() {
+        return OutputType.JAVA;
+    }
 
     @Override
     public String decompile(final ClassProvider classProvider, final WrappedBytecode klass, final WrappedBytecode... innerKlasses) {
@@ -40,16 +56,6 @@ public class CfrDecompiler extends AbstractDecompiler {
         driver.analyse(Collections.singletonList(name + ".class"));
 
         return sink.getValue();
-    }
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
-    @Override
-    public OutputType getOutputType() {
-        return OutputType.JAVA;
     }
 
     private static final class Sink implements OutputSinkFactory {

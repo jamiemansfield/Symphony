@@ -26,7 +26,8 @@ import java.util.Map;
  */
 public class ForgeFlowerDecompiler extends AbstractDecompiler {
 
-    private static final String NAME =  "ForgeFlower";
+    private static final String ID = "forgeflower";
+    private static final String NAME = "ForgeFlower";
     private static final Map<String, Object> DECOMPILER_OPTIONS = new HashMap<String, Object>(){
         {
             this.put(IFernflowerPreferences.DECOMPILE_GENERIC_SIGNATURES, "1");
@@ -36,6 +37,21 @@ public class ForgeFlowerDecompiler extends AbstractDecompiler {
             this.put(IFernflowerPreferences.INDENT_STRING, "    ");
         }
     };
+
+    @Override
+    public String getId() {
+        return ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
+    public OutputType getOutputType() {
+        return OutputType.JAVA;
+    }
 
     @Override
     public String decompile(final ClassProvider classProvider, final WrappedBytecode klass, final WrappedBytecode... innerKlasses) {
@@ -61,16 +77,6 @@ public class ForgeFlowerDecompiler extends AbstractDecompiler {
         finally {
             fernflower.clearContext();
         }
-    }
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
-    @Override
-    public OutputType getOutputType() {
-        return OutputType.JAVA;
     }
 
     private static void provideClass(final Fernflower fernflower, final WrappedBytecode klass) {

@@ -18,15 +18,11 @@ import org.cadixdev.bombe.asm.jar.ClassProvider;
 public interface Decompiler {
 
     /**
-     * Decompiles the given class, with any necessary inner
-     * classes provided.
+     * Gets the identifier of the decompiler.
      *
-     * @param classProvider The class provider to use
-     * @param klass The top-level class to decompile
-     * @param innerKlasses The inner (and anonymous) classes
-     * @return The re-constructed source code
+     * @return The identifier
      */
-    String decompile(final ClassProvider classProvider, final WrappedBytecode klass, final WrappedBytecode... innerKlasses);
+    String getId();
 
     /**
      * Gets the name of the decompiler.
@@ -41,6 +37,17 @@ public interface Decompiler {
      * @return The output type
      */
     OutputType getOutputType();
+
+    /**
+     * Decompiles the given class, with any necessary inner
+     * classes provided.
+     *
+     * @param classProvider The class provider to use
+     * @param klass The top-level class to decompile
+     * @param innerKlasses The inner (and anonymous) classes
+     * @return The re-constructed source code
+     */
+    String decompile(final ClassProvider classProvider, final WrappedBytecode klass, final WrappedBytecode... innerKlasses);
 
     /**
      * Represents the format of the decompiler output.
