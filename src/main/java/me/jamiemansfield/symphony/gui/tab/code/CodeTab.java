@@ -31,6 +31,8 @@ import org.cadixdev.lorenz.model.TopLevelClassMapping;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 
+import java.util.Optional;
+
 /**
  * A tab used to display the code of a file.
  *
@@ -41,7 +43,7 @@ public class CodeTab extends Tab {
 
     private final SymphonyMain symphony;
     private final TopLevelClassMapping klass;
-    private Decompiler decompiler = Decompilers.getDefault();
+    private Decompiler decompiler = null;
 
     private final ContextMenu classMenu;
 
@@ -82,7 +84,11 @@ public class CodeTab extends Tab {
         notice.setFont(new Font(24));
         root.setCenter(notice);
 
-        final DecompileService decompileService = new DecompileService(this.symphony.getJar(), this.decompiler, this.klass);
+        final DecompileService decompileService = new DecompileService(
+                this.symphony.getJar(),
+                this.getDecompiler().orElse(Decompilers.getDefault()),
+                this.klass
+        );
         decompileService.setOnSucceeded(event -> {
             final CodeArea code = new CodeArea(event.getSource().getValue().toString());
             code.setParagraphGraphicFactory(LineNumberFactory.get(code));
@@ -114,6 +120,10 @@ public class CodeTab extends Tab {
 
     public TopLevelClassMapping getKlass() {
         return this.klass;
+    }
+
+    public Optional<Decompiler> getDecompiler() {
+        return Optional.ofNullable(this.decompiler);
     }
 
     private static class DecompileService extends Service<String> {
