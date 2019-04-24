@@ -19,9 +19,9 @@ import org.cadixdev.bombe.jar.AbstractJarEntry;
 import org.cadixdev.bombe.jar.JarClassEntry;
 import org.cadixdev.bombe.jar.Jars;
 import org.cadixdev.lorenz.MappingSet;
+import org.cadixdev.lorenz.asm.LorenzRemapper;
 import org.cadixdev.lorenz.model.ClassMapping;
 import org.cadixdev.lorenz.model.TopLevelClassMapping;
-import org.cadixdev.survey.remapper.SurveyRemapper;
 import org.objectweb.asm.commons.Remapper;
 
 import java.io.Closeable;
@@ -55,7 +55,7 @@ public class Jar implements Closeable {
         this.obfProvider = new JarFileClassProvider(this.jar);
         this.inheritanceProvider =
                 new CachingInheritanceProvider(new ClassProviderInheritanceProvider(this.obfProvider));
-        this.remapper = new SurveyRemapper(this.mappings, this.inheritanceProvider);
+        this.remapper = new LorenzRemapper(this.mappings, this.inheritanceProvider);
         this.deobfProvider = new DeobfuscatingClassProvider(this.obfProvider, this.mappings, this.remapper);
     }
 

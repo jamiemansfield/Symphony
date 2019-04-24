@@ -36,8 +36,8 @@ dependencies {
 
     // Decompilers
     compile 'net.minecraftforge:forgeflower:1.5.380.24'
-    compile 'org.bitbucket.mstrobel:procyon-compilertools:0.5.33'
-    compile 'org.benf:cfr:0.138'
+    compile 'org.bitbucket.mstrobel:procyon-compilertools:0.5.35'
+    compile 'org.benf:cfr:0.141'
     compile 'org.ow2.asm:asm-util:7.0'
 
     // RichTextFX (syntax highlighting)
