@@ -50,8 +50,8 @@ public class NavigateMenu extends Menu {
         dialog.setContentText(LocaleHelper.get("menu.navigate.class.content"));
 
         dialog.showAndWait().ifPresent(klass -> {
-            if (!this.symphony.getJar().hasClass(klass)) return;
-            this.symphony.displayCodeTab(this.symphony.getJar().getMappings().getOrCreateTopLevelClassMapping(klass));
+            if (!this.symphony.getFirstJar().hasClass(klass)) return;
+            this.symphony.displayCodeTab(this.symphony.getFirstJar().getMappings().getOrCreateTopLevelClassMapping(klass));
         });
     }
 

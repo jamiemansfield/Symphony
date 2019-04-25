@@ -35,7 +35,7 @@ public class PackageContextMenu extends ContextMenu {
                     .map(name -> name.endsWith("/") ? name : name + "/")
                     .ifPresent(deobfName -> {
                         // Set the deobf name
-                        symphony.getJar().getMappings().getTopLevelClassMappings().stream()
+                        symphony.getFirstJar().getMappings().getTopLevelClassMappings().stream()
                                 .filter(klass -> Objects.equals(packageName, klass.getDeobfuscatedPackage()) ||
                                         klass.getDeobfuscatedPackage().startsWith(packageName + '/'))
                                 .forEach(klass -> {

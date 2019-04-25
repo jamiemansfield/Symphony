@@ -55,8 +55,9 @@ public final class SymphonyMain extends Application {
     private TabPane tabs;
     private MainMenuBar mainMenu;
 
-    // Active jar
-    private Jar jar;
+    // Active firstJar
+    private Jar firstJar;
+    private Jar secondJar;
 
     // Classes View
     private TreeItem<TreeElement> treeRoot;
@@ -64,12 +65,21 @@ public final class SymphonyMain extends Application {
     @Override
     public void start(final Stage primaryStage) {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            if (this.jar == null) return;
-            try {
-                this.jar.close();
+            if (this.firstJar != null) {
+                try {
+                    this.firstJar.close();
+                }
+                catch (final IOException ex) {
+                    ex.printStackTrace();
+                }
             }
-            catch (final IOException ex) {
-                ex.printStackTrace();
+            if (this.secondJar != null) {
+                try {
+                    this.secondJar.close();
+                }
+                catch (final IOException ex) {
+                    ex.printStackTrace();
+                }
             }
         }));
 
@@ -134,39 +144,47 @@ public final class SymphonyMain extends Application {
         this.stage.show();
     }
 
-    public Jar getJar() {
-        return this.jar;
+    public Jar getFirstJar() {
+        return this.firstJar;
     }
 
-    public void setJar(final Jar jar) {
+    public void setFirstJar(final Jar firstJar) {
         // Close all current tabs
-        if (this.jar != null) {
+        if (this.firstJar != null) {
             this.tabs.getTabs().removeAll(
                     this.tabs.getTabs().stream().filter(CodeTab.class::isInstance).collect(Collectors.toList())
             );
         }
 
-        // Set the jar
-        final boolean opening = jar != null;
-        this.jar = jar;
+        // Set the firstJar
+        final boolean opening = firstJar != null;
+        this.firstJar = firstJar;
 
         // Enable/Disable menu buttons as required
-        {
-            this.mainMenu.file.closeJar.setDisable(!opening);
-            this.mainMenu.file.loadMappings.setDisable(!opening);
-            // this.mainMenu.file.saveMappings.setDisable(!opening); // TODO: implement
-            this.mainMenu.file.saveMappingsAs.setDisable(!opening);
-            this.mainMenu.file.exportRemappedJar.setDisable(!opening);
-            this.mainMenu.navigate.klass.setDisable(!opening);
+        this.mainMenu.file.firstJar.toggle(opening);
+
+        // Refresh classes view
+        this.refreshClasses();
+    }
+
+    public Jar getSecondJar() {
+        return this.secondJar;
+    }
+
+    public void setSecondJar(final Jar secondJar) {
+        // Close all current tabs
+        if (this.secondJar != null) {
+            this.tabs.getTabs().removeAll(
+                    this.tabs.getTabs().stream().filter(CodeTab.class::isInstance).collect(Collectors.toList())
+            );
         }
 
-        // Correct the title, if needed
-        if (opening) {
-            this.stage.setTitle(DEFAULT_TITLE + " - " + jar.getName());
-        }
-        else {
-            this.stage.setTitle(DEFAULT_TITLE);
-        }
+        // Set the firstJar
+        final boolean opening = secondJar != null;
+        this.secondJar = secondJar;
+
+        // Enable/Disable menu buttons as required
+        this.mainMenu.file.secondJar.toggle(opening);
 
         // Refresh classes view
         this.refreshClasses();
@@ -183,16 +201,16 @@ public final class SymphonyMain extends Application {
     public void refreshClasses() {
         final List<String> expanded = this.getExpandedPackages(new ArrayList<>(), this.treeRoot);
         this.treeRoot.getChildren().clear();
-        if (this.jar == null) return;
+        if (this.firstJar == null) return;
 
         final Map<String, TreeItem<TreeElement>> packageCache = new HashMap<>();
 
-        this.jar.entries()
+        this.firstJar.entries()
                 .filter(JarClassEntry.class::isInstance).map(JarClassEntry.class::cast)
                 .filter(entry -> !entry.getSimpleName().contains("$"))
                 .forEach(entry -> {
             final String klassName = entry.getName().substring(0, entry.getName().length() - ".class".length());
-            final TopLevelClassMapping klass = this.jar.getMappings().getOrCreateTopLevelClassMapping(klassName);
+            final TopLevelClassMapping klass = this.firstJar.getMappings().getOrCreateTopLevelClassMapping(klassName);
 
             this.getPackageItem(packageCache, klass.getDeobfuscatedPackage()).getChildren()
                     .add(new TreeItem<>(new ClassElement(this, klass)));

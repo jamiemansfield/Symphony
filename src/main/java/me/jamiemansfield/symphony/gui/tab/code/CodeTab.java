@@ -85,7 +85,7 @@ public class CodeTab extends Tab {
         root.setCenter(notice);
 
         final DecompileService decompileService = new DecompileService(
-                this.symphony.getJar(),
+                this.symphony.getFirstJar(),
                 this.getDecompiler().orElse(Decompilers.getDefault()),
                 this.klass
         );
