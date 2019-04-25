@@ -49,6 +49,9 @@ dependencies {
     // Feather Icons (see https://feathericons.com/)
     compile 'org.kordamp.ikonli:ikonli-javafx:2.4.0'
     compile 'org.kordamp.ikonli:ikonli-feather-pack:2.4.0'
+
+    // Diffing
+    compile 'com.cloudbees:diff4j:1.2'
 }
 
 processResources {

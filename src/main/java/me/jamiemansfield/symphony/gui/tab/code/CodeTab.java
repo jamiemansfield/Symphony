@@ -7,6 +7,7 @@
 
 package me.jamiemansfield.symphony.gui.tab.code;
 
+import com.cloudbees.diff.Diff;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.scene.control.ContextMenu;
@@ -31,6 +32,11 @@ import org.cadixdev.lorenz.model.TopLevelClassMapping;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -84,19 +90,46 @@ public class CodeTab extends Tab {
         notice.setFont(new Font(24));
         root.setCenter(notice);
 
-        final DecompileService decompileService = new DecompileService(
+        final DecompileService firstDecompileService = new DecompileService(
                 this.symphony.getFirstJar(),
                 this.getDecompiler().orElse(Decompilers.getDefault()),
                 this.klass
         );
-        decompileService.setOnSucceeded(event -> {
-            final CodeArea code = new CodeArea(event.getSource().getValue().toString());
-            code.setParagraphGraphicFactory(LineNumberFactory.get(code));
-            code.setEditable(false);
-            JavaSyntaxHighlighting.highlight(code);
-            root.setCenter(code);
+        final DecompileService secondDecompileService = new DecompileService(
+                this.symphony.getSecondJar(),
+                this.getDecompiler().orElse(Decompilers.getDefault()),
+                this.klass
+        );
+        final List<String> firstCode = new ArrayList<>();
+        firstDecompileService.setOnSucceeded(event -> {
+            firstCode.addAll(Arrays.asList(event.getSource().getValue().toString().split("\n")));
+            secondDecompileService.start();
         });
-        decompileService.start();
+        secondDecompileService.setOnSucceeded(event -> {
+            final List<String> secondCode = Arrays.asList(event.getSource().getValue().toString().split("\n"));
+
+            try {
+                final CodeArea code = new CodeArea(Diff.diff(
+                        firstCode,
+                        secondCode,
+                        false
+                ).toUnifiedDiff(
+                        "a/" + this.klass.getFullDeobfuscatedName(),
+                        "b/" + this.klass.getFullDeobfuscatedName(),
+                        new StringReader(String.join("\n", firstCode)),
+                        new StringReader(String.join("\n", secondCode)),
+                        3
+                ));
+                code.setParagraphGraphicFactory(LineNumberFactory.get(code));
+                code.setEditable(false);
+                JavaSyntaxHighlighting.highlight(code);
+                root.setCenter(code);
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        firstDecompileService.start();
 
         // Bottom tool bar
         final ToolBar bar = new ToolBar();
