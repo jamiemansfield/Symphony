@@ -59,7 +59,9 @@ public final class MappingsHelper {
         );
 
         // Use the last used directory
-        StateHelper.get(LAST_DIRECTORY).ifPresent(FILE_CHOOSER::setInitialDirectory);
+        StateHelper.get(LAST_DIRECTORY)
+                .filter(File::exists)
+                .ifPresent(FILE_CHOOSER::setInitialDirectory);
     }
 
     /**

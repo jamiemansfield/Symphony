@@ -149,7 +149,9 @@ public class FileMenu extends Menu {
             );
 
             // Use the last used directory
-            StateHelper.get(LAST_OPEN_DIRECTORY).ifPresent(this.openJarFileChooser::setInitialDirectory);
+            StateHelper.get(LAST_OPEN_DIRECTORY)
+                    .filter(File::exists)
+                    .ifPresent(this.openJarFileChooser::setInitialDirectory);
         }
 
         final File jarPath = this.openJarFileChooser.showOpenDialog(this.symphony.getStage());
