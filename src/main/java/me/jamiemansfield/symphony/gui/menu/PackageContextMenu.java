@@ -42,6 +42,7 @@ public class PackageContextMenu extends ContextMenu {
                                     final String className =
                                             klass.getDeobfuscatedName().substring(packageName.length() + 1);
                                     klass.setDeobfuscatedName(deobfName + className);
+                                    symphony.markDirty(klass.hasDeobfuscatedName());
                                 });
 
                         // Update the view

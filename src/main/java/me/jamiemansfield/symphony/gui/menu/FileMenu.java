@@ -186,20 +186,20 @@ public class FileMenu extends Menu {
         if (MappingsHelper.loadMappings(this.symphony.getStage(), this.symphony.getJar().getMappings())) {
             // Update views
             this.symphony.update();
-
-            // Enable File -> Save
-            this.saveMappings.setDisable(false);
         }
     }
 
     private void saveMappings(final ActionEvent event) {
-        MappingsHelper.saveMappings(this.symphony.getStage(), this.symphony.getJar().getMappings());
+        if (MappingsHelper.saveMappings(this.symphony.getStage(), this.symphony.getJar().getMappings())) {
+            // Mark as not-dirty
+            this.symphony.resetDirty();
+        }
     }
 
     private void saveMappingsAs(final ActionEvent event) {
         if (MappingsHelper.saveMappingsAs(this.symphony.getStage(), this.symphony.getJar().getMappings())) {
-            // Enable File -> Save
-            this.saveMappings.setDisable(false);
+            // Mark as not-dirty
+            this.symphony.resetDirty();
         }
     }
 

@@ -163,12 +163,7 @@ public final class SymphonyMain extends Application {
         MappingsHelper.LAST_LOCATION = null;
 
         // Correct the title, if needed
-        if (opening) {
-            this.stage.setTitle(DEFAULT_TITLE + " - " + jar.getName());
-        }
-        else {
-            this.stage.setTitle(DEFAULT_TITLE);
-        }
+        this.updateTitle();
 
         // Refresh classes view
         this.refreshClasses();
@@ -242,9 +237,19 @@ public final class SymphonyMain extends Application {
     }
 
     public void update() {
+        this.updateTitle();
         this.refreshClasses();
         this.tabs.getTabs().stream().filter(CodeTab.class::isInstance).map(CodeTab.class::cast)
                 .forEach(CodeTab::update);
+    }
+
+    public void updateTitle() {
+        if (this.jar != null) {
+            this.stage.setTitle(DEFAULT_TITLE + " - " + jar.getName());
+        }
+        else {
+            this.stage.setTitle(DEFAULT_TITLE);
+        }
     }
 
     public void displayCodeTab(final TopLevelClassMapping klass) {
@@ -258,6 +263,23 @@ public final class SymphonyMain extends Application {
                     this.tabs.getTabs().add(tab);
                     return tab;
                 }));
+    }
+
+    public void markDirty(final boolean dirty) {
+        this.jar.markDirty(dirty);
+        // These calls are always followed by a #update() call, no need to
+        // update the title here.
+        if (this.jar.isDirty() && MappingsHelper.LAST_LOCATION != null) {
+            this.mainMenu.file.saveMappings.setDisable(false);
+        }
+    }
+
+    public void resetDirty() {
+        this.jar.resetDirty();
+        this.updateTitle();
+        if (this.jar.isDirty() && MappingsHelper.LAST_LOCATION != null) {
+            this.mainMenu.file.saveMappings.setDisable(true);
+        }
     }
 
     public static void main(final String[] args) {

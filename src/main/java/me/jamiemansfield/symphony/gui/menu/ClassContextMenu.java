@@ -37,6 +37,7 @@ public class ClassContextMenu extends ContextMenu {
             dialog.showAndWait().ifPresent(deobfName -> {
                 // Set the deobf name
                 klass.setDeobfuscatedName(deobfName);
+                symphony.markDirty(klass.hasDeobfuscatedName());
 
                 // Update the view
                 symphony.update();
@@ -48,6 +49,7 @@ public class ClassContextMenu extends ContextMenu {
         reset.addEventHandler(ActionEvent.ACTION, event -> {
             // Set the deobf name to the obf name (resetting it)
             klass.setDeobfuscatedName(klass.getObfuscatedName());
+            symphony.markDirty(klass.hasDeobfuscatedName());
 
             // Update the view
             symphony.update();

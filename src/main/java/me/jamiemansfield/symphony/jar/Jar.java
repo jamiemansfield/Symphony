@@ -42,6 +42,7 @@ public class Jar implements Closeable {
 
     // Mappings Related
     private final MappingSet mappings = MappingSet.create();
+    private boolean dirty = false;
 
     // Jar related
     private final JarFile jar;
@@ -68,6 +69,18 @@ public class Jar implements Closeable {
         return this.mappings;
     }
 
+    public boolean isDirty() {
+        return this.dirty;
+    }
+
+    public void markDirty(final boolean dirty) {
+        this.dirty = this.dirty || dirty;
+    }
+
+    public void resetDirty() {
+        this.dirty = false;
+    }
+
     /**
      * @see Jars#walk(JarFile)
      */
@@ -79,7 +92,7 @@ public class Jar implements Closeable {
      * @see JarFile#getName()
      */
     public String getName() {
-        return this.jar.getName();
+        return (this.dirty ? "*" : "") + this.jar.getName();
     }
 
     /**
