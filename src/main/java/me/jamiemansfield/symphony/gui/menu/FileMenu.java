@@ -14,6 +14,9 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.stage.FileChooser;
 import me.jamiemansfield.symphony.decompiler.Decompiler;
 import me.jamiemansfield.symphony.decompiler.Decompilers;
@@ -72,6 +75,7 @@ public class FileMenu extends Menu {
         {
             this.openJar = new MenuItem(LocaleHelper.get("menu.file.open_jar"));
             this.openJar.setOnAction(this::openJar);
+            this.openJar.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
             this.getItems().add(this.openJar);
 
             this.closeJar = new MenuItem(LocaleHelper.get("menu.file.close_jar"));
@@ -86,16 +90,20 @@ public class FileMenu extends Menu {
             this.loadMappings = new MenuItem(LocaleHelper.get("menu.file.load_mappings"));
             this.loadMappings.setDisable(true);
             this.loadMappings.setOnAction(this::loadMappings);
+            this.loadMappings.setAccelerator(new KeyCodeCombination(KeyCode.L, KeyCombination.CONTROL_DOWN));
             this.getItems().add(this.loadMappings);
 
             this.saveMappings = new MenuItem(LocaleHelper.get("menu.file.save_mappings"));
             this.saveMappings.setDisable(true);
             this.saveMappings.setOnAction(this::saveMappings);
+            this.saveMappings.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
             this.getItems().add(this.saveMappings);
 
             this.saveMappingsAs = new MenuItem(LocaleHelper.get("menu.file.save_mappings_as"));
             this.saveMappingsAs.setDisable(true);
             this.saveMappingsAs.setOnAction(this::saveMappingsAs);
+            this.saveMappingsAs.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN,
+                    KeyCombination.ALT_DOWN));
             this.getItems().add(this.saveMappingsAs);
         }
         this.getItems().add(new SeparatorMenuItem());

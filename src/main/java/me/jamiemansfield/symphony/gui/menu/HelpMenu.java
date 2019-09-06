@@ -11,6 +11,8 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
 import me.jamiemansfield.symphony.gui.SymphonyMain;
 import me.jamiemansfield.symphony.gui.concurrent.TaskManager;
 import me.jamiemansfield.symphony.gui.tab.welcome.WelcomeTab;
@@ -54,6 +56,7 @@ public class HelpMenu extends Menu {
         {
             final MenuItem about = new MenuItem(LocaleHelper.get("menu.help.about"));
             about.addEventHandler(ActionEvent.ACTION, event -> AboutHelper.display());
+            about.setAccelerator(new KeyCodeCombination(KeyCode.F1));
             this.getItems().add(about);
         }
     }
