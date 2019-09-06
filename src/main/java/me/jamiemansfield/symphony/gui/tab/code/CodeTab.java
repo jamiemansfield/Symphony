@@ -62,7 +62,7 @@ public class CodeTab extends Tab {
                         // Set the decompiler
                         this.decompiler = decompiler;
 
-                        // Update the views
+                        // Update the view
                         this.update();
                     }
             );

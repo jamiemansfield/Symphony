@@ -90,6 +90,7 @@ public class FileMenu extends Menu {
 
             this.saveMappings = new MenuItem(LocaleHelper.get("menu.file.save_mappings"));
             this.saveMappings.setDisable(true);
+            this.saveMappings.setOnAction(this::saveMappings);
             this.getItems().add(this.saveMappings);
 
             this.saveMappingsAs = new MenuItem(LocaleHelper.get("menu.file.save_mappings_as"));
@@ -177,11 +178,21 @@ public class FileMenu extends Menu {
         if (MappingsHelper.loadMappings(this.symphony.getStage(), this.symphony.getJar().getMappings())) {
             // Update views
             this.symphony.update();
+
+            // Enable File -> Save
+            this.saveMappings.setDisable(false);
         }
     }
 
+    private void saveMappings(final ActionEvent event) {
+        MappingsHelper.saveMappings(this.symphony.getStage(), this.symphony.getJar().getMappings());
+    }
+
     private void saveMappingsAs(final ActionEvent event) {
-        MappingsHelper.saveMappingsAs(this.symphony.getStage(), this.symphony.getJar().getMappings());
+        if (MappingsHelper.saveMappingsAs(this.symphony.getStage(), this.symphony.getJar().getMappings())) {
+            // Enable File -> Save
+            this.saveMappings.setDisable(false);
+        }
     }
 
     private void exportRemappedJar(final ActionEvent event) {

@@ -16,6 +16,8 @@ import java.util.function.Function;
  * A representation of data stored in a properties file.
  *
  * @param <T> The type of the key
+ * @author Jamie Mansfield
+ * @since 0.1.0
  */
 public abstract class PropertiesKey<T> {
 

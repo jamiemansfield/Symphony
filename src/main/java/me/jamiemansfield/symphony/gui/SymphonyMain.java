@@ -25,6 +25,7 @@ import me.jamiemansfield.symphony.gui.tree.PackageElement;
 import me.jamiemansfield.symphony.gui.tree.RootElement;
 import me.jamiemansfield.symphony.gui.tree.SymphonyTreeCell;
 import me.jamiemansfield.symphony.gui.tree.TreeElement;
+import me.jamiemansfield.symphony.gui.util.MappingsHelper;
 import me.jamiemansfield.symphony.jar.Jar;
 import me.jamiemansfield.symphony.util.StateHelper;
 import org.cadixdev.bombe.jar.JarClassEntry;
@@ -154,11 +155,12 @@ public final class SymphonyMain extends Application {
         {
             this.mainMenu.file.closeJar.setDisable(!opening);
             this.mainMenu.file.loadMappings.setDisable(!opening);
-            // this.mainMenu.file.saveMappings.setDisable(!opening); // TODO: implement
+            this.mainMenu.file.saveMappings.setDisable(true);
             this.mainMenu.file.saveMappingsAs.setDisable(!opening);
             this.mainMenu.file.exportRemappedJar.setDisable(!opening);
             this.mainMenu.navigate.klass.setDisable(!opening);
         }
+        MappingsHelper.LAST_LOCATION = null;
 
         // Correct the title, if needed
         if (opening) {

@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * A helper class for reading and writing mappings to
@@ -35,6 +36,7 @@ public final class MappingsHelper {
     private static final PropertiesKey<File> LAST_DIRECTORY = PropertiesKey.file(
             "last_mapping_directory"
     );
+    public static File LAST_LOCATION = null;
 
     private static final Map<FileChooser.ExtensionFilter, MappingFormat> FORWARD = new HashMap<>();
     private static final Map<MappingFormat, FileChooser.ExtensionFilter> BACKWARD = new HashMap<>();
@@ -93,8 +95,24 @@ public final class MappingsHelper {
         // Update state
         StateHelper.set(LAST_FORMAT, format);
         StateHelper.set(LAST_DIRECTORY, mappingsPath.getParentFile());
+        LAST_LOCATION = mappingsPath;
 
         return true;
+    }
+
+    /**
+     * Saves mappings from the given {@link MappingSet}, in the {@link Window}.
+     *
+     * @param window The parent window
+     * @param mappings The mappings
+     * @return {@code true} if the mappings were written successfully;
+     *         {@code false} otherwise
+     */
+    public static boolean saveMappings(final Window window, final MappingSet mappings) {
+        return Optional.ofNullable(LAST_LOCATION)
+                .filter(mappingsPath -> mappingsPath.getParentFile().exists())
+                .map(mappingsPath -> _saveMappings(mappingsPath, mappings))
+                .orElseGet(() -> saveMappingsAs(window, mappings));
     }
 
     /**
@@ -113,7 +131,12 @@ public final class MappingsHelper {
         final File mappingsPath = FILE_CHOOSER.showSaveDialog(window);
         if (mappingsPath == null) return false;
 
-        // Reads from file
+        // Saves to file
+        return _saveMappings(mappingsPath, mappings);
+    }
+
+    private static boolean _saveMappings(final File mappingsPath, final MappingSet mappings) {
+        // Saves to file
         final MappingFormat format = FORWARD.get(FILE_CHOOSER.getSelectedExtensionFilter());
         try {
             format.write(mappings, mappingsPath.toPath());
@@ -126,6 +149,7 @@ public final class MappingsHelper {
         // Update state
         StateHelper.set(LAST_FORMAT, format);
         StateHelper.set(LAST_DIRECTORY, mappingsPath.getParentFile());
+        LAST_LOCATION = mappingsPath;
 
         return true;
     }
