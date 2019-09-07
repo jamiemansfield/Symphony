@@ -67,6 +67,16 @@ public abstract class PropertiesKey<T> {
     }
 
     /**
+     * Creates an boolean key from the given key.
+     *
+     * @param key The key
+     * @return The key
+     */
+    public static PropertiesKey<Boolean> bool(final String key) {
+        return create(key, Object::toString, Boolean::parseBoolean);
+    }
+
+    /**
      * Creates a file key from the given key.
      *
      * @param key The key

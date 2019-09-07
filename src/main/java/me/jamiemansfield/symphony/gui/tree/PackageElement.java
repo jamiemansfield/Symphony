@@ -11,6 +11,7 @@ import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import me.jamiemansfield.symphony.gui.SymphonyMain;
 import me.jamiemansfield.symphony.gui.menu.PackageContextMenu;
+import me.jamiemansfield.symphony.gui.util.DisplaySettings;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.Optional;
@@ -25,7 +26,6 @@ public class PackageElement implements TreeElement {
 
     private final String name;
     private final String displayName;
-
     private final ContextMenu contextMenu;
 
     public PackageElement(final SymphonyMain symphony, final String name, final String displayName) {
@@ -35,7 +35,10 @@ public class PackageElement implements TreeElement {
     }
 
     public PackageElement(final SymphonyMain symphony, final String name) {
-        this(symphony, name, name.substring(name.lastIndexOf('/') + 1));
+        this(symphony, name, DisplaySettings.flattenPackages() ?
+                name :
+                name.substring(name.lastIndexOf('/') + 1)
+        );
     }
 
     public String getName() {

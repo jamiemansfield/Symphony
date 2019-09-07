@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.function.Supplier;
 
 /**
  * A helper class for interacting with the persisted state of
@@ -24,15 +25,32 @@ import java.util.Properties;
  * @author Jamie Mansfield
  * @since 0.1.0
  */
-public class StateHelper {
+public enum StateHelper {
 
-    private static final Path PROPERTIES_PATH = SharedConstants.CONFIG_PATH.resolve("state.properties");
-    private static final Properties PROPERTIES = new Properties();
+    GENERAL,
+    DISPLAY,
+    ;
 
-    static {
-        if (Files.exists(PROPERTIES_PATH)) {
-            try (final InputStream is = Files.newInputStream(PROPERTIES_PATH)) {
-                PROPERTIES.load(is);
+    /**
+     * Saves all the properties to file.
+     */
+    public static void saveAll() {
+        for (final StateHelper helper : values()) {
+            helper.save();
+        }
+    }
+
+    private final Path path;
+    private final Properties properties;
+
+    StateHelper() {
+        this.path = SharedConstants.CONFIG_PATH.resolve(this.name().toLowerCase() + ".properties");
+        this.properties = new Properties();
+
+        // Read
+        if (Files.exists(this.path)) {
+            try (final InputStream is = Files.newInputStream(this.path)) {
+                this.properties.load(is);
             }
             catch (final IOException ex) {
                 ex.printStackTrace();
@@ -47,8 +65,27 @@ public class StateHelper {
      * @param <T> The type of the key
      * @return The value, wrapped in an {@link Optional}
      */
-    public static <T> Optional<T> get(final PropertiesKey<T> key) {
-        return key.get(PROPERTIES);
+    public <T> Optional<T> get(final PropertiesKey<T> key) {
+        return key.get(this.properties);
+    }
+
+    /**
+     * Gets the value, if available, of the given key - if not
+     * available, will attempt to compute the value, using the given
+     * supplier. The value will be set, provided it is not null.
+     *
+     * @param key The key
+     * @param supplier The compute supplier
+     * @param <T> The type of the key
+     * @return The value
+     */
+    public <T> T computeIfAbsent(final PropertiesKey<T> key, final Supplier<T> supplier) {
+        return this.get(key).orElseGet(() -> {
+            final T value = supplier.get();
+            if (value == null) return null;
+            this.set(key, value);
+            return value;
+        });
     }
 
     /**
@@ -58,23 +95,20 @@ public class StateHelper {
      * @param value The value
      * @param <T> The type of the key
      */
-    public static <T> void set(final PropertiesKey<T> key, final T value) {
-        key.set(PROPERTIES, value);
+    public <T> void set(final PropertiesKey<T> key, final T value) {
+        key.set(this.properties, value);
     }
 
     /**
      * Saves the properties to file.
      */
-    public static void save() {
-        try (final OutputStream os = Files.newOutputStream(PROPERTIES_PATH)) {
-            PROPERTIES.store(os, "Symphony State");
+    public void save() {
+        try (final OutputStream os = Files.newOutputStream(this.path)) {
+            this.properties.store(os, "Symphony State");
         }
         catch (final IOException ex) {
             ex.printStackTrace();
         }
-    }
-
-    private StateHelper() {
     }
 
 }

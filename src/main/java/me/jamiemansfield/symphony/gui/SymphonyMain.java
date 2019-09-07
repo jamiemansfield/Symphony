@@ -17,7 +17,7 @@ import me.jamiemansfield.symphony.SharedConstants;
 import me.jamiemansfield.symphony.gui.menu.MainMenuBar;
 import me.jamiemansfield.symphony.gui.tab.code.CodeTab;
 import me.jamiemansfield.symphony.gui.tab.welcome.WelcomeTab;
-import me.jamiemansfield.symphony.gui.tree.ClassesView;
+import me.jamiemansfield.symphony.gui.tree.ClassesTreeView;
 import me.jamiemansfield.symphony.gui.util.MappingsHelper;
 import me.jamiemansfield.symphony.jar.Jar;
 import me.jamiemansfield.symphony.util.StateHelper;
@@ -48,7 +48,7 @@ public final class SymphonyMain extends Application {
     private Jar jar;
 
     // Classes View
-    private ClassesView classesView;
+    private ClassesTreeView classesView;
 
     @Override
     public void start(final Stage primaryStage) {
@@ -82,7 +82,7 @@ public final class SymphonyMain extends Application {
         final BorderPane classesView = new BorderPane();
         classesView.setMaxWidth(400);
         classesView.setMinWidth(250);
-        classesView.setCenter(this.classesView = new ClassesView(this));
+        classesView.setCenter(this.classesView = new ClassesTreeView(this));
         main.getItems().add(classesView);
 
         // Tabs
@@ -196,7 +196,7 @@ public final class SymphonyMain extends Application {
     }
 
     public static void main(final String[] args) {
-        Runtime.getRuntime().addShutdownHook(new Thread(StateHelper::save));
+        Runtime.getRuntime().addShutdownHook(new Thread(StateHelper::saveAll));
 
         launch(args);
     }

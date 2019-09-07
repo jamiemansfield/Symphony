@@ -10,6 +10,7 @@ package me.jamiemansfield.symphony.gui.tree;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import me.jamiemansfield.symphony.gui.SymphonyMain;
+import me.jamiemansfield.symphony.gui.util.DisplaySettings;
 import me.jamiemansfield.symphony.jar.Jar;
 import org.cadixdev.bombe.jar.JarClassEntry;
 import org.cadixdev.lorenz.model.TopLevelClassMapping;
@@ -28,12 +29,12 @@ import java.util.Set;
  * @since 0.1.0
  */
 // TODO: Search bar
-public class ClassesView extends TreeView<TreeElement> {
+public class ClassesTreeView extends TreeView<TreeElement> {
 
     private final SymphonyMain symphony;
     private final TreeItem<TreeElement> treeRoot;
 
-    public ClassesView(final SymphonyMain symphony) {
+    public ClassesTreeView(final SymphonyMain symphony) {
         this.symphony = symphony;
         this.setShowRoot(false);
         this.setCellFactory(view -> new SymphonyTreeCell());
@@ -107,7 +108,7 @@ public class ClassesView extends TreeView<TreeElement> {
         if (cache.containsKey(packageName)) return cache.get(packageName);
 
         final TreeItem<TreeElement> parent;
-        if (packageName.lastIndexOf('/') != -1) {
+        if (packageName.lastIndexOf('/') != -1 && !DisplaySettings.flattenPackages()) {
             parent = this.getPackageItem(cache, packageName.substring(0, packageName.lastIndexOf('/')));
         }
         else {

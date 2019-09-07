@@ -79,7 +79,7 @@ public class Decompilers {
      * @return The decompiler
      */
     public static Decompiler getDefault() {
-        return StateHelper.get(DEFAULT).orElse(FORGEFLOWER);
+        return StateHelper.GENERAL.get(DEFAULT).orElse(FORGEFLOWER);
     }
 
     /**
@@ -88,7 +88,7 @@ public class Decompilers {
      * @param decompiler The decompiler
      */
     public static void setDefault(final Decompiler decompiler) {
-        StateHelper.set(DEFAULT, decompiler);
+        StateHelper.GENERAL.set(DEFAULT, decompiler);
     }
 
 }

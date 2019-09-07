@@ -10,6 +10,9 @@ package me.jamiemansfield.symphony.gui.menu;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.SeparatorMenuItem;
+import me.jamiemansfield.symphony.gui.util.DisplaySettings;
 import me.jamiemansfield.symphony.util.LocaleHelper;
 
 /**
@@ -30,6 +33,26 @@ public class ViewMenu extends Menu {
             final MenuItem closeAllTabs = new MenuItem(LocaleHelper.get("menu.view.close_all_tabs"));
             closeAllTabs.addEventHandler(ActionEvent.ACTION, event -> mainMenuBar.getSymphony().getTabs().getTabs().clear());
             this.getItems().add(closeAllTabs);
+        }
+        this.getItems().add(new SeparatorMenuItem());
+
+        // Display Settings
+        {
+            final RadioMenuItem flattenPackages = new RadioMenuItem(LocaleHelper.get("menu.view.flatten_packages"));
+            flattenPackages.setSelected(DisplaySettings.flattenPackages());
+            flattenPackages.addEventHandler(ActionEvent.ACTION, event -> {
+                DisplaySettings.setFlattenPackages(flattenPackages.isSelected());
+                mainMenuBar.getSymphony().refreshClasses();
+            });
+            this.getItems().add(flattenPackages);
+
+            final RadioMenuItem compactMiddlePackages = new RadioMenuItem(LocaleHelper.get("menu.view.compact_middle_packages"));
+            compactMiddlePackages.setSelected(DisplaySettings.compactMiddlePackages());
+            compactMiddlePackages.addEventHandler(ActionEvent.ACTION, event -> {
+                DisplaySettings.setCompactMiddlePackages(compactMiddlePackages.isSelected());
+                mainMenuBar.getSymphony().refreshClasses();
+            });
+            this.getItems().add(compactMiddlePackages);
         }
     }
 

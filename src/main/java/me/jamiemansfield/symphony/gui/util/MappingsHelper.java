@@ -57,11 +57,11 @@ public final class MappingsHelper {
 
         // Use the last used mapping format
         FILE_CHOOSER.setSelectedExtensionFilter(
-                BACKWARD.get(StateHelper.get(LAST_FORMAT).orElse(MappingFormats.SRG))
+                BACKWARD.get(StateHelper.GENERAL.get(LAST_FORMAT).orElse(MappingFormats.SRG))
         );
 
         // Use the last used directory
-        StateHelper.get(LAST_DIRECTORY)
+        StateHelper.GENERAL.get(LAST_DIRECTORY)
                 .filter(File::exists)
                 .ifPresent(FILE_CHOOSER::setInitialDirectory);
     }
@@ -93,8 +93,8 @@ public final class MappingsHelper {
         }
 
         // Update state
-        StateHelper.set(LAST_FORMAT, format);
-        StateHelper.set(LAST_DIRECTORY, mappingsPath.getParentFile());
+        StateHelper.GENERAL.set(LAST_FORMAT, format);
+        StateHelper.GENERAL.set(LAST_DIRECTORY, mappingsPath.getParentFile());
         LAST_LOCATION = mappingsPath;
 
         return true;
@@ -147,8 +147,8 @@ public final class MappingsHelper {
         }
 
         // Update state
-        StateHelper.set(LAST_FORMAT, format);
-        StateHelper.set(LAST_DIRECTORY, mappingsPath.getParentFile());
+        StateHelper.GENERAL.set(LAST_FORMAT, format);
+        StateHelper.GENERAL.set(LAST_DIRECTORY, mappingsPath.getParentFile());
         LAST_LOCATION = mappingsPath;
 
         return true;

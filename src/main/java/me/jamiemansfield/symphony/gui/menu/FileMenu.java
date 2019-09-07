@@ -158,7 +158,7 @@ public class FileMenu extends Menu {
             );
 
             // Use the last used directory
-            StateHelper.get(LAST_OPEN_DIRECTORY)
+            StateHelper.GENERAL.get(LAST_OPEN_DIRECTORY)
                     .filter(File::exists)
                     .ifPresent(this.openJarFileChooser::setInitialDirectory);
         }
@@ -175,7 +175,7 @@ public class FileMenu extends Menu {
         }
 
         // Update state
-        StateHelper.set(LAST_OPEN_DIRECTORY, jarPath.getParentFile());
+        StateHelper.GENERAL.set(LAST_OPEN_DIRECTORY, jarPath.getParentFile());
     }
 
     private void closeJar(final ActionEvent actionEvent) {
@@ -212,7 +212,7 @@ public class FileMenu extends Menu {
             );
 
             // Use the last used directory
-            StateHelper.get(LAST_EXPORT_DIRECTORY).ifPresent(this.exportJarFileChooser::setInitialDirectory);
+            StateHelper.GENERAL.get(LAST_EXPORT_DIRECTORY).ifPresent(this.exportJarFileChooser::setInitialDirectory);
         }
 
         final File jarPath = this.exportJarFileChooser.showSaveDialog(this.symphony.getStage());
@@ -222,7 +222,7 @@ public class FileMenu extends Menu {
         remapperService.start();
 
         // Update state
-        StateHelper.set(LAST_EXPORT_DIRECTORY, jarPath.getParentFile());
+        StateHelper.GENERAL.set(LAST_EXPORT_DIRECTORY, jarPath.getParentFile());
     }
 
     private class RemapperService extends Service<Void> {
