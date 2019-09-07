@@ -32,7 +32,6 @@ public class ClassElement implements TreeElement {
     public ClassElement(final SymphonyMain symphony, final TopLevelClassMapping klass) {
         this.symphony = symphony;
         this.klass = klass;
-
         this.contextMenu = new ClassContextMenu(symphony, klass);
     }
 

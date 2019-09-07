@@ -12,7 +12,6 @@ import javafx.scene.control.TreeView;
 import me.jamiemansfield.symphony.gui.SymphonyMain;
 import me.jamiemansfield.symphony.gui.util.DisplaySettings;
 import me.jamiemansfield.symphony.jar.Jar;
-import org.cadixdev.bombe.jar.JarClassEntry;
 import org.cadixdev.lorenz.model.TopLevelClassMapping;
 
 import java.util.Collections;
@@ -69,12 +68,10 @@ public class ClassesTreeView extends TreeView<TreeElement> {
      */
     public void initialise(final Jar jar, final Set<String> expanded) {
         final Map<String, TreeItem<TreeElement>> packageCache = new HashMap<>();
-        jar.entries()
-                .filter(JarClassEntry.class::isInstance).map(JarClassEntry.class::cast)
-                .filter(entry -> !entry.getSimpleName().contains("$"))
-                .forEach(entry -> {
-                    final String klassName = entry.getName().substring(0, entry.getName().length() - ".class".length());
-                    final TopLevelClassMapping klass = jar.getMappings().getOrCreateTopLevelClassMapping(klassName);
+        jar.classes().stream()
+                .filter(name -> !name.contains("$"))
+                .forEach(name -> {
+                    final TopLevelClassMapping klass = jar.getMappings().getOrCreateTopLevelClassMapping(name);
 
                     this.getPackageItem(packageCache, klass.getDeobfuscatedPackage()).getChildren()
                             .add(new TreeItem<>(new ClassElement(this.symphony, klass)));

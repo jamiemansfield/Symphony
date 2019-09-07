@@ -25,20 +25,11 @@ import java.util.Optional;
 public class PackageElement implements TreeElement {
 
     private final String name;
-    private final String displayName;
     private final ContextMenu contextMenu;
 
-    public PackageElement(final SymphonyMain symphony, final String name, final String displayName) {
-        this.name = name;
-        this.displayName = displayName;
-        this.contextMenu = new PackageContextMenu(symphony, name);
-    }
-
     public PackageElement(final SymphonyMain symphony, final String name) {
-        this(symphony, name, DisplaySettings.flattenPackages() ?
-                name :
-                name.substring(name.lastIndexOf('/') + 1)
-        );
+        this.name = name;
+        this.contextMenu = new PackageContextMenu(symphony, name);
     }
 
     public String getName() {
@@ -63,7 +54,9 @@ public class PackageElement implements TreeElement {
 
     @Override
     public String toString() {
-        return this.displayName;
+        return DisplaySettings.flattenPackages() ?
+                this.name :
+                this.name.substring(this.name.lastIndexOf('/') + 1);
     }
 
 }

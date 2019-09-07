@@ -28,8 +28,12 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Set;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -46,13 +50,20 @@ public class Jar implements Closeable {
 
     // Jar related
     private final JarFile jar;
-    private final JarFileClassProvider obfProvider;
-    private final DeobfuscatingClassProvider deobfProvider;
+    private final Set<String> classes;
+    private final ClassProvider obfProvider;
+    private final ClassProvider deobfProvider;
     private final InheritanceProvider inheritanceProvider;
     private final Remapper remapper;
 
     public Jar(final JarFile jar) {
         this.jar = jar;
+        this.classes = this.entries()
+                .filter(JarClassEntry.class::isInstance)
+                .map(JarClassEntry.class::cast)
+                .map(JarClassEntry::getName)
+                .map(name -> name.substring(0, name.length() - ".class".length()))
+                .collect(Collectors.toSet());
         this.obfProvider = new JarFileClassProvider(this.jar);
         this.inheritanceProvider =
                 new CachingInheritanceProvider(new ClassProviderInheritanceProvider(this.obfProvider));
@@ -81,11 +92,12 @@ public class Jar implements Closeable {
         this.dirty = false;
     }
 
-    /**
-     * @see Jars#walk(JarFile)
-     */
-    public Stream<AbstractJarEntry> entries() {
-        return Jars.walk(this.jar);
+    public Set<String> classes() {
+        return Collections.unmodifiableSet(this.classes);
+    }
+
+    private Stream<AbstractJarEntry> entries() {
+        return SymphonyJars.walk(this.jar, EnumSet.of(SymphonyJars.Options.IGNORE_RESOURCES));
     }
 
     /**
@@ -118,7 +130,7 @@ public class Jar implements Closeable {
     }
 
     public boolean hasClass(final String klass) {
-        return this.jar.getEntry(klass + ".class") != null;
+        return this.classes.contains(klass);
     }
 
     public void exportRemapped(final File exportPath) {
@@ -142,15 +154,13 @@ public class Jar implements Closeable {
         );
 
         // Get the inner classes
-        final WrappedBytecode[] innerKlasses = this.entries()
-                .filter(JarClassEntry.class::isInstance).map(JarClassEntry.class::cast)
-                .filter(entry -> entry.getName().startsWith(klass.getFullObfuscatedName() + '$'))
-                .map(entry -> {
-                    final ClassMapping<?, ?> innerKlass = this.mappings.getOrCreateClassMapping(
-                            entry.getName().substring(0, entry.getName().length() - ".class".length())
-                    );
-                    final byte[] innerDeobfBytes = this.deobfProvider.get(innerKlass.getFullObfuscatedName());
+        final WrappedBytecode[] innerKlasses = this.classes.stream()
+                .filter(name -> name.startsWith(klass.getFullObfuscatedName() + '$'))
+                .map(name -> {
+                    final byte[] innerDeobfBytes = this.deobfProvider.get(name);
                     if (innerDeobfBytes == null) return null;
+
+                    final ClassMapping<?, ?> innerKlass = this.mappings.getOrCreateClassMapping(name);
                     return new WrappedBytecode(
                             innerKlass.getFullDeobfuscatedName() + ".class",
                             innerDeobfBytes
