@@ -34,10 +34,16 @@ public final class SharedConstants {
      */
     public static final Path CONFIG_PATH = Paths.get(OperatingSystem.get().getConfigFolder(), "Symphony");
 
+    /**
+     * The projects directory used by Symphony.
+     */
+    public static final Path PROJECTS_PATH = CONFIG_PATH.resolve("projects");
+
     static {
-        // Ensure the config directory exists
+        // Ensure the directories exists
         try {
             Files.createDirectories(CONFIG_PATH);
+            Files.createDirectories(PROJECTS_PATH);
         }
         catch (final IOException ex) {
             ex.printStackTrace();
