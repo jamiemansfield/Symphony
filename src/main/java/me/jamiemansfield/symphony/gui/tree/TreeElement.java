@@ -32,20 +32,25 @@ public interface TreeElement extends Comparable<TreeElement> {
      * Invoked when the element is double clicked, or other
      * equivalent action.
      */
-    void activate();
+    default void activate() {
+    }
 
     /**
      * Gets the context menu of this tree element, if applicable.
      *
      * @return The context menu
      */
-    Optional<ContextMenu> getContextMenu();
+    default Optional<ContextMenu> getContextMenu() {
+        return Optional.empty();
+    }
 
     /**
      * Gets the graphic of this tree element, if applicable.
      *
      * @return The graphic
      */
-    Optional<Node> getGraphic();
+    default Optional<Node> getGraphic() {
+        return Optional.empty();
+    }
 
 }

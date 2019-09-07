@@ -7,11 +7,6 @@
 
 package me.jamiemansfield.symphony.gui.tree;
 
-import javafx.scene.Node;
-import javafx.scene.control.ContextMenu;
-
-import java.util.Optional;
-
 /**
  * The root tree element.
  *
@@ -21,20 +16,6 @@ import java.util.Optional;
 public class RootElement implements TreeElement {
 
     private static final String NAME = "root";
-
-    @Override
-    public void activate() {
-    }
-
-    @Override
-    public Optional<ContextMenu> getContextMenu() {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Node> getGraphic() {
-        return Optional.empty();
-    }
 
     @Override
     public int compareTo(final TreeElement o) {

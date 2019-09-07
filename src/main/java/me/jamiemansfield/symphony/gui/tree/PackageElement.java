@@ -24,23 +24,22 @@ import java.util.Optional;
 public class PackageElement implements TreeElement {
 
     private final String name;
-    private final String simpleName;
+    private final String displayName;
 
     private final ContextMenu contextMenu;
 
-    public PackageElement(final SymphonyMain symphony, final String name) {
+    public PackageElement(final SymphonyMain symphony, final String name, final String displayName) {
         this.name = name;
-        this.simpleName = name.substring(name.lastIndexOf('/') + 1);
-
+        this.displayName = displayName;
         this.contextMenu = new PackageContextMenu(symphony, name);
+    }
+
+    public PackageElement(final SymphonyMain symphony, final String name) {
+        this(symphony, name, name.substring(name.lastIndexOf('/') + 1));
     }
 
     public String getName() {
         return this.name;
-    }
-
-    @Override
-    public void activate() {
     }
 
     @Override
@@ -61,7 +60,7 @@ public class PackageElement implements TreeElement {
 
     @Override
     public String toString() {
-        return this.simpleName;
+        return this.displayName;
     }
 
 }
