@@ -26,7 +26,6 @@ public class ClassElement implements TreeElement {
 
     private final SymphonyMain symphony;
     private final TopLevelClassMapping klass;
-
     private final ContextMenu contextMenu;
 
     public ClassElement(final SymphonyMain symphony, final TopLevelClassMapping klass) {

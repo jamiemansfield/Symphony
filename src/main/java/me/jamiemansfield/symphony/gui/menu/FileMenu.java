@@ -31,7 +31,6 @@ import me.jamiemansfield.symphony.util.StateHelper;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.jar.JarFile;
 
 /**
  * The Symphony 'File' menu.
@@ -167,7 +166,7 @@ public class FileMenu extends Menu {
         if (jarPath == null) return;
 
         try {
-            this.symphony.setJar(new Jar(new JarFile(jarPath)));
+            this.symphony.setJar(new Jar(jarPath.toPath()));
         }
         catch (final IOException ex) {
             ex.printStackTrace();

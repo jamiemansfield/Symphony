@@ -9,15 +9,14 @@ package me.jamiemansfield.symphony.jar;
 
 import me.jamiemansfield.symphony.decompiler.Decompiler;
 import me.jamiemansfield.symphony.decompiler.WrappedBytecode;
+import me.jamiemansfield.symphony.jar.io.JarFile;
+import me.jamiemansfield.symphony.jar.io.JarFileClassProvider;
 import org.cadixdev.bombe.analysis.CachingInheritanceProvider;
 import org.cadixdev.bombe.analysis.InheritanceProvider;
 import org.cadixdev.bombe.asm.analysis.ClassProviderInheritanceProvider;
 import org.cadixdev.bombe.asm.jar.ClassProvider;
 import org.cadixdev.bombe.asm.jar.JarEntryRemappingTransformer;
-import org.cadixdev.bombe.asm.jar.JarFileClassProvider;
-import org.cadixdev.bombe.jar.AbstractJarEntry;
 import org.cadixdev.bombe.jar.JarClassEntry;
-import org.cadixdev.bombe.jar.Jars;
 import org.cadixdev.lorenz.MappingSet;
 import org.cadixdev.lorenz.asm.LorenzRemapper;
 import org.cadixdev.lorenz.model.ClassMapping;
@@ -26,15 +25,11 @@ import org.objectweb.asm.commons.Remapper;
 
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.Set;
-import java.util.jar.JarFile;
-import java.util.jar.JarOutputStream;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * A wrapper around {@link JarFile}.
@@ -56,11 +51,9 @@ public class Jar implements Closeable {
     private final InheritanceProvider inheritanceProvider;
     private final Remapper remapper;
 
-    public Jar(final JarFile jar) {
-        this.jar = jar;
-        this.classes = this.entries()
-                .filter(JarClassEntry.class::isInstance)
-                .map(JarClassEntry.class::cast)
+    public Jar(final Path path) throws IOException {
+        this.jar = new JarFile(path);
+        this.classes = this.jar.classes()
                 .map(JarClassEntry::getName)
                 .map(name -> name.substring(0, name.length() - ".class".length()))
                 .collect(Collectors.toSet());
@@ -69,6 +62,15 @@ public class Jar implements Closeable {
                 new CachingInheritanceProvider(new ClassProviderInheritanceProvider(this.obfProvider));
         this.remapper = new LorenzRemapper(this.mappings, this.inheritanceProvider);
         this.deobfProvider = new DeobfuscatingClassProvider(this.obfProvider, this.mappings, this.remapper);
+    }
+
+    /**
+     * Gets the name of the Jar file.
+     *
+     * @return The name
+     */
+    public String getName() {
+        return (this.dirty ? "*" : "") + this.jar.getName();
     }
 
     /**
@@ -94,17 +96,6 @@ public class Jar implements Closeable {
 
     public Set<String> classes() {
         return Collections.unmodifiableSet(this.classes);
-    }
-
-    private Stream<AbstractJarEntry> entries() {
-        return SymphonyJars.walk(this.jar, EnumSet.of(SymphonyJars.Options.IGNORE_RESOURCES));
-    }
-
-    /**
-     * @see JarFile#getName()
-     */
-    public String getName() {
-        return (this.dirty ? "*" : "") + this.jar.getName();
     }
 
     /**
@@ -134,13 +125,11 @@ public class Jar implements Closeable {
     }
 
     public void exportRemapped(final File exportPath) {
-        synchronized (this.jar) {
-            try (final JarOutputStream jos = new JarOutputStream(new FileOutputStream(exportPath))) {
-                Jars.transform(this.jar, jos, new JarEntryRemappingTransformer(this.remapper));
-            }
-            catch (final IOException ex) {
-                ex.printStackTrace();
-            }
+        try {
+            this.jar.transform(exportPath.toPath(), new JarEntryRemappingTransformer(this.remapper));
+        }
+        catch (final IOException ex) {
+            ex.printStackTrace();
         }
     }
 
