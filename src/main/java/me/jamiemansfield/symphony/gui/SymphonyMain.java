@@ -204,8 +204,14 @@ public final class SymphonyMain extends Application {
         }
     }
 
-    public void setClassesPane() {
+    private void setClassesPane() {
         this.classesView.setCenter(this.classesPane = createClassesPane(this));
+    }
+
+    public void updateClassesPane() {
+        final Set<String> expanded = this.classesPane.clear();
+        this.setClassesPane();
+        this.classesPane.initialise(this.jar, expanded);
     }
 
     private static ClassesPane createClassesPane(final SymphonyMain symphony) {

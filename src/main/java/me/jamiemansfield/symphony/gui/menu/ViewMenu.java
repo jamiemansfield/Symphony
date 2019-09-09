@@ -58,8 +58,7 @@ public class ViewMenu extends Menu {
             splitClasses.setSelected(DisplaySettings.splitClasses());
             splitClasses.addEventHandler(ActionEvent.ACTION, event -> {
                 DisplaySettings.setSplitClasses(splitClasses.isSelected());
-                mainMenuBar.getSymphony().setClassesPane();
-                mainMenuBar.getSymphony().refreshClasses();
+                mainMenuBar.getSymphony().updateClassesPane();
             });
             this.getItems().add(splitClasses);
         }
