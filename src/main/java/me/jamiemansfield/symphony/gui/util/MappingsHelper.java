@@ -7,8 +7,11 @@
 
 package me.jamiemansfield.symphony.gui.util;
 
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
+import me.jamiemansfield.symphony.util.LocaleHelper;
 import me.jamiemansfield.symphony.util.PropertiesKey;
 import me.jamiemansfield.symphony.util.StateHelper;
 import org.cadixdev.lorenz.MappingSet;
@@ -133,6 +136,20 @@ public final class MappingsHelper {
 
         // Saves to file
         return _saveMappings(mappingsPath, mappings);
+    }
+
+    public static boolean doDirtyConfirmation(final Window window, final MappingSet mappings) {
+        final Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(LocaleHelper.get("dirty_confirmation.title"));
+        alert.setHeaderText(null);
+        alert.setContentText(LocaleHelper.get("dirty_confirmation.message"));
+        alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
+        alert.showAndWait();
+
+        if (alert.getResult() == ButtonType.YES) {
+            return saveMappings(window, mappings);
+        }
+        return alert.getResult() == ButtonType.NO;
     }
 
     private static boolean _saveMappings(final File mappingsPath, final MappingSet mappings) {

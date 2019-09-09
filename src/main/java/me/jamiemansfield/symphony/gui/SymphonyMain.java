@@ -71,6 +71,14 @@ public final class SymphonyMain extends Application {
         this.stage.setTitle(DEFAULT_TITLE);
         this.stage.setWidth(DEFAULT_WIDTH);
         this.stage.setHeight(DEFAULT_HEIGHT);
+        this.stage.setOnCloseRequest(event -> {
+            if (this.jar != null) {
+                if (this.jar.isDirty() &&
+                        !MappingsHelper.doDirtyConfirmation(this.stage, this.jar.getMappings())) {
+                    event.consume();
+                }
+            }
+        });
 
         // Root GUI container
         final BorderPane root = new BorderPane();
