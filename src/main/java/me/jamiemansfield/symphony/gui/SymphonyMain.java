@@ -133,7 +133,12 @@ public final class SymphonyMain extends Application {
         this.updateTitle();
 
         // Refresh classes view
-        this.refreshClasses();
+        if (opening) {
+            this.refreshClasses();
+        }
+        else {
+            this.classesView.clear();
+        }
     }
 
     public TabPane getTabs() {
