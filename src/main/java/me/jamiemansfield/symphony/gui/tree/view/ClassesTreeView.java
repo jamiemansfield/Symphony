@@ -5,11 +5,15 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 //******************************************************************************
 
-package me.jamiemansfield.symphony.gui.tree;
+package me.jamiemansfield.symphony.gui.tree.view;
 
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import me.jamiemansfield.symphony.gui.SymphonyMain;
+import me.jamiemansfield.symphony.gui.tree.ClassElement;
+import me.jamiemansfield.symphony.gui.tree.PackageElement;
+import me.jamiemansfield.symphony.gui.tree.RootElement;
+import me.jamiemansfield.symphony.gui.tree.TreeElement;
 import me.jamiemansfield.symphony.gui.util.DisplaySettings;
 import me.jamiemansfield.symphony.jar.Jar;
 import org.cadixdev.lorenz.model.TopLevelClassMapping;
@@ -20,6 +24,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 
 /**
  * An extension of {@link TreeView} to display packaged classes.
@@ -31,10 +36,12 @@ import java.util.Set;
 public class ClassesTreeView extends TreeView<TreeElement> {
 
     private final SymphonyMain symphony;
+    private final ClassesView classesView;
     private final TreeItem<TreeElement> treeRoot;
 
-    public ClassesTreeView(final SymphonyMain symphony) {
+    public ClassesTreeView(final SymphonyMain symphony, final ClassesView classesView) {
         this.symphony = symphony;
+        this.classesView = classesView;
         this.setShowRoot(false);
         this.setCellFactory(view -> new SymphonyTreeCell());
         this.setOnMouseClicked(event -> {
@@ -70,12 +77,10 @@ public class ClassesTreeView extends TreeView<TreeElement> {
         final Map<String, TreeItem<TreeElement>> packageCache = new HashMap<>();
         jar.classes().stream()
                 .filter(name -> !name.contains("$"))
-                .forEach(name -> {
-                    final TopLevelClassMapping klass = jar.getMappings().getOrCreateTopLevelClassMapping(name);
-
-                    this.getPackageItem(packageCache, klass.getDeobfuscatedPackage()).getChildren()
-                            .add(new TreeItem<>(new ClassElement(this.symphony, klass)));
-                });
+                .map(jar.getMappings()::getOrCreateTopLevelClassMapping)
+                .filter(this.classesView)
+                .forEach(klass -> this.getPackageItem(packageCache, klass.getDeobfuscatedPackage()).getChildren()
+                        .add(new TreeItem<>(new ClassElement(this.symphony, klass))));
 
         // sort
         packageCache.values().forEach(item -> {
@@ -125,6 +130,46 @@ public class ClassesTreeView extends TreeView<TreeElement> {
             }
         });
         return packages;
+    }
+
+    /**
+     * A representation of the classes to display.
+     */
+    public enum ClassesView implements Predicate<TopLevelClassMapping> {
+
+        /**
+         * Display all the classes in the JAR file.
+         */
+        ALL {
+            @Override
+            public boolean test(final TopLevelClassMapping topLevelClassMapping) {
+                return true;
+            }
+        },
+
+        /**
+         * Only display classes in the JAR file, of which names haven't been
+         * de-obfuscated.
+         */
+        OBFUSCATED {
+            @Override
+            public boolean test(final TopLevelClassMapping topLevelClassMapping) {
+                return !topLevelClassMapping.hasDeobfuscatedName();
+            }
+        },
+
+        /**
+         * Only display classes in the JAR file, of which names have been
+         * de-obfuscated.
+         */
+        DEOBFUSCATED {
+            @Override
+            public boolean test(final TopLevelClassMapping topLevelClassMapping) {
+                return topLevelClassMapping.hasDeobfuscatedName();
+            }
+        },
+        ;
+
     }
 
 }

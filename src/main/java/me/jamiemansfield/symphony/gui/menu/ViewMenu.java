@@ -53,6 +53,15 @@ public class ViewMenu extends Menu {
                 mainMenuBar.getSymphony().refreshClasses();
             });
             this.getItems().add(compactMiddlePackages);
+
+            final RadioMenuItem splitClasses = new RadioMenuItem(LocaleHelper.get("menu.view.split_classes"));
+            splitClasses.setSelected(DisplaySettings.splitClasses());
+            splitClasses.addEventHandler(ActionEvent.ACTION, event -> {
+                DisplaySettings.setSplitClasses(splitClasses.isSelected());
+                mainMenuBar.getSymphony().setClassesPane();
+                mainMenuBar.getSymphony().refreshClasses();
+            });
+            this.getItems().add(splitClasses);
         }
     }
 

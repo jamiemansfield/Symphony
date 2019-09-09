@@ -17,7 +17,10 @@ import me.jamiemansfield.symphony.SharedConstants;
 import me.jamiemansfield.symphony.gui.menu.MainMenuBar;
 import me.jamiemansfield.symphony.gui.tab.code.CodeTab;
 import me.jamiemansfield.symphony.gui.tab.welcome.WelcomeTab;
-import me.jamiemansfield.symphony.gui.tree.ClassesTreeView;
+import me.jamiemansfield.symphony.gui.tree.view.ClassesPane;
+import me.jamiemansfield.symphony.gui.tree.view.MergedClassesPane;
+import me.jamiemansfield.symphony.gui.tree.view.SplitClassesPane;
+import me.jamiemansfield.symphony.gui.util.DisplaySettings;
 import me.jamiemansfield.symphony.gui.util.MappingsHelper;
 import me.jamiemansfield.symphony.jar.Jar;
 import me.jamiemansfield.symphony.util.StateHelper;
@@ -48,7 +51,8 @@ public final class SymphonyMain extends Application {
     private Jar jar;
 
     // Classes View
-    private ClassesTreeView classesView;
+    private BorderPane classesView;
+    private ClassesPane classesPane;
 
     @Override
     public void start(final Stage primaryStage) {
@@ -79,11 +83,11 @@ public final class SymphonyMain extends Application {
         final SplitPane main = new SplitPane();
 
         // Classes view
-        final BorderPane classesView = new BorderPane();
-        classesView.setMaxWidth(400);
-        classesView.setMinWidth(250);
-        classesView.setCenter(this.classesView = new ClassesTreeView(this));
-        main.getItems().add(classesView);
+        this.classesView = new BorderPane();
+        this.classesView.setMaxWidth(400);
+        this.classesView.setMinWidth(250);
+        this.setClassesPane();
+        main.getItems().add(this.classesView);
 
         // Tabs
         this.tabs = new TabPane();
@@ -137,7 +141,7 @@ public final class SymphonyMain extends Application {
             this.refreshClasses();
         }
         else {
-            this.classesView.clear();
+            this.classesPane.clear();
         }
     }
 
@@ -150,8 +154,8 @@ public final class SymphonyMain extends Application {
     }
 
     public void refreshClasses() {
-        final Set<String> expanded = this.classesView.clear();
-        this.classesView.initialise(this.jar, expanded);
+        final Set<String> expanded = this.classesPane.clear();
+        this.classesPane.initialise(this.jar, expanded);
     }
 
     public void update() {
@@ -197,6 +201,19 @@ public final class SymphonyMain extends Application {
         this.updateTitle();
         if (this.jar.isDirty() && MappingsHelper.LAST_LOCATION != null) {
             this.mainMenu.file.saveMappings.setDisable(true);
+        }
+    }
+
+    public void setClassesPane() {
+        this.classesView.setCenter(this.classesPane = createClassesPane(this));
+    }
+
+    private static ClassesPane createClassesPane(final SymphonyMain symphony) {
+        if (DisplaySettings.splitClasses()) {
+            return new SplitClassesPane(symphony);
+        }
+        else {
+            return new MergedClassesPane(symphony);
         }
     }
 

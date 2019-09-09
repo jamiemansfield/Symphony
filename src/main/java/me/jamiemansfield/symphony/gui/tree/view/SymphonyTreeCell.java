@@ -5,9 +5,10 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 //******************************************************************************
 
-package me.jamiemansfield.symphony.gui.tree;
+package me.jamiemansfield.symphony.gui.tree.view;
 
 import javafx.scene.control.TreeCell;
+import me.jamiemansfield.symphony.gui.tree.TreeElement;
 
 /**
  * An extension of {@link TreeCell} allowing for the use of context
