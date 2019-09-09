@@ -10,6 +10,13 @@ package me.jamiemansfield.symphony.jar.io;
 import org.cadixdev.bombe.asm.jar.ClassProvider;
 import org.cadixdev.bombe.jar.JarClassEntry;
 
+/**
+ * An implementation of {@link ClassProvider} backed by a
+ * {@link JarFile}.
+ *
+ * @author Jamie Mansfield
+ * @since 0.1.0
+ */
 public class JarFileClassProvider implements ClassProvider {
 
     private final JarFile jar;

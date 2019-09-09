@@ -29,6 +29,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.Manifest;
 import java.util.stream.Stream;
 
+/**
+ * A representation of a JAR file, with the class entries cached.
+ *
+ * @author Jamie Mansfield
+ * @since 0.1.0
+ */
 public class JarFile implements Closeable {
 
     private final Path path;
@@ -48,18 +54,42 @@ public class JarFile implements Closeable {
                 });
     }
 
+    /**
+     * Gets the name (location on file system) of the JAR file.
+     *
+     * @return The name
+     */
     public String getName() {
         return this.path.toString();
     }
 
+    /**
+     * Gets the <strong>cached</strong> class entry, of the given name.
+     *
+     * @param name The class name
+     * @return The class entry, or {@code null} is not present
+     */
     public JarClassEntry getClass(final String name) {
         return this.classes.get(name);
     }
 
+    /**
+     * Gets a stream of <strong>cached</strong> class entries.
+     *
+     * @return The classes in the JAR file
+     */
     public Stream<JarClassEntry> classes() {
         return this.classes.values().stream();
     }
 
+    /**
+     * Walks through the jar entries within the JAR file, omitting those targeted
+     * by a {@link JarVisitOption}.
+     *
+     * @param options The visit options to use, while walking
+     * @return The jar entries
+     * @throws IOException Should an issue with reading occur
+     */
     public Stream<AbstractJarEntry> walk(final JarVisitOption... options) throws IOException {
         return Files.walk(this.fs.getPath("/")).filter(p -> !Files.isDirectory(p)).map(p -> {
             try {
@@ -72,6 +102,14 @@ public class JarFile implements Closeable {
         }).filter(Objects::nonNull);
     }
 
+    /**
+     * Transforms the JAR file, with the given {@link JarEntryTransformer}s, writing
+     * to the given output JAR path.
+     *
+     * @param export The JAR path to write to
+     * @param transformers The transformers to use
+     * @throws IOException Should an issue with reading or writing occur
+     */
     public void transform(final Path export, final JarEntryTransformer... transformers) throws IOException {
         try (final FileSystem fs = NIOHelper.openZip(export, true)) {
             Stream.concat(this.walk(JarVisitOption.IGNORE_CLASSES), this.classes.values().stream())
