@@ -23,9 +23,9 @@ import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.Manifest;
 import java.util.stream.Stream;
 
@@ -33,7 +33,7 @@ public class JarFile implements Closeable {
 
     private final Path path;
     private final FileSystem fs;
-    private final Map<String, JarClassEntry> classes = new HashMap<>();
+    private final Map<String, JarClassEntry> classes = new ConcurrentHashMap<>();
 
     public JarFile(final Path path) throws IOException {
         this.path = path;

@@ -133,7 +133,7 @@ public class Jar implements Closeable {
         }
     }
 
-    public synchronized String decompile(final Decompiler decompiler, final TopLevelClassMapping klass) {
+    public String decompile(final Decompiler decompiler, final TopLevelClassMapping klass) {
         // Get the top-level class
         final byte[] deobfBytes = this.deobfProvider.get(klass.getFullObfuscatedName());
         if (deobfBytes == null) return "Well... this is embarrassing.";
