@@ -7,6 +7,8 @@
 
 package me.jamiemansfield.symphony.gui.tree.view;
 
+import javafx.geometry.Orientation;
+import javafx.scene.control.SplitPane;
 import me.jamiemansfield.symphony.gui.SymphonyMain;
 import me.jamiemansfield.symphony.jar.Jar;
 
@@ -20,10 +22,14 @@ public class SplitClassesPane extends ClassesPane {
 
     public SplitClassesPane(final SymphonyMain symphony) {
         super(symphony);
-        this.obfView = new ClassesTreeView(symphony, ClassesTreeView.ClassesView.OBFUSCATED);
-        this.deobfView = new ClassesTreeView(symphony, ClassesTreeView.ClassesView.DEOBFUSCATED);
-        this.setTop(this.obfView);
-        this.setBottom(this.deobfView);
+
+        final SplitPane pane = new SplitPane();
+        pane.setOrientation(Orientation.VERTICAL);
+        pane.getItems().addAll(
+                this.obfView = new ClassesTreeView(symphony, ClassesTreeView.View.OBFUSCATED),
+                this.deobfView = new ClassesTreeView(symphony, ClassesTreeView.View.DEOBFUSCATED)
+        );
+        this.setCenter(pane);
     }
 
     @Override

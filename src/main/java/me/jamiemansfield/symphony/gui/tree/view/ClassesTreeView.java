@@ -36,12 +36,12 @@ import java.util.function.Predicate;
 public class ClassesTreeView extends TreeView<TreeElement> {
 
     private final SymphonyMain symphony;
-    private final ClassesView classesView;
-    private final TreeItem<TreeElement> treeRoot;
+    private final View view;
+    private final TreeItem<TreeElement> root;
 
-    public ClassesTreeView(final SymphonyMain symphony, final ClassesView classesView) {
+    public ClassesTreeView(final SymphonyMain symphony, final View classesView) {
         this.symphony = symphony;
-        this.classesView = classesView;
+        this.view = classesView;
         this.setShowRoot(false);
         this.setCellFactory(view -> new SymphonyTreeCell());
         this.setOnMouseClicked(event -> {
@@ -51,9 +51,9 @@ public class ClassesTreeView extends TreeView<TreeElement> {
                 item.getValue().activate();
             }
         });
-        this.treeRoot = new TreeItem<>(new RootElement());
-        this.treeRoot.setExpanded(true);
-        this.setRoot(this.treeRoot);
+        this.root = new TreeItem<>(new RootElement());
+        this.root.setExpanded(true);
+        this.setRoot(this.root);
     }
 
     /**
@@ -62,8 +62,8 @@ public class ClassesTreeView extends TreeView<TreeElement> {
      * @return The set of expanded packages, prior to clearing
      */
     public Set<String> clear() {
-        final Set<String> expanded = this.getExpandedPackages(new HashSet<>(), this.treeRoot);
-        this.treeRoot.getChildren().clear();
+        final Set<String> expanded = this.getExpandedPackages(new HashSet<>(), this.root);
+        this.root.getChildren().clear();
         return expanded;
     }
 
@@ -78,7 +78,7 @@ public class ClassesTreeView extends TreeView<TreeElement> {
         jar.classes().stream()
                 .filter(name -> !name.contains("$"))
                 .map(jar.getMappings()::getOrCreateTopLevelClassMapping)
-                .filter(this.classesView)
+                .filter(this.view)
                 .forEach(klass -> this.getPackageItem(packageCache, klass.getDeobfuscatedPackage()).getChildren()
                         .add(new TreeItem<>(new ClassElement(this.symphony, klass))));
 
@@ -86,7 +86,7 @@ public class ClassesTreeView extends TreeView<TreeElement> {
         packageCache.values().forEach(item -> {
             item.getChildren().setAll(item.getChildren().sorted(Comparator.comparing(TreeItem::getValue)));
         });
-        this.treeRoot.getChildren().setAll(this.treeRoot.getChildren().sorted(Comparator.comparing(TreeItem::getValue)));
+        this.root.getChildren().setAll(this.root.getChildren().sorted(Comparator.comparing(TreeItem::getValue)));
 
         // reopen packages
         expanded.forEach(pkg -> {
@@ -106,7 +106,7 @@ public class ClassesTreeView extends TreeView<TreeElement> {
     }
 
     private TreeItem<TreeElement> getPackageItem(final Map<String, TreeItem<TreeElement>> cache, final String packageName) {
-        if (packageName.isEmpty()) return this.treeRoot;
+        if (packageName.isEmpty()) return this.root;
         if (cache.containsKey(packageName)) return cache.get(packageName);
 
         final TreeItem<TreeElement> parent;
@@ -114,7 +114,7 @@ public class ClassesTreeView extends TreeView<TreeElement> {
             parent = this.getPackageItem(cache, packageName.substring(0, packageName.lastIndexOf('/')));
         }
         else {
-            parent = this.treeRoot;
+            parent = this.root;
         }
         final TreeItem<TreeElement> packageItem = new TreeItem<>(new PackageElement(this.symphony, packageName));
         parent.getChildren().add(packageItem);
@@ -135,7 +135,7 @@ public class ClassesTreeView extends TreeView<TreeElement> {
     /**
      * A representation of the classes to display.
      */
-    public enum ClassesView implements Predicate<TopLevelClassMapping> {
+    public enum View implements Predicate<TopLevelClassMapping> {
 
         /**
          * Display all the classes in the JAR file.

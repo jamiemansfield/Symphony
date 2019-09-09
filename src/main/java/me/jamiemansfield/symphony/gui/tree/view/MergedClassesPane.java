@@ -18,7 +18,7 @@ public class MergedClassesPane extends ClassesPane {
 
     public MergedClassesPane(final SymphonyMain symphony) {
         super(symphony);
-        this.view = new ClassesTreeView(symphony, ClassesTreeView.ClassesView.ALL);
+        this.view = new ClassesTreeView(symphony, ClassesTreeView.View.ALL);
         this.setCenter(this.view);
     }
 
