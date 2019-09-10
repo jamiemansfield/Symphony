@@ -9,6 +9,7 @@ package me.jamiemansfield.symphony.gui.tree.view;
 
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.input.KeyCode;
 import me.jamiemansfield.symphony.gui.SymphonyMain;
 import me.jamiemansfield.symphony.gui.tree.ClassElement;
 import me.jamiemansfield.symphony.gui.tree.PackageElement;
@@ -46,14 +47,34 @@ public class ClassesTreeView extends TreeView<TreeElement> {
         this.setCellFactory(view -> new SymphonyTreeCell());
         this.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) { // isDoubleClick
-                final TreeItem<TreeElement> item = this.getSelectionModel().getSelectedItems().get(0);
-                if (item == null) return;
-                item.getValue().activate();
+                this.open();
+            }
+        });
+        this.setOnKeyReleased(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                this.open();
             }
         });
         this.root = new TreeItem<>(new RootElement());
         this.root.setExpanded(true);
         this.setRoot(this.root);
+    }
+
+    /**
+     * Opens/expands the currently selected class/package.
+     */
+    private void open() {
+        final TreeItem<TreeElement> item = this.getSelectionModel().getSelectedItems().get(0);
+        if (item == null) return;
+
+        // Expand packages
+        if (item.getValue() instanceof PackageElement) {
+            item.setExpanded(!item.isExpanded());
+        }
+        // Open classes
+        else {
+            item.getValue().activate();
+        }
     }
 
     /**
