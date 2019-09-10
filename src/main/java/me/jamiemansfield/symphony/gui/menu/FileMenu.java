@@ -177,7 +177,13 @@ public class FileMenu extends Menu {
     }
 
     private void closeJar(final ActionEvent actionEvent) {
-        this.symphony.setJar(null);
+        try {
+            this.symphony.getJar().close();
+            this.symphony.setJar(null);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void loadMappings(final ActionEvent event) {
