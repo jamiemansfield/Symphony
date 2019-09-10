@@ -12,6 +12,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
 import me.jamiemansfield.symphony.gui.SymphonyMain;
+import me.jamiemansfield.symphony.gui.dialog.RemappingInputDialog;
 import me.jamiemansfield.symphony.util.LocaleHelper;
 import org.cadixdev.lorenz.model.TopLevelClassMapping;
 
@@ -29,11 +30,7 @@ public class ClassContextMenu extends ContextMenu {
             final String name = klass.getDeobfuscatedName();
 
             // Configure the dialog
-            final TextInputDialog dialog = new TextInputDialog(name);
-            dialog.setTitle(LocaleHelper.get("context_menu.remappable.set_deobfuscated_name"));
-            dialog.setHeaderText(LocaleHelper.get("context_menu.remappable.set_deobfuscated_name"));
-            dialog.setContentText(LocaleHelper.get("context_menu.remappable.set_deobfuscated_name.content"));
-
+            final TextInputDialog dialog = new RemappingInputDialog(name);
             dialog.showAndWait().ifPresent(deobfName -> {
                 // Set the deobf name
                 klass.setDeobfuscatedName(deobfName);

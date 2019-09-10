@@ -11,6 +11,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
 import me.jamiemansfield.symphony.gui.SymphonyMain;
+import me.jamiemansfield.symphony.gui.dialog.RemappingInputDialog;
 import me.jamiemansfield.symphony.util.LocaleHelper;
 
 import java.util.Objects;
@@ -26,11 +27,7 @@ public class PackageContextMenu extends ContextMenu {
     public PackageContextMenu(final SymphonyMain symphony, final String packageName) {
         final MenuItem remap = new MenuItem(LocaleHelper.get("context_menu.remappable.set_deobfuscated_name"));
         remap.setOnAction(event -> {
-            final TextInputDialog dialog = new TextInputDialog();
-            dialog.setTitle(LocaleHelper.get("context_menu.remappable.set_deobfuscated_name"));
-            dialog.setHeaderText(LocaleHelper.get("context_menu.remappable.set_deobfuscated_name"));
-            dialog.setContentText(LocaleHelper.get("context_menu.remappable.set_deobfuscated_name.content"));
-
+            final TextInputDialog dialog = new RemappingInputDialog();
             dialog.showAndWait()
                     .map(name -> name.endsWith("/") ? name : name + "/")
                     .ifPresent(deobfName -> {
