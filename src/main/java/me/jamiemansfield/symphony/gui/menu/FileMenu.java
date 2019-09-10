@@ -31,6 +31,7 @@ import me.jamiemansfield.symphony.util.StateHelper;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
 /**
  * The Symphony 'File' menu.
@@ -165,13 +166,11 @@ public class FileMenu extends Menu {
         final File jarPath = this.openJarFileChooser.showOpenDialog(this.symphony.getStage());
         if (jarPath == null) return;
 
-        try {
-            this.symphony.setJar(new Jar(jarPath.toPath()));
-        }
-        catch (final IOException ex) {
-            ex.printStackTrace();
-            return;
-        }
+        final JarService jarService = new JarService(jarPath.toPath());
+        jarService.setOnSucceeded(e -> {
+            this.symphony.setJar((Jar) e.getSource().getValue());
+        });
+        jarService.start();
 
         // Update state
         StateHelper.GENERAL.set(LAST_OPEN_DIRECTORY, jarPath.getParentFile());
@@ -222,6 +221,29 @@ public class FileMenu extends Menu {
 
         // Update state
         StateHelper.GENERAL.set(LAST_EXPORT_DIRECTORY, jarPath.getParentFile());
+    }
+
+    private static class JarService extends Service<Jar> {
+
+        private final Path path;
+
+        JarService(final Path path) {
+            this.path = path;
+        }
+
+        @Override
+        protected Task<Jar> createTask() {
+            return TaskManager.INSTANCE.new TrackedTask<Jar>() {
+                {
+                    this.updateTitle("load jar: " + JarService.this.path);
+                }
+                @Override
+                protected Jar call() throws IOException {
+                    return new Jar(JarService.this.path);
+                }
+            };
+        }
+
     }
 
     private class RemapperService extends Service<Void> {
