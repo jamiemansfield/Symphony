@@ -7,6 +7,8 @@
 
 package me.jamiemansfield.symphony.jar;
 
+import static me.jamiemansfield.symphony.SharedConstants.CLASSLOADER_PROVIDER;
+
 import me.jamiemansfield.symphony.decompiler.Decompiler;
 import me.jamiemansfield.symphony.decompiler.WrappedBytecode;
 import me.jamiemansfield.symphony.jar.io.JarFile;
@@ -57,7 +59,14 @@ public class Jar implements Closeable {
                 .map(JarClassEntry::getName)
                 .map(name -> name.substring(0, name.length() - ".class".length()))
                 .collect(Collectors.toSet());
-        this.obfProvider = new JarFileClassProvider(this.jar);
+        final ClassProvider rawProvider = new JarFileClassProvider(this.jar);
+        this.obfProvider = klass -> {
+            if (klass.startsWith("java/") || klass.startsWith("javax/")) {
+                final byte[] contents = CLASSLOADER_PROVIDER.get(klass);
+                if (contents != null) return contents;
+            }
+            return rawProvider.get(klass);
+        };
         this.inheritanceProvider =
                 new CachingInheritanceProvider(new ClassProviderInheritanceProvider(this.obfProvider));
         this.remapper = new LorenzRemapper(this.mappings, this.inheritanceProvider);

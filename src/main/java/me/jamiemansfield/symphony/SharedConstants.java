@@ -8,6 +8,8 @@
 package me.jamiemansfield.symphony;
 
 import me.jamiemansfield.symphony.util.OperatingSystem;
+import org.cadixdev.bombe.asm.jar.ClassLoaderClassProvider;
+import org.cadixdev.bombe.asm.jar.ClassProvider;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -33,6 +35,12 @@ public final class SharedConstants {
      * The configuration directory used by Symphony.
      */
     public static final Path CONFIG_PATH = Paths.get(OperatingSystem.get().getConfigFolder(), "Symphony");
+
+    /**
+     * A {@link ClassProvider class provider} for the local class loader.
+     */
+    public static final ClassProvider CLASSLOADER_PROVIDER =
+            new ClassLoaderClassProvider(SharedConstants.class.getClassLoader());
 
     static {
         // Ensure the config directory exists
