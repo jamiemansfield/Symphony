@@ -84,16 +84,25 @@ public class CodeTab extends Tab {
         notice.setFont(new Font(24));
         root.setCenter(notice);
 
+        final Decompiler decompiler = this.getDecompiler().orElse(Decompilers.getDefault());
         final DecompileService decompileService = new DecompileService(
                 this.symphony.getJar(),
-                this.getDecompiler().orElse(Decompilers.getDefault()),
+                decompiler,
                 this.klass
         );
         decompileService.setOnSucceeded(event -> {
             final CodeArea code = new CodeArea(event.getSource().getValue().toString());
             code.setParagraphGraphicFactory(LineNumberFactory.get(code));
             code.setEditable(false);
-            JavaSyntaxHighlighting.highlight(code);
+
+            switch (decompiler.getOutputType()) {
+                case JAVA:
+                    JavaSyntaxHighlighting.highlight(code);
+                    break;
+                case TEXT:
+                    break;
+            }
+
             root.setCenter(code);
         });
         decompileService.start();

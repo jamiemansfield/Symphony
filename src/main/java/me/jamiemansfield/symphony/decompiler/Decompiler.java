@@ -7,6 +7,7 @@
 
 package me.jamiemansfield.symphony.decompiler;
 
+import me.jamiemansfield.symphony.SourceFileType;
 import org.cadixdev.bombe.asm.jar.ClassProvider;
 
 /**
@@ -36,7 +37,7 @@ public interface Decompiler {
      *
      * @return The output type
      */
-    OutputType getOutputType();
+    SourceFileType getOutputType();
 
     /**
      * Decompiles the given class, with any necessary inner
@@ -48,16 +49,5 @@ public interface Decompiler {
      * @return The re-constructed source code
      */
     String decompile(final ClassProvider classProvider, final WrappedBytecode klass, final WrappedBytecode... innerKlasses);
-
-    /**
-     * Represents the format of the decompiler output.
-     */
-    enum OutputType {
-
-        JAVA,
-        OTHER,
-        ;
-
-    }
 
 }
