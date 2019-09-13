@@ -11,6 +11,7 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Tab;
 import javafx.scene.control.ToolBar;
@@ -28,9 +29,12 @@ import me.jamiemansfield.symphony.gui.util.TextFlowBuilder;
 import me.jamiemansfield.symphony.jar.Jar;
 import me.jamiemansfield.symphony.util.LocaleHelper;
 import org.cadixdev.lorenz.model.TopLevelClassMapping;
-import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.LineNumberFactory;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -90,11 +94,29 @@ public class CodeTab extends Tab {
                 this.klass
         );
         decompileService.setOnSucceeded(event -> {
-            final CodeArea code = new CodeArea(event.getSource().getValue().toString());
+            final String source = event.getSource().getValue().toString();
+
+            /*
+            final CodeArea code = new CodeArea(source);
             code.setParagraphGraphicFactory(LineNumberFactory.get(code));
             code.setEditable(false);
             JavaSyntaxHighlighting.highlight(code);
             root.setCenter(code);
+            */
+
+            final JavaCodeBuilder builder = new JavaCodeBuilder(source);
+            final ASTParser parser = ASTParser.newParser(AST.JLS12);
+            parser.setResolveBindings(true);
+            parser.setSource(source.toCharArray());
+
+            final Map<String, String> options = JavaCore.getOptions();
+            JavaCore.setComplianceOptions(JavaCore.VERSION_1_8, options);
+            parser.setCompilerOptions(options);
+
+            final CompilationUnit result = (CompilationUnit) parser.createAST(null);
+            result.accept(builder);
+
+            root.setCenter(new ScrollPane(builder.create()));
         });
         decompileService.start();
 
