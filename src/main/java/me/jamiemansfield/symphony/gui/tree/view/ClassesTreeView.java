@@ -17,15 +17,18 @@ import me.jamiemansfield.symphony.gui.tree.RootElement;
 import me.jamiemansfield.symphony.gui.tree.TreeElement;
 import me.jamiemansfield.symphony.gui.util.DisplaySettings;
 import me.jamiemansfield.symphony.jar.Jar;
+import me.jamiemansfield.symphony.jar.hierarchy.ClassHierarchyNode;
+import me.jamiemansfield.symphony.jar.hierarchy.Hierarchy;
+import me.jamiemansfield.symphony.jar.hierarchy.HierarchyNode;
+import me.jamiemansfield.symphony.jar.hierarchy.PackageHierarchyNode;
 import org.cadixdev.lorenz.model.TopLevelClassMapping;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * An extension of {@link TreeView} to display packaged classes.
@@ -95,26 +98,15 @@ public class ClassesTreeView extends TreeView<TreeElement> {
      * @param expanded The packages to expand, after initialisation
      */
     public void initialise(final Jar jar, final Set<String> expanded) {
-        final Map<String, TreeItem<TreeElement>> packageCache = new HashMap<>();
-        jar.classes().stream()
+        final Hierarchy hierarchy = Hierarchy.create(jar.classes().stream()
                 .filter(name -> !name.contains("$"))
                 .map(jar.getMappings()::getOrCreateTopLevelClassMapping)
                 .filter(this.view)
-                .forEach(klass -> this.getPackageItem(packageCache, klass.getDeobfuscatedPackage()).getChildren()
-                        .add(new TreeItem<>(new ClassElement(this.symphony, klass))));
+                .collect(Collectors.toSet()));
 
-        // sort
-        packageCache.values().forEach(item -> {
-            item.getChildren().setAll(item.getChildren().sorted(Comparator.comparing(TreeItem::getValue)));
-        });
+        this.root.getChildren().addAll(hierarchy.getChildren().stream()
+                .map(node -> this.generateTreeItem(node, expanded)).collect(Collectors.toSet()));
         this.root.getChildren().setAll(this.root.getChildren().sorted(Comparator.comparing(TreeItem::getValue)));
-
-        // reopen packages
-        expanded.forEach(pkg -> {
-            final TreeItem<TreeElement> packageItem = packageCache.get(pkg);
-            if (packageItem == null) return;
-            packageItem.setExpanded(true);
-        });
     }
 
     /**
@@ -126,21 +118,39 @@ public class ClassesTreeView extends TreeView<TreeElement> {
         this.initialise(jar, Collections.emptySet());
     }
 
-    private TreeItem<TreeElement> getPackageItem(final Map<String, TreeItem<TreeElement>> cache, final String packageName) {
-        if (packageName.isEmpty()) return this.root;
-        if (cache.containsKey(packageName)) return cache.get(packageName);
+    private TreeItem<TreeElement> generateTreeItem(final HierarchyNode node, final Set<String> expanded) {
+        final TreeItem<TreeElement> item;
+        if (node instanceof PackageHierarchyNode) {
+            PackageHierarchyNode n = (PackageHierarchyNode) node;
+            final StringBuilder builder = new StringBuilder()
+                    .append(n.getSimpleName());
 
-        final TreeItem<TreeElement> parent;
-        if (packageName.lastIndexOf('/') != -1 && !DisplaySettings.flattenPackages()) {
-            parent = this.getPackageItem(cache, packageName.substring(0, packageName.lastIndexOf('/')));
+            while (DisplaySettings.compactMiddlePackages() &&
+                    !DisplaySettings.flattenPackages() &&
+                    n.getChildren().size() == 1 &&
+                    n.getChildren().get(0) instanceof PackageHierarchyNode) {
+                n = (PackageHierarchyNode) n.getChildren().get(0);
+                builder.append('.').append(n.getSimpleName());
+            }
+
+            item = new TreeItem<>(new PackageElement(this.symphony, n.getName(), builder.toString()));
+
+            item.getChildren().addAll(n.getChildren().stream()
+                    .map(e -> this.generateTreeItem(e, expanded)).collect(Collectors.toList()));
+            item.getChildren().setAll(item.getChildren().sorted(Comparator.comparing(TreeItem::getValue)));
+        }
+        else if (node instanceof ClassHierarchyNode) {
+            item = new TreeItem<>(new ClassElement(this.symphony, ((ClassHierarchyNode) node).getKlass()));
         }
         else {
-            parent = this.root;
+            item = this.root;
         }
-        final TreeItem<TreeElement> packageItem = new TreeItem<>(new PackageElement(this.symphony, packageName));
-        parent.getChildren().add(packageItem);
-        cache.put(packageName, packageItem);
-        return packageItem;
+
+        if (expanded.contains(node.getName())) {
+            item.setExpanded(true);
+        }
+
+        return item;
     }
 
     private Set<String> getExpandedPackages(final Set<String> packages, final TreeItem<TreeElement> item) {

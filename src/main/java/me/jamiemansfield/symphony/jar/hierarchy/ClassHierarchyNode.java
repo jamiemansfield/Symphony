@@ -23,6 +23,10 @@ public class ClassHierarchyNode implements HierarchyNode {
         this.klass = klass;
     }
 
+    public TopLevelClassMapping getKlass() {
+        return this.klass;
+    }
+
     @Override
     public String getName() {
         return this.klass.getFullDeobfuscatedName();

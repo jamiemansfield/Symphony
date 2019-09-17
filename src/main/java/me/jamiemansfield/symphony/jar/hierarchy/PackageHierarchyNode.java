@@ -17,7 +17,7 @@ public class PackageHierarchyNode extends ParentHierarchyElement implements Hier
 
     private final String name;
 
-    public PackageHierarchyNode(final String name) {
+    public PackageHierarchyNode(final ParentHierarchyElement parent, final String name) {
         this.name = name;
     }
 
@@ -28,8 +28,7 @@ public class PackageHierarchyNode extends ParentHierarchyElement implements Hier
 
     @Override
     public String getSimpleName() {
-        final int index = this.name.lastIndexOf('/');
-        return index == -1 ? this.name : this.name.substring(index);
+        return this.name.substring(this.name.lastIndexOf('/') + 1);
     }
 
 }

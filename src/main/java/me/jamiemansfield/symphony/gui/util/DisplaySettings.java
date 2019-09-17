@@ -22,6 +22,7 @@ public class DisplaySettings {
     private static final PropertiesKey<Boolean> COMPACT_MIDDLE_PACKAGES = PropertiesKey.bool("compact_middle_packages");
     private static final PropertiesKey<Boolean> SPLIT_CLASSES = PropertiesKey.bool("split_classes");
 
+    // TODO: Implement functionality
     public static boolean flattenPackages() {
         return StateHelper.DISPLAY.computeIfAbsent(FLATTEN_PACKAGES, () -> false);
     }
@@ -30,7 +31,6 @@ public class DisplaySettings {
         StateHelper.DISPLAY.set(FLATTEN_PACKAGES, value);
     }
 
-    // TODO: Implement functionality
     public static boolean compactMiddlePackages() {
         return StateHelper.DISPLAY.computeIfAbsent(COMPACT_MIDDLE_PACKAGES, () -> true);
     }

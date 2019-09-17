@@ -7,8 +7,11 @@
 
 package me.jamiemansfield.symphony.jar.hierarchy;
 
+import org.cadixdev.lorenz.MappingSet;
 import org.cadixdev.lorenz.model.TopLevelClassMapping;
 
+import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -19,6 +22,18 @@ import java.util.Set;
  */
 public class Hierarchy extends ParentHierarchyElement {
 
+    public static void main(final String[] args) {
+        final MappingSet mappings = MappingSet.create();
+        mappings.getOrCreateTopLevelClassMapping("Test");
+        mappings.getOrCreateTopLevelClassMapping("Test2");
+        mappings.getOrCreateTopLevelClassMapping("com/m/Test3");
+        mappings.getOrCreateTopLevelClassMapping("com/m/Test4");
+
+        final Hierarchy hierarchy = Hierarchy.create(new HashSet<>(mappings.getTopLevelClassMappings()));
+
+        System.out.println(hierarchy);
+    }
+
     /**
      * Creates a hierarchy from a set of {@link TopLevelClassMapping classes}.
      *
@@ -28,24 +43,32 @@ public class Hierarchy extends ParentHierarchyElement {
     public static Hierarchy create(final Set<TopLevelClassMapping> classes) {
         final Hierarchy hierarchy = new Hierarchy();
         for (final TopLevelClassMapping klass : classes) {
-            hierarchy.getPackage(klass.getDeobfuscatedPackage())
-                    .add(NodeKey.cls(klass.getDeobfuscatedName()), new ClassHierarchyNode(klass));
+            final String packageName = klass.getDeobfuscatedPackage();
+            final String[] subPackages = packageName.split("/");
+
+            ParentHierarchyElement parent = hierarchy;
+            for (final String partial : subPackages) {
+                if (partial.isEmpty()) {
+                    parent = hierarchy;
+                    continue;
+                }
+
+                final NodeKey<PackageHierarchyNode> key = NodeKey.pkg(partial);
+                final Optional<PackageHierarchyNode> node = parent.get(key);
+                if (node.isPresent()) {
+                    parent = node.get();
+                }
+                else {
+                    final PackageHierarchyNode packageNode = new PackageHierarchyNode(parent, partial);
+                    parent.add(key, packageNode);
+                    parent = packageNode;
+                }
+            }
+
+            final NodeKey<ClassHierarchyNode> key = NodeKey.cls(klass.getSimpleDeobfuscatedName());
+            parent.add(key, new ClassHierarchyNode(klass));
         }
         return hierarchy;
-    }
-
-    private ParentHierarchyElement getPackage(final String name) {
-        if (name.isEmpty()) return this;
-
-        final NodeKey<PackageHierarchyNode> key = NodeKey.pkg(name);
-        return this.get(key).orElseGet(() -> {
-            final int index = name.lastIndexOf('/');
-            final String parent = index == -1 ? "" : name.substring(0, index);
-            final PackageHierarchyNode packageNode = new PackageHierarchyNode(name);
-            this.getPackage(parent)
-                    .add(NodeKey.pkg(name), packageNode);
-            return packageNode;
-        });
     }
 
 }

@@ -51,6 +51,11 @@ public class NodeKey<T extends HierarchyNode> {
     }
 
     @Override
+    public String toString() {
+        return this.name;
+    }
+
+    @Override
     public boolean equals(final Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof NodeKey)) return false;

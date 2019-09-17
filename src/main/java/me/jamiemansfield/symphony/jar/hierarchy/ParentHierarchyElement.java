@@ -7,8 +7,11 @@
 
 package me.jamiemansfield.symphony.jar.hierarchy;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -25,6 +28,10 @@ import java.util.Optional;
 public abstract class ParentHierarchyElement implements Iterable<HierarchyNode> {
 
     protected final Map<NodeKey, HierarchyNode> children = new HashMap<>();
+
+    public List<HierarchyNode> getChildren() {
+        return Collections.unmodifiableList(new ArrayList<>(this.children.values()));
+    }
 
     /**
      * Gets a child {@link HierarchyNode node}, with the given
