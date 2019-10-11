@@ -23,6 +23,9 @@ import org.cadixdev.lorenz.MappingSet;
 import org.cadixdev.lorenz.asm.LorenzRemapper;
 import org.cadixdev.lorenz.model.ClassMapping;
 import org.cadixdev.lorenz.model.TopLevelClassMapping;
+import org.cadixdev.survey.context.SurveyContext;
+import org.cadixdev.survey.mapper.AbstractMapper;
+import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.commons.Remapper;
 
 import java.io.Closeable;
@@ -31,6 +34,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 /**
@@ -47,6 +51,7 @@ public class Jar implements Closeable {
 
     // Jar related
     private final JarFile jar;
+    private final SurveyContext ctx;
     private final Set<String> classes;
     private final ClassProvider obfProvider;
     private final ClassProvider deobfProvider;
@@ -55,6 +60,7 @@ public class Jar implements Closeable {
 
     public Jar(final Path path) throws IOException {
         this.jar = new JarFile(path);
+        this.ctx = new JarContext(this);
         this.classes = this.jar.classes()
                 .map(JarClassEntry::getName)
                 .map(name -> name.substring(0, name.length() - ".class".length()))
@@ -168,6 +174,14 @@ public class Jar implements Closeable {
 
         // Decompile
         return decompiler.decompile(this.deobfProvider, rootKlass, innerKlasses);
+    }
+
+    public <C, M extends AbstractMapper<C>> void runMapper(final BiFunction<SurveyContext, C, M> mapperConstructor,
+                                                           final C config) {
+        final M mapper = mapperConstructor.apply(this.ctx, config);
+        this.jar.classes().map(JarClassEntry::getContents).map(ClassReader::new).forEach(reader -> {
+            reader.accept(mapper, 0);
+        });
     }
 
     @Override

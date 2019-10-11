@@ -137,6 +137,7 @@ public final class SymphonyMain extends Application {
             this.mainMenu.file.saveMappingsAs.setDisable(!opening);
             this.mainMenu.file.exportRemappedJar.setDisable(!opening);
             this.mainMenu.navigate.klass.setDisable(!opening);
+            this.mainMenu.run.mapEnumConstants.setDisable(!opening);
         }
         MappingsHelper.LAST_LOCATION = null;
 

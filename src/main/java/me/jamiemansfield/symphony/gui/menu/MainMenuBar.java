@@ -25,6 +25,7 @@ public class MainMenuBar extends MenuBar {
     public final FileMenu file;
     public final ViewMenu view;
     public final NavigateMenu navigate;
+    public final RunMenu run;
     public final HelpMenu help;
 
     public MainMenuBar(final SymphonyMain symphony) {
@@ -33,6 +34,7 @@ public class MainMenuBar extends MenuBar {
         this.file = this.install(new FileMenu(this));
         this.view = this.install(new ViewMenu(this));
         this.navigate = this.install(new NavigateMenu(this));
+        this.run = this.install(new RunMenu(this));
         this.help = this.install(new HelpMenu(this));
     }
 
