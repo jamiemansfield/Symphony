@@ -7,12 +7,14 @@
 
 package me.jamiemansfield.symphony.gui.menu;
 
-import javafx.event.ActionEvent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import me.jamiemansfield.symphony.gui.menu.mapper.MapperMenuItemProvider;
+import me.jamiemansfield.symphony.gui.menu.mapper.SymphonyMappers;
 import me.jamiemansfield.symphony.util.LocaleHelper;
-import org.cadixdev.survey.mapper.EnumConstantsMapper;
-import org.cadixdev.survey.mapper.config.EnumConstantsMapperConfig;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The Symphony 'Run' menu.
@@ -22,26 +24,25 @@ import org.cadixdev.survey.mapper.config.EnumConstantsMapperConfig;
  */
 public class RunMenu extends Menu {
 
-    public final MenuItem mapEnumConstants;
+    private final List<MenuItem> mappers = new ArrayList<>();
 
     public RunMenu(final MainMenuBar mainMenuBar) {
         // Settings
         super(LocaleHelper.get("menu.run"));
         this.setMnemonicParsing(true);
 
-        // Map Enum Constants
-        {
-            this.mapEnumConstants = new MenuItem(LocaleHelper.get("menu.run.map_enum_constants"));
-            this.mapEnumConstants.setDisable(true);
-            this.mapEnumConstants.addEventHandler(ActionEvent.ACTION, event -> {
-                mainMenuBar.getSymphony().getJar().runMapper(EnumConstantsMapper::new, new EnumConstantsMapperConfig() {
-                    {
-                        this.mapSyntheticValues = true;
-                    }
-                });
-                mainMenuBar.getSymphony().update();
-            });
-            this.getItems().add(this.mapEnumConstants);
+        // Mappers
+        for (final MapperMenuItemProvider provider : SymphonyMappers.values()) {
+            final MenuItem mapper = provider.provide(mainMenuBar.getSymphony());
+            mapper.setDisable(true);
+            this.mappers.add(mapper);
+        }
+        this.getItems().addAll(this.mappers);
+    }
+
+    public void setMappersDisable(final boolean disable) {
+        for (final MenuItem mapper : this.mappers) {
+            mapper.setDisable(disable);
         }
     }
 
