@@ -32,7 +32,13 @@ repositories {
 
 dependencies {
     // Survey (binary remapper)
-    compile "org.cadixdev:survey:$surveyVersion"
+    compile 'org.cadixdev:lorenz-asm:0.5.0'
+    compile("org.cadixdev:survey:$surveyVersion") {
+        exclude module: 'org.cadixdev:lorenz-asm'
+    }
+    compile("org.cadixdev:atlas:$atlasVersion") {
+        transitive = false
+    }
 
     // Decompilers
     compile 'net.minecraftforge:forgeflower:1.5.380.24'
