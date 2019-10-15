@@ -15,7 +15,7 @@ import org.cadixdev.survey.mapper.AbstractMapper;
  * A provider for {@link MenuItem menu items} specifically for adding
  * support for Survey's {@link AbstractMapper mappers} to Symphony.
  * <p>
- * Implementations are encouraged to use {@link AbstractMapperMenuItem}
+ * Implementations are encouraged to use {@link MapperMenuItem}
  * as the base of their menu item.
  *
  * @author Jamie Mansfield

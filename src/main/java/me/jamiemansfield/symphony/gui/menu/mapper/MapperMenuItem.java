@@ -14,6 +14,9 @@ import me.jamiemansfield.symphony.util.LocaleHelper;
 import org.cadixdev.survey.context.SurveyContext;
 import org.cadixdev.survey.mapper.AbstractMapper;
 
+import java.util.function.BiFunction;
+import java.util.function.Supplier;
+
 /**
  * The framework for exposing Survey's {@link AbstractMapper mappers} in
  * Symphony.
@@ -24,11 +27,40 @@ import org.cadixdev.survey.mapper.AbstractMapper;
  * @author Jamie Mansfield
  * @since 0.1.0
  */
-public abstract class AbstractMapperMenuItem<M extends AbstractMapper<C>, C> extends MenuItem {
+public abstract class MapperMenuItem<M extends AbstractMapper<C>, C> extends MenuItem {
+
+    /**
+     * Creates a {@link MenuItem menu item} for a {@link AbstractMapper mapper}, given
+     * a {@link SymphonyMain Symphony} instance, a locale key, a configuration supplier,
+     * and a mapper constructor.
+     *
+     * @param symphony The symphony instance
+     * @param localeKey The locale key to get the name
+     * @param configSupplier The configuration supplier
+     * @param mapperFunction The construction function for the mapper
+     * @param <M> The type of the mapper
+     * @param <C> The type of the mapper's configuration
+     * @return The menu item.
+     */
+    public static <M extends AbstractMapper<C>, C> MapperMenuItem<M, C> of(
+            final SymphonyMain symphony, final String localeKey,
+            final Supplier<C> configSupplier, final BiFunction<SurveyContext, C, M> mapperFunction) {
+        return new MapperMenuItem<M, C>(symphony, localeKey) {
+            @Override
+            public C fetchConfig() {
+                return configSupplier.get();
+            }
+
+            @Override
+            public M createMapper(final SurveyContext ctx, final C config) {
+                return mapperFunction.apply(ctx, config);
+            }
+        };
+    }
 
     private final SymphonyMain symphony;
 
-    public AbstractMapperMenuItem(final SymphonyMain symphony, final String localeKey) {
+    public MapperMenuItem(final SymphonyMain symphony, final String localeKey) {
         super(LocaleHelper.get(localeKey));
         this.symphony = symphony;
 

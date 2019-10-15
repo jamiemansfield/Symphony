@@ -10,11 +10,11 @@ package me.jamiemansfield.symphony.gui.menu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import me.jamiemansfield.symphony.gui.menu.mapper.MapperMenuItemProvider;
-import me.jamiemansfield.symphony.gui.menu.mapper.SymphonyMappers;
 import me.jamiemansfield.symphony.util.LocaleHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ServiceLoader;
 
 /**
  * The Symphony 'Run' menu.
@@ -32,7 +32,7 @@ public class RunMenu extends Menu {
         this.setMnemonicParsing(true);
 
         // Mappers
-        for (final MapperMenuItemProvider provider : SymphonyMappers.values()) {
+        for (final MapperMenuItemProvider provider : ServiceLoader.load(MapperMenuItemProvider.class)) {
             final MenuItem mapper = provider.provide(mainMenuBar.getSymphony());
             mapper.setDisable(true);
             this.mappers.add(mapper);

@@ -9,7 +9,6 @@ package me.jamiemansfield.symphony.gui.menu.mapper;
 
 import javafx.scene.control.MenuItem;
 import me.jamiemansfield.symphony.gui.SymphonyMain;
-import org.cadixdev.survey.context.SurveyContext;
 import org.cadixdev.survey.mapper.EnumConstantsMapper;
 import org.cadixdev.survey.mapper.config.EnumConstantsMapperConfig;
 
@@ -24,21 +23,10 @@ public class EnumConstantsMapperMenuItemProvider implements MapperMenuItemProvid
 
     @Override
     public MenuItem provide(final SymphonyMain symphony) {
-        return new AbstractMapperMenuItem<EnumConstantsMapper, EnumConstantsMapperConfig>(
-                symphony, "menu.run.map_enum_constants"
-        ) {
-
-            @Override
-            public EnumConstantsMapperConfig fetchConfig() {
-                return new EnumConstantsMapperConfig();
-            }
-
-            @Override
-            public EnumConstantsMapper createMapper(final SurveyContext ctx, final EnumConstantsMapperConfig config) {
-                return new EnumConstantsMapper(ctx, config);
-            }
-
-        };
+        return MapperMenuItem.of(symphony, "menu.run.map_enum_constants",
+                EnumConstantsMapperConfig::new,
+                EnumConstantsMapper::new
+        );
     }
 
     @Override
