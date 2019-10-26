@@ -11,6 +11,7 @@ import static me.jamiemansfield.symphony.SharedConstants.CLASSLOADER_PROVIDER;
 
 import me.jamiemansfield.symphony.decompiler.Decompiler;
 import me.jamiemansfield.symphony.decompiler.WrappedBytecode;
+import me.jamiemansfield.symphony.util.Dirtyable;
 import org.cadixdev.atlas.jar.JarFile;
 import org.cadixdev.bombe.analysis.CachingInheritanceProvider;
 import org.cadixdev.bombe.analysis.InheritanceProvider;
@@ -42,7 +43,7 @@ import java.util.stream.Collectors;
  * @author Jamie Mansfield
  * @since 0.1.0
  */
-public class Jar implements Closeable {
+public class Jar implements Dirtyable, Closeable {
 
     // Mappings Related
     private final MappingSet mappings = MappingSet.create();
@@ -95,42 +96,23 @@ public class Jar implements Closeable {
         return this.mappings;
     }
 
+    @Override
     public boolean isDirty() {
         return this.dirty;
     }
 
+    @Override
     public void markDirty(final boolean dirty) {
         this.dirty = this.dirty || dirty;
     }
 
+    @Override
     public void resetDirty() {
         this.dirty = false;
     }
 
     public Set<String> classes() {
         return Collections.unmodifiableSet(this.classes);
-    }
-
-    /**
-     * Gets the {@link ClassProvider} for querying obfuscated bytecode.
-     *
-     * @return The obfuscated class provider
-     */
-    public ClassProvider obfProvider() {
-        return this.obfProvider;
-    }
-
-    /**
-     * Gets the {@link ClassProvider} for querying de-obfuscated bytecode.
-     *
-     * @return The de-obfuscated class provider
-     */
-    public ClassProvider deobfProvider() {
-        return this.deobfProvider;
-    }
-
-    public InheritanceProvider getInheritanceProvider() {
-        return this.inheritanceProvider;
     }
 
     public boolean hasClass(final String klass) {
