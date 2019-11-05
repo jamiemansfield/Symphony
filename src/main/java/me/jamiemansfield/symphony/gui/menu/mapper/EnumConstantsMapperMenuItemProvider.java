@@ -9,6 +9,7 @@ package me.jamiemansfield.symphony.gui.menu.mapper;
 
 import javafx.scene.control.MenuItem;
 import me.jamiemansfield.symphony.gui.SymphonyMain;
+import me.jamiemansfield.symphony.util.PairedBoolean;
 import org.cadixdev.survey.mapper.EnumConstantsMapper;
 import org.cadixdev.survey.mapper.config.EnumConstantsMapperConfig;
 
@@ -21,10 +22,17 @@ import org.cadixdev.survey.mapper.config.EnumConstantsMapperConfig;
  */
 public class EnumConstantsMapperMenuItemProvider implements MapperMenuItemProvider {
 
+    private static PairedBoolean<EnumConstantsMapperConfig> configure() {
+        final EnumConstantsMapperConfirmationDialog dialog = new EnumConstantsMapperConfirmationDialog();
+        return dialog
+                .showAndWait()
+                .orElseGet(() -> new PairedBoolean<>(null, false));
+    }
+
     @Override
     public MenuItem provide(final SymphonyMain symphony) {
         return MapperMenuItem.of(symphony, "menu.run.map_enum_constants",
-                EnumConstantsMapperConfig::new,
+                EnumConstantsMapperMenuItemProvider::configure,
                 EnumConstantsMapper::new
         );
     }

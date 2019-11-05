@@ -11,6 +11,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.MenuItem;
 import me.jamiemansfield.symphony.gui.SymphonyMain;
 import me.jamiemansfield.symphony.util.LocaleHelper;
+import me.jamiemansfield.symphony.util.PairedBoolean;
 import org.cadixdev.survey.context.SurveyContext;
 import org.cadixdev.survey.mapper.AbstractMapper;
 
@@ -44,10 +45,10 @@ public abstract class MapperMenuItem<M extends AbstractMapper<C>, C> extends Men
      */
     public static <M extends AbstractMapper<C>, C> MapperMenuItem<M, C> of(
             final SymphonyMain symphony, final String localeKey,
-            final Supplier<C> configSupplier, final BiFunction<SurveyContext, C, M> mapperFunction) {
+            final Supplier<PairedBoolean<C>> configSupplier, final BiFunction<SurveyContext, C, M> mapperFunction) {
         return new MapperMenuItem<M, C>(symphony, localeKey) {
             @Override
-            public C fetchConfig() {
+            public PairedBoolean<C> configure() {
                 return configSupplier.get();
             }
 
@@ -68,11 +69,17 @@ public abstract class MapperMenuItem<M extends AbstractMapper<C>, C> extends Men
     }
 
     /**
-     * Called when the menu item is pressed, to configure the mapper.
+     * Gets the configuration of the mapper, when the {@link MenuItem menu item}
+     * is pressed.
+     * <p>
+     * An {@link PairedBoolean paired boolean} is returned, allowing the mapper
+     * operation to be cancelled. It is expected of Symphony mappers to require
+     * a further 'confirmation' dialog.
      *
-     * @return The mapper's configuration
+     * @return A paired boolean, where the value is the configuration; and the
+     *         state is whether to continue or not.
      */
-    public abstract C fetchConfig();
+    public abstract PairedBoolean<C> configure();
 
     /**
      * Creates a mapper with the given {@link SurveyContext context}, and
@@ -85,8 +92,11 @@ public abstract class MapperMenuItem<M extends AbstractMapper<C>, C> extends Men
     public abstract M createMapper(final SurveyContext ctx, final C config);
 
     private void onAction(final ActionEvent event) {
-        this.symphony.getJar().runMapper(this::createMapper, this.fetchConfig());
-        this.symphony.update();
+        final PairedBoolean<C> config = this.configure();
+        if (config.getState()) {
+            this.symphony.getJar().runMapper(this::createMapper, config.getValue());
+            this.symphony.update();
+        }
     }
 
 }
