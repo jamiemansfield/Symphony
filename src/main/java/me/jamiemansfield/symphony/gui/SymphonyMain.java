@@ -118,11 +118,18 @@ public final class SymphonyMain extends Application {
     }
 
     public void setJar(final Jar jar) {
-        // Close all current tabs
+        // Close all current tabs, and the jar
         if (this.jar != null) {
             this.tabs.getTabs().removeAll(
                     this.tabs.getTabs().stream().filter(CodeTab.class::isInstance).collect(Collectors.toList())
             );
+
+            try {
+                this.jar.close();
+            }
+            catch (final IOException ex) {
+                ex.printStackTrace();
+            }
         }
 
         // Set the jar

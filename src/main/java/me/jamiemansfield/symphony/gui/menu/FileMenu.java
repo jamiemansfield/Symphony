@@ -181,8 +181,8 @@ public class FileMenu extends Menu {
             this.symphony.getJar().close();
             this.symphony.setJar(null);
         }
-        catch (IOException e) {
-            e.printStackTrace();
+        catch (final IOException ex) {
+            ex.printStackTrace();
         }
     }
 
