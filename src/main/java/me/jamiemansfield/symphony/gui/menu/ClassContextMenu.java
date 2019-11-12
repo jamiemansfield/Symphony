@@ -11,7 +11,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
-import me.jamiemansfield.symphony.gui.SymphonyMain;
+import me.jamiemansfield.symphony.gui.Symphony;
 import me.jamiemansfield.symphony.gui.dialog.RemappingInputDialog;
 import me.jamiemansfield.symphony.util.LocaleHelper;
 import org.cadixdev.lorenz.model.TopLevelClassMapping;
@@ -24,7 +24,7 @@ import org.cadixdev.lorenz.model.TopLevelClassMapping;
  */
 public class ClassContextMenu extends ContextMenu {
 
-    public ClassContextMenu(final SymphonyMain symphony, final TopLevelClassMapping klass) {
+    public ClassContextMenu(final Symphony symphony, final TopLevelClassMapping klass) {
         final MenuItem remap = new MenuItem(LocaleHelper.get("context_menu.remappable.set_deobfuscated_name"));
         remap.addEventHandler(ActionEvent.ACTION, event -> {
             final String name = klass.getDeobfuscatedName();

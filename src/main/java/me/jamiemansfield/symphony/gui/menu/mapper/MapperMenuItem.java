@@ -9,7 +9,7 @@ package me.jamiemansfield.symphony.gui.menu.mapper;
 
 import javafx.event.ActionEvent;
 import javafx.scene.control.MenuItem;
-import me.jamiemansfield.symphony.gui.SymphonyMain;
+import me.jamiemansfield.symphony.gui.Symphony;
 import me.jamiemansfield.symphony.util.LocaleHelper;
 import org.cadixdev.survey.context.SurveyContext;
 import org.cadixdev.survey.mapper.AbstractMapper;
@@ -31,7 +31,7 @@ public abstract class MapperMenuItem<M extends AbstractMapper<C>, C> extends Men
 
     /**
      * Creates a {@link MenuItem menu item} for a {@link AbstractMapper mapper}, given
-     * a {@link SymphonyMain Symphony} instance, a locale key, a configuration supplier,
+     * a {@link Symphony Symphony} instance, a locale key, a configuration supplier,
      * and a mapper constructor.
      *
      * @param symphony The symphony instance
@@ -43,7 +43,7 @@ public abstract class MapperMenuItem<M extends AbstractMapper<C>, C> extends Men
      * @return The menu item.
      */
     public static <M extends AbstractMapper<C>, C> MapperMenuItem<M, C> of(
-            final SymphonyMain symphony, final String localeKey,
+            final Symphony symphony, final String localeKey,
             final Supplier<C> configSupplier, final BiFunction<SurveyContext, C, M> mapperFunction) {
         return new MapperMenuItem<M, C>(symphony, localeKey) {
             @Override
@@ -58,9 +58,9 @@ public abstract class MapperMenuItem<M extends AbstractMapper<C>, C> extends Men
         };
     }
 
-    private final SymphonyMain symphony;
+    private final Symphony symphony;
 
-    public MapperMenuItem(final SymphonyMain symphony, final String localeKey) {
+    public MapperMenuItem(final Symphony symphony, final String localeKey) {
         super(LocaleHelper.get(localeKey));
         this.symphony = symphony;
 

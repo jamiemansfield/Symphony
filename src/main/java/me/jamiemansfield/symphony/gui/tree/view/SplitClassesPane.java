@@ -9,7 +9,7 @@ package me.jamiemansfield.symphony.gui.tree.view;
 
 import javafx.geometry.Orientation;
 import javafx.scene.control.SplitPane;
-import me.jamiemansfield.symphony.gui.SymphonyMain;
+import me.jamiemansfield.symphony.gui.Symphony;
 import me.jamiemansfield.symphony.jar.Jar;
 
 import java.util.HashSet;
@@ -20,7 +20,7 @@ public class SplitClassesPane extends ClassesPane {
     private final ClassesTreeView obfView;
     private final ClassesTreeView deobfView;
 
-    public SplitClassesPane(final SymphonyMain symphony) {
+    public SplitClassesPane(final Symphony symphony) {
         super(symphony);
 
         final SplitPane pane = new SplitPane();

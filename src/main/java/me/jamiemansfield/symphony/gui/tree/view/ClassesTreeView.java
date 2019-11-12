@@ -10,7 +10,7 @@ package me.jamiemansfield.symphony.gui.tree.view;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
-import me.jamiemansfield.symphony.gui.SymphonyMain;
+import me.jamiemansfield.symphony.gui.Symphony;
 import me.jamiemansfield.symphony.gui.tree.ClassElement;
 import me.jamiemansfield.symphony.gui.tree.PackageElement;
 import me.jamiemansfield.symphony.gui.tree.RootElement;
@@ -36,11 +36,11 @@ import java.util.function.Predicate;
 // TODO: Search bar
 public class ClassesTreeView extends TreeView<TreeElement> {
 
-    private final SymphonyMain symphony;
+    private final Symphony symphony;
     private final View view;
     private final TreeItem<TreeElement> root;
 
-    public ClassesTreeView(final SymphonyMain symphony, final View classesView) {
+    public ClassesTreeView(final Symphony symphony, final View classesView) {
         this.symphony = symphony;
         this.view = classesView;
         this.setShowRoot(false);

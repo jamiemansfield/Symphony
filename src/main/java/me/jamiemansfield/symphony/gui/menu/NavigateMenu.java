@@ -11,7 +11,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
-import me.jamiemansfield.symphony.gui.SymphonyMain;
+import me.jamiemansfield.symphony.gui.Symphony;
 import me.jamiemansfield.symphony.util.LocaleHelper;
 
 /**
@@ -22,7 +22,7 @@ import me.jamiemansfield.symphony.util.LocaleHelper;
  */
 public class NavigateMenu extends Menu {
 
-    private final SymphonyMain symphony;
+    private final Symphony symphony;
 
     public final MenuItem klass;
 

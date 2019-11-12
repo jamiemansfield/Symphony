@@ -13,7 +13,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
-import me.jamiemansfield.symphony.gui.SymphonyMain;
+import me.jamiemansfield.symphony.gui.Symphony;
 import me.jamiemansfield.symphony.gui.concurrent.TaskManager;
 import me.jamiemansfield.symphony.gui.tab.welcome.WelcomeTab;
 import me.jamiemansfield.symphony.gui.util.AboutHelper;
@@ -27,7 +27,7 @@ import me.jamiemansfield.symphony.util.LocaleHelper;
  */
 public class HelpMenu extends Menu {
 
-    private final SymphonyMain symphony;
+    private final Symphony symphony;
 
     public HelpMenu(final MainMenuBar mainMenuBar) {
         // Settings

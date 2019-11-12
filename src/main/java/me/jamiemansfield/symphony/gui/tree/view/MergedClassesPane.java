@@ -7,7 +7,7 @@
 
 package me.jamiemansfield.symphony.gui.tree.view;
 
-import me.jamiemansfield.symphony.gui.SymphonyMain;
+import me.jamiemansfield.symphony.gui.Symphony;
 import me.jamiemansfield.symphony.jar.Jar;
 
 import java.util.Set;
@@ -16,7 +16,7 @@ public class MergedClassesPane extends ClassesPane {
 
     private final ClassesTreeView view;
 
-    public MergedClassesPane(final SymphonyMain symphony) {
+    public MergedClassesPane(final Symphony symphony) {
         super(symphony);
         this.view = new ClassesTreeView(symphony, ClassesTreeView.View.ALL);
         this.setCenter(this.view);

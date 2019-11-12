@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  * @author Jamie Mansfield
  * @since 0.1.0
  */
-public final class SymphonyMain extends Application {
+public final class Symphony extends Application {
 
     private static final String DEFAULT_TITLE = "Symphony v" + SharedConstants.VERSION;
     private static final int DEFAULT_WIDTH = 1280;
@@ -154,7 +154,7 @@ public final class SymphonyMain extends Application {
 
         // Refresh classes view
         if (opening) {
-            this.refreshClasses();
+            this.classesPane.initialise(this.jar);
         }
         else {
             this.classesPane.clear();
@@ -230,7 +230,7 @@ public final class SymphonyMain extends Application {
         this.classesPane.initialise(this.jar, expanded);
     }
 
-    private static ClassesPane createClassesPane(final SymphonyMain symphony) {
+    private static ClassesPane createClassesPane(final Symphony symphony) {
         if (DisplaySettings.splitClasses()) {
             return new SplitClassesPane(symphony);
         }

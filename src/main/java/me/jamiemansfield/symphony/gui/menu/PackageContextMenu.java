@@ -10,7 +10,7 @@ package me.jamiemansfield.symphony.gui.menu;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
-import me.jamiemansfield.symphony.gui.SymphonyMain;
+import me.jamiemansfield.symphony.gui.Symphony;
 import me.jamiemansfield.symphony.gui.dialog.RemappingInputDialog;
 import me.jamiemansfield.symphony.util.LocaleHelper;
 
@@ -24,7 +24,7 @@ import java.util.Objects;
  */
 public class PackageContextMenu extends ContextMenu {
 
-    public PackageContextMenu(final SymphonyMain symphony, final String packageName) {
+    public PackageContextMenu(final Symphony symphony, final String packageName) {
         final MenuItem remap = new MenuItem(LocaleHelper.get("context_menu.remappable.set_deobfuscated_name"));
         remap.setOnAction(event -> {
             final TextInputDialog dialog = new RemappingInputDialog();

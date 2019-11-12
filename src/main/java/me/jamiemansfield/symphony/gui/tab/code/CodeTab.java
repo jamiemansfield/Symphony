@@ -20,7 +20,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import me.jamiemansfield.symphony.decompiler.Decompiler;
 import me.jamiemansfield.symphony.decompiler.Decompilers;
-import me.jamiemansfield.symphony.gui.SymphonyMain;
+import me.jamiemansfield.symphony.gui.Symphony;
 import me.jamiemansfield.symphony.gui.concurrent.TaskManager;
 import me.jamiemansfield.symphony.gui.menu.ClassContextMenu;
 import me.jamiemansfield.symphony.gui.util.RadioMenuHelper;
@@ -41,13 +41,13 @@ import java.util.Optional;
  */
 public class CodeTab extends Tab {
 
-    private final SymphonyMain symphony;
+    private final Symphony symphony;
     private final TopLevelClassMapping klass;
     private Decompiler decompiler = null;
 
     private final ContextMenu classMenu;
 
-    public CodeTab(final SymphonyMain symphony, final TopLevelClassMapping klass) {
+    public CodeTab(final Symphony symphony, final TopLevelClassMapping klass) {
         this.symphony = symphony;
         this.klass = klass;
 

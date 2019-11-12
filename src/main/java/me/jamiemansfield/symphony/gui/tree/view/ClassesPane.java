@@ -8,7 +8,7 @@
 package me.jamiemansfield.symphony.gui.tree.view;
 
 import javafx.scene.layout.BorderPane;
-import me.jamiemansfield.symphony.gui.SymphonyMain;
+import me.jamiemansfield.symphony.gui.Symphony;
 import me.jamiemansfield.symphony.jar.Jar;
 
 import java.util.Collections;
@@ -16,9 +16,9 @@ import java.util.Set;
 
 public abstract class ClassesPane extends BorderPane {
 
-    protected final SymphonyMain symphony;
+    protected final Symphony symphony;
 
-    public ClassesPane(final SymphonyMain symphony) {
+    public ClassesPane(final Symphony symphony) {
         this.symphony = symphony;
     }
 

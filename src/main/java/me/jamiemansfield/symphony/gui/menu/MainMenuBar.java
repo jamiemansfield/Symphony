@@ -9,7 +9,7 @@ package me.jamiemansfield.symphony.gui.menu;
 
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
-import me.jamiemansfield.symphony.gui.SymphonyMain;
+import me.jamiemansfield.symphony.gui.Symphony;
 
 /**
  * The Symphony main menu.
@@ -19,7 +19,7 @@ import me.jamiemansfield.symphony.gui.SymphonyMain;
  */
 public class MainMenuBar extends MenuBar {
 
-    private final SymphonyMain symphony;
+    private final Symphony symphony;
 
     // Menus
     public final FileMenu file;
@@ -28,7 +28,7 @@ public class MainMenuBar extends MenuBar {
     public final RunMenu run;
     public final HelpMenu help;
 
-    public MainMenuBar(final SymphonyMain symphony) {
+    public MainMenuBar(final Symphony symphony) {
         this.symphony = symphony;
 
         this.file = this.install(new FileMenu(this));
@@ -38,7 +38,7 @@ public class MainMenuBar extends MenuBar {
         this.help = this.install(new HelpMenu(this));
     }
 
-    public SymphonyMain getSymphony() {
+    public Symphony getSymphony() {
         return this.symphony;
     }
 

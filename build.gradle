@@ -18,6 +18,10 @@ targetCompatibility = '1.8'
 group = 'me.jamiemansfield'
 version = '0.0.1-indev'
 
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 1, 'hours'
+}
+
 repositories {
     mavenCentral()
     maven {
@@ -32,10 +36,7 @@ repositories {
 
 dependencies {
     // Survey (binary remapper)
-    compile 'org.cadixdev:lorenz-asm:0.5.0'
-    compile("org.cadixdev:survey:$surveyVersion") {
-        exclude module: 'org.cadixdev:lorenz-asm'
-    }
+    compile("org.cadixdev:survey:$surveyVersion")
     compile("org.cadixdev:atlas:$atlasVersion") {
         transitive = false
     }
@@ -43,7 +44,7 @@ dependencies {
     // Decompilers
     compile 'net.minecraftforge:forgeflower:1.5.380.24'
     compile 'org.bitbucket.mstrobel:procyon-compilertools:0.5.35'
-    compile 'org.benf:cfr:0.146'
+    compile 'org.benf:cfr:0.148'
     compile 'org.ow2.asm:asm-util:7.0'
 
     // RichTextFX (syntax highlighting)
@@ -55,6 +56,14 @@ dependencies {
     // Feather Icons (see https://feathericons.com/)
     compile 'org.kordamp.ikonli:ikonli-javafx:2.4.0'
     compile 'org.kordamp.ikonli:ikonli-feather-pack:2.4.0'
+
+    // Unit Testing (junit5)
+    testCompile "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+    testRuntime "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+}
+
+test {
+    //useJUnitPlatform()
 }
 
 processResources {

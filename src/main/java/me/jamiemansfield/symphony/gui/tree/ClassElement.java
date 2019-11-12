@@ -9,7 +9,7 @@ package me.jamiemansfield.symphony.gui.tree;
 
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
-import me.jamiemansfield.symphony.gui.SymphonyMain;
+import me.jamiemansfield.symphony.gui.Symphony;
 import me.jamiemansfield.symphony.gui.menu.ClassContextMenu;
 import org.cadixdev.lorenz.model.TopLevelClassMapping;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -24,11 +24,11 @@ import java.util.Optional;
  */
 public class ClassElement implements TreeElement {
 
-    private final SymphonyMain symphony;
+    private final Symphony symphony;
     private final TopLevelClassMapping klass;
     private final ContextMenu contextMenu;
 
-    public ClassElement(final SymphonyMain symphony, final TopLevelClassMapping klass) {
+    public ClassElement(final Symphony symphony, final TopLevelClassMapping klass) {
         this.symphony = symphony;
         this.klass = klass;
         this.contextMenu = new ClassContextMenu(symphony, klass);

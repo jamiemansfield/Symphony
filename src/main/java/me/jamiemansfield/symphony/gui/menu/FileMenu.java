@@ -20,7 +20,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.stage.FileChooser;
 import me.jamiemansfield.symphony.decompiler.Decompiler;
 import me.jamiemansfield.symphony.decompiler.Decompilers;
-import me.jamiemansfield.symphony.gui.SymphonyMain;
+import me.jamiemansfield.symphony.gui.Symphony;
 import me.jamiemansfield.symphony.gui.concurrent.TaskManager;
 import me.jamiemansfield.symphony.gui.util.MappingsHelper;
 import me.jamiemansfield.symphony.gui.util.RadioMenuHelper;
@@ -48,7 +48,7 @@ public class FileMenu extends Menu {
             "last_export_jar_directory"
     );
 
-    private final SymphonyMain symphony;
+    private final Symphony symphony;
 
     // Menu items
     public final MenuItem openJar;

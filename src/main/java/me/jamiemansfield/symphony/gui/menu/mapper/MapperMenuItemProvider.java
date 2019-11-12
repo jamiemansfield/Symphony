@@ -8,7 +8,7 @@
 package me.jamiemansfield.symphony.gui.menu.mapper;
 
 import javafx.scene.control.MenuItem;
-import me.jamiemansfield.symphony.gui.SymphonyMain;
+import me.jamiemansfield.symphony.gui.Symphony;
 import org.cadixdev.survey.mapper.AbstractMapper;
 
 /**
@@ -30,7 +30,7 @@ public interface MapperMenuItemProvider {
      * @param symphony The symphony instance
      * @return The menu item
      */
-    MenuItem provide(final SymphonyMain symphony);
+    MenuItem provide(final Symphony symphony);
 
     /**
      * Gets the identifier of the menu item provider.
