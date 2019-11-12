@@ -7,16 +7,6 @@
 
 package me.jamiemansfield.symphony.gui.tab.code;
 
-import static j2html.TagCreator.attrs;
-import static j2html.TagCreator.body;
-import static j2html.TagCreator.head;
-import static j2html.TagCreator.html;
-import static j2html.TagCreator.pre;
-import static j2html.TagCreator.script;
-import static j2html.TagCreator.style;
-import static me.jamiemansfield.symphony.gui.tab.code.WebConstants.CODE_PRETTIFY;
-
-import j2html.tags.ContainerTag;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.scene.control.ContextMenu;
@@ -28,8 +18,6 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.web.WebView;
-import me.jamiemansfield.symphony.SourceFileType;
 import me.jamiemansfield.symphony.decompiler.Decompiler;
 import me.jamiemansfield.symphony.decompiler.Decompilers;
 import me.jamiemansfield.symphony.gui.SymphonyMain;
@@ -40,6 +28,8 @@ import me.jamiemansfield.symphony.gui.util.TextFlowBuilder;
 import me.jamiemansfield.symphony.jar.Jar;
 import me.jamiemansfield.symphony.util.LocaleHelper;
 import org.cadixdev.lorenz.model.TopLevelClassMapping;
+import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.LineNumberFactory;
 
 import java.util.Optional;
 
@@ -101,22 +91,19 @@ public class CodeTab extends Tab {
                 this.klass
         );
         decompileService.setOnSucceeded(event -> {
-            final String source = event.getSource().getValue().toString();
+            final CodeArea code = new CodeArea(event.getSource().getValue().toString());
+            code.setParagraphGraphicFactory(LineNumberFactory.get(code));
+            code.setEditable(false);
 
-            final WebView view = new WebView();
-            final ContainerTag html = html(
-                    head(
-                            script().withSrc(CODE_PRETTIFY),
-                            // This will remove the box placed around the code
-                            style("pre.prettyprint {padding: 0; border: 0;}")
-                    ),
-                    body(
-                            pre(attrs(".prettyprint" + getLangAttrFor(decompiler.getOutputType())), source)
-                    )
-            );
+            switch (decompiler.getOutputType()) {
+                case JAVA:
+                    JavaSyntaxHighlighting.highlight(code);
+                    break;
+                case TEXT:
+                    break;
+            }
 
-            view.getEngine().loadContent(html.render());
-            root.setCenter(view);
+            root.setCenter(code);
         });
         decompileService.start();
 
@@ -146,17 +133,6 @@ public class CodeTab extends Tab {
 
     public Optional<Decompiler> getDecompiler() {
         return Optional.ofNullable(this.decompiler);
-    }
-
-    private static String getLangAttrFor(final SourceFileType sourceFileType) {
-        switch (sourceFileType) {
-            case JAVA:
-            case TEXT:
-            default:
-                // Currently the Java language works best for all outputs producible by
-                // Symphony.
-                return ".lang-java";
-        }
     }
 
     private static class DecompileService extends Service<String> {

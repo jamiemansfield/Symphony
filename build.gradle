@@ -46,15 +46,15 @@ dependencies {
     compile 'org.benf:cfr:0.146'
     compile 'org.ow2.asm:asm-util:7.0'
 
+    // RichTextFX (syntax highlighting)
+    compile 'org.fxmisc.richtext:richtextfx:0.6.10'
+
     // ControlsFX (JavaFX utility)
     compile 'org.controlsfx:controlsfx:8.40.14'
 
     // Feather Icons (see https://feathericons.com/)
     compile 'org.kordamp.ikonli:ikonli-javafx:2.4.0'
     compile 'org.kordamp.ikonli:ikonli-feather-pack:2.4.0'
-
-    // HTML Builder (code view)
-    compile 'com.j2html:j2html:1.4.0'
 }
 
 processResources {

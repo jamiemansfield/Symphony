@@ -109,6 +109,7 @@ public final class SymphonyMain extends Application {
 
         // Set the scene
         final Scene scene = new Scene(root);
+        scene.getStylesheets().add("css/highlighting.css");
         this.stage.setScene(scene);
         this.stage.show();
     }
