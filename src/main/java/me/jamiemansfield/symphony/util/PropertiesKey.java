@@ -8,8 +8,10 @@
 package me.jamiemansfield.symphony.util;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -87,6 +89,7 @@ public abstract class PropertiesKey<T> {
     }
 
     private final String key;
+    private final Set<Listener<T>> listeners = new HashSet<>();
 
     protected PropertiesKey(final String key) {
         this.key = key;
@@ -127,7 +130,38 @@ public abstract class PropertiesKey<T> {
      * @param value The value
      */
     public void set(final Properties properties, final T value) {
+        // Notify listeners
+        for (final Listener<T> listener : this.listeners) {
+            listener.handle(value);
+        }
+
+        // Sets the property value
         properties.setProperty(this.key, this.serialise(value));
+    }
+
+    /**
+     * Registers a listener.
+     *
+     * @param listener The listener
+     */
+    public void addListener(final Listener<T> listener) {
+        if (listener == null) return;
+        this.listeners.add(listener);
+    }
+
+    /**
+     * A listener for observing changes in property values.
+     */
+    @FunctionalInterface
+    public interface Listener<T> {
+
+        /**
+         * Called when the property value is set.
+         *
+         * @param newValue The new value
+         */
+        void handle(final T newValue);
+
     }
 
 }

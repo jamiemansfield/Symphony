@@ -67,6 +67,7 @@ public final class MappingsHelper {
         StateHelper.GENERAL.get(LAST_DIRECTORY)
                 .filter(File::exists)
                 .ifPresent(FILE_CHOOSER::setInitialDirectory);
+        LAST_DIRECTORY.addListener(FILE_CHOOSER::setInitialDirectory);
     }
 
     /**

@@ -161,6 +161,7 @@ public class FileMenu extends Menu {
             StateHelper.GENERAL.get(LAST_OPEN_DIRECTORY)
                     .filter(File::exists)
                     .ifPresent(this.openJarFileChooser::setInitialDirectory);
+            LAST_OPEN_DIRECTORY.addListener(this.openJarFileChooser::setInitialDirectory);
         }
 
         final File jarPath = this.openJarFileChooser.showOpenDialog(this.symphony.getStage());
@@ -216,7 +217,10 @@ public class FileMenu extends Menu {
             );
 
             // Use the last used directory
-            StateHelper.GENERAL.get(LAST_EXPORT_DIRECTORY).ifPresent(this.exportJarFileChooser::setInitialDirectory);
+            StateHelper.GENERAL.get(LAST_EXPORT_DIRECTORY)
+                    .filter(File::exists)
+                    .ifPresent(this.exportJarFileChooser::setInitialDirectory);
+            LAST_EXPORT_DIRECTORY.addListener(this.exportJarFileChooser::setInitialDirectory);
         }
 
         final File jarPath = this.exportJarFileChooser.showSaveDialog(this.symphony.getStage());

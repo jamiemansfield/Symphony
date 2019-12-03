@@ -75,7 +75,7 @@ jar {
         attributes(
                 'Implementation-Title': name,
                 'Implementation-Version': version,
-                'Main-Class': 'me.jamiemansfield.symphony.gui.SymphonyMain'
+                'Main-Class': 'me.jamiemansfield.symphony.gui.Symphony'
         )
     }
 }
