@@ -153,11 +153,9 @@ public final class Symphony extends Application {
         this.updateTitle();
 
         // Refresh classes view
+        this.classesPane.clear();
         if (opening) {
             this.classesPane.initialise(this.jar);
-        }
-        else {
-            this.classesPane.clear();
         }
     }
 
