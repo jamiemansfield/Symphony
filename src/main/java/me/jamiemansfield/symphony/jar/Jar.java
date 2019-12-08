@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 public class Jar implements Dirtyable, Closeable {
 
     // Mappings Related
-    private final MappingSet mappings = MappingSet.create();
+    private final MappingSet mappings = new MappingSet();
     private boolean dirty = false;
 
     // Jar related

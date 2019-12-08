@@ -168,6 +168,7 @@ public final class Symphony extends Application {
     }
 
     public void refreshClasses() {
+        if (this.jar == null) return;
         final Set<String> expanded = this.classesPane.clear();
         this.classesPane.initialise(this.jar, expanded);
     }
