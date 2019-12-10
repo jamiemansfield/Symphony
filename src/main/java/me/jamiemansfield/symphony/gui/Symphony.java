@@ -23,7 +23,6 @@ import me.jamiemansfield.symphony.gui.tree.view.SplitClassesPane;
 import me.jamiemansfield.symphony.gui.util.DisplaySettings;
 import me.jamiemansfield.symphony.gui.util.MappingsHelper;
 import me.jamiemansfield.symphony.jar.Jar;
-import me.jamiemansfield.symphony.util.StateHelper;
 import org.cadixdev.lorenz.model.TopLevelClassMapping;
 
 import java.io.IOException;
@@ -32,7 +31,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * The Main-Class behind Symphony.
+ * The root Symphony GUI controller.
  *
  * @author Jamie Mansfield
  * @since 0.1.0
@@ -236,12 +235,6 @@ public final class Symphony extends Application {
         else {
             return new MergedClassesPane(symphony);
         }
-    }
-
-    public static void main(final String[] args) {
-        Runtime.getRuntime().addShutdownHook(new Thread(StateHelper::saveAll));
-
-        launch(args);
     }
 
 }

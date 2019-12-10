@@ -27,7 +27,7 @@ repositories {
     maven {
         url 'https://files.minecraftforge.net/maven/'
     }
-    if (surveyVersion.endsWith('-SNAPSHOT')) {
+    if (surveyVersion.endsWith('-SNAPSHOT') || atlasVersion.endsWith('-SNAPSHOT')) {
         maven {
             url 'https://oss.sonatype.org/content/groups/public/'
         }
@@ -75,7 +75,7 @@ jar {
         attributes(
                 'Implementation-Title': name,
                 'Implementation-Version': version,
-                'Main-Class': 'me.jamiemansfield.symphony.gui.Symphony'
+                'Main-Class': 'me.jamiemansfield.symphony.SymphonyMain'
         )
     }
 }

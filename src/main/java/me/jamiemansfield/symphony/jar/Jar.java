@@ -8,11 +8,15 @@
 package me.jamiemansfield.symphony.jar;
 
 import static me.jamiemansfield.symphony.SharedConstants.CLASSLOADER_PROVIDER;
+import static org.cadixdev.atlas.jar.JarVisitOption.IGNORE_MANIFESTS;
+import static org.cadixdev.atlas.jar.JarVisitOption.IGNORE_RESOURCES;
+import static org.cadixdev.atlas.jar.JarVisitOption.IGNORE_SERVICE_PROVIDER_CONFIGURATIONS;
 
 import me.jamiemansfield.symphony.decompiler.Decompiler;
 import me.jamiemansfield.symphony.decompiler.WrappedBytecode;
 import me.jamiemansfield.symphony.util.Dirtyable;
 import org.cadixdev.atlas.jar.JarFile;
+import org.cadixdev.atlas.jar.JarPath;
 import org.cadixdev.bombe.analysis.CachingInheritanceProvider;
 import org.cadixdev.bombe.analysis.InheritanceProvider;
 import org.cadixdev.bombe.asm.analysis.ClassProviderInheritanceProvider;
@@ -52,7 +56,7 @@ public class Jar implements Dirtyable, Closeable {
     // Jar related
     private final JarFile jar;
     private final SurveyContext ctx;
-    private final Set<String> classes;
+    private final Set<JarPath> classes;
     private final ClassProvider obfProvider;
     private final ClassProvider deobfProvider;
     private final InheritanceProvider inheritanceProvider;
@@ -61,9 +65,7 @@ public class Jar implements Dirtyable, Closeable {
     public Jar(final Path path) throws IOException {
         this.jar = new JarFile(path);
         this.ctx = new JarContext(this);
-        this.classes = this.jar.classes()
-                .map(JarClassEntry::getName)
-                .map(name -> name.substring(0, name.length() - ".class".length()))
+        this.classes = this.jar.walk(IGNORE_MANIFESTS, IGNORE_SERVICE_PROVIDER_CONFIGURATIONS, IGNORE_RESOURCES)
                 .collect(Collectors.toSet());
         this.obfProvider = klass -> {
             if (klass.startsWith("java/") || klass.startsWith("javax/")) {
@@ -111,12 +113,12 @@ public class Jar implements Dirtyable, Closeable {
         this.dirty = false;
     }
 
-    public Set<String> classes() {
+    public Set<JarPath> classes() {
         return Collections.unmodifiableSet(this.classes);
     }
 
     public boolean hasClass(final String klass) {
-        return this.classes.contains(klass);
+        return this.classes.contains(new JarPath(klass + ".class"));
     }
 
     public void exportRemapped(final File exportPath) {
@@ -139,6 +141,7 @@ public class Jar implements Dirtyable, Closeable {
 
         // Get the inner classes
         final WrappedBytecode[] innerKlasses = this.classes.stream()
+                .map(path -> path.getName().substring(0, path.getName().length() - ".class".length()))
                 .filter(name -> name.startsWith(klass.getFullObfuscatedName() + '$'))
                 .map(name -> {
                     final byte[] innerDeobfBytes = this.deobfProvider.get(name);
@@ -159,7 +162,7 @@ public class Jar implements Dirtyable, Closeable {
     public <C, M extends AbstractMapper<C>> void runMapper(final BiFunction<SurveyContext, C, M> mapperConstructor,
                                                            final C config) {
         final M mapper = mapperConstructor.apply(this.ctx, config);
-        this.jar.classes().map(JarClassEntry::getContents).map(ClassReader::new).forEach(reader -> {
+        this.classes.stream().map(this.jar::getClass).map(JarClassEntry::getContents).map(ClassReader::new).forEach(reader -> {
             reader.accept(mapper, 0);
         });
     }

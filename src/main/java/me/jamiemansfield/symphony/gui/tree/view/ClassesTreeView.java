@@ -97,6 +97,7 @@ public class ClassesTreeView extends TreeView<TreeElement> {
     public void initialise(final Jar jar, final Set<String> expanded) {
         final Map<String, TreeItem<TreeElement>> packageCache = new HashMap<>();
         jar.classes().stream()
+                .map(path -> path.getName().substring(0, path.getName().length() - ".class".length()))
                 .filter(name -> !name.contains("$"))
                 .map(jar.getMappings()::getOrCreateTopLevelClassMapping)
                 .filter(this.view)
