@@ -7,7 +7,7 @@
 
 package me.jamiemansfield.symphony.decompiler.textifier;
 
-import me.jamiemansfield.symphony.SourceFileType;
+import me.jamiemansfield.symphony.source.SourceFileType;
 import me.jamiemansfield.symphony.decompiler.AbstractDecompiler;
 import me.jamiemansfield.symphony.decompiler.Decompiler;
 import me.jamiemansfield.symphony.decompiler.WrappedBytecode;

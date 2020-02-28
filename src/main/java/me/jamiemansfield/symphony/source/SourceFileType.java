@@ -5,7 +5,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 //******************************************************************************
 
-package me.jamiemansfield.symphony;
+package me.jamiemansfield.symphony.source;
 
 /**
  * The type of a source file, accessible from Symphony.
