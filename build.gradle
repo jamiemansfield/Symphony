@@ -1,19 +1,12 @@
-buildscript {
-    repositories {
-        maven {
-            url 'https://plugins.gradle.org/m2/'
-        }
-    }
-    dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.3'
-    }
+plugins {
+    id 'java'
+
+    id 'org.openjfx.javafxplugin' version '0.0.8'
+    id 'com.github.johnrengelman.shadow' version '6.0.0'
 }
 
-apply plugin: 'java'
-apply plugin: 'com.github.johnrengelman.shadow'
-
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+sourceCompatibility = '11'
+targetCompatibility = '11'
 
 group = 'me.jamiemansfield'
 version = '0.0.1-indev'
@@ -48,7 +41,7 @@ dependencies {
     compile 'org.ow2.asm:asm-util:7.0'
 
     // RichTextFX (syntax highlighting)
-    compile 'org.fxmisc.richtext:richtextfx:0.6.10'
+    compile 'org.fxmisc.richtext:richtextfx:0.10.5'
 
     // ControlsFX (JavaFX utility)
     compile 'org.controlsfx:controlsfx:8.40.14'
@@ -60,6 +53,11 @@ dependencies {
     // Unit Testing (junit5)
     testCompile "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+}
+
+javafx {
+    version = '14'
+    modules = [ 'javafx.controls' ]
 }
 
 test {
