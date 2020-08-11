@@ -9,7 +9,7 @@ package me.jamiemansfield.symphony.decompiler.procyon;
 
 import com.strobel.assembler.metadata.Buffer;
 import com.strobel.assembler.metadata.ITypeLoader;
-import org.cadixdev.bombe.asm.jar.ClassProvider;
+import org.cadixdev.bombe.jar.ClassProvider;
 
 /**
  * An implementation of {@link ITypeLoader} backed by a

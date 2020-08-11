@@ -7,7 +7,7 @@
 
 package me.jamiemansfield.symphony.decompiler.forgeflower;
 
-import org.cadixdev.bombe.asm.jar.ClassProvider;
+import org.cadixdev.bombe.jar.ClassProvider;
 import org.jetbrains.java.decompiler.main.extern.IBytecodeProvider;
 
 /**

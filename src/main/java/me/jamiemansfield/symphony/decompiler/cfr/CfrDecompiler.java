@@ -13,7 +13,7 @@ import me.jamiemansfield.symphony.decompiler.Decompiler;
 import me.jamiemansfield.symphony.decompiler.WrappedBytecode;
 import org.benf.cfr.reader.api.CfrDriver;
 import org.benf.cfr.reader.api.OutputSinkFactory;
-import org.cadixdev.bombe.asm.jar.ClassProvider;
+import org.cadixdev.bombe.jar.ClassProvider;
 
 import java.util.Collection;
 import java.util.Collections;

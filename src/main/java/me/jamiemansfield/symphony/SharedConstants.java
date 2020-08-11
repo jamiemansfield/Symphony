@@ -8,8 +8,8 @@
 package me.jamiemansfield.symphony;
 
 import me.jamiemansfield.symphony.util.OperatingSystem;
-import org.cadixdev.bombe.asm.jar.ClassLoaderClassProvider;
-import org.cadixdev.bombe.asm.jar.ClassProvider;
+import org.cadixdev.bombe.jar.ClassLoaderClassProvider;
+import org.cadixdev.bombe.jar.ClassProvider;
 
 import java.io.IOException;
 import java.nio.file.Files;

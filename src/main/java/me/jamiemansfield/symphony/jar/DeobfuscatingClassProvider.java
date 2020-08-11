@@ -7,7 +7,7 @@
 
 package me.jamiemansfield.symphony.jar;
 
-import org.cadixdev.bombe.asm.jar.ClassProvider;
+import org.cadixdev.bombe.jar.ClassProvider;
 import org.cadixdev.lorenz.MappingSet;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -43,10 +43,18 @@ class DeobfuscatingClassProvider implements ClassProvider {
         // Remap the class
         final ClassReader reader = new ClassReader(obfuscated);
         final ClassWriter writer = new ClassWriter(reader, 0);
-        reader.accept(new LvtWipingClassRemapper(
-                writer,
-                this.remapper
-        ), 0);
+
+        try {
+            reader.accept(new LvtWipingClassRemapper(
+                    writer,
+                    this.remapper
+            ), 0);
+        }
+        catch (final Throwable ex) {
+            ex.printStackTrace();
+            return null;
+        }
+
         return writer.toByteArray();
     }
 

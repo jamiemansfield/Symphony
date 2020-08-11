@@ -8,7 +8,7 @@
 package me.jamiemansfield.symphony.decompiler;
 
 import me.jamiemansfield.symphony.source.SourceFileType;
-import org.cadixdev.bombe.asm.jar.ClassProvider;
+import org.cadixdev.bombe.jar.ClassProvider;
 
 /**
  * A representation of a decompiler, that can be used by Symphony.

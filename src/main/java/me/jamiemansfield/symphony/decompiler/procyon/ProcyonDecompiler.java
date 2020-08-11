@@ -15,7 +15,7 @@ import me.jamiemansfield.symphony.source.SourceFileType;
 import me.jamiemansfield.symphony.decompiler.AbstractDecompiler;
 import me.jamiemansfield.symphony.decompiler.Decompiler;
 import me.jamiemansfield.symphony.decompiler.WrappedBytecode;
-import org.cadixdev.bombe.asm.jar.ClassProvider;
+import org.cadixdev.bombe.jar.ClassProvider;
 
 /**
  * An implementation of {@link Decompiler} for Procyon.

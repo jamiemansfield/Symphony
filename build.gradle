@@ -29,16 +29,29 @@ repositories {
 
 dependencies {
     // Survey (binary remapper)
-    compile("org.cadixdev:survey:$surveyVersion")
+    compile("org.cadixdev:bombe:$bombeVersion")
+    compile("org.cadixdev:bombe-jar:$bombeVersion")
+    compile("org.cadixdev:lorenz:$lorenzVersion")
     compile("org.cadixdev:atlas:$atlasVersion") {
-        transitive = false
+        exclude(module: "asm-commons")
+        exclude(module: "bombe")
+        exclude(module: "bombe-jar")
     }
+    compile("org.cadixdev:survey:$surveyVersion"){
+        exclude(module: "lorenz")
+        exclude(module: "lorenz-asm")
+        exclude(module: "atlas")
+        exclude(module: "bombe-jar")
+    }
+
+    // ASM
+    compile "org.ow2.asm:asm-commons:$asmVersion"
 
     // Decompilers
     compile 'net.minecraftforge:forgeflower:1.5.380.24'
     compile 'org.bitbucket.mstrobel:procyon-compilertools:0.5.35'
     compile 'org.benf:cfr:0.148'
-    compile 'org.ow2.asm:asm-util:7.0'
+    compile "org.ow2.asm:asm-util:$asmVersion"
 
     // RichTextFX (syntax highlighting)
     compile 'org.fxmisc.richtext:richtextfx:0.10.5'

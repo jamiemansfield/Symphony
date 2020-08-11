@@ -9,7 +9,7 @@ package me.jamiemansfield.symphony.decompiler.cfr;
 
 import org.benf.cfr.reader.api.ClassFileSource;
 import org.benf.cfr.reader.bytecode.analysis.parse.utils.Pair;
-import org.cadixdev.bombe.asm.jar.ClassProvider;
+import org.cadixdev.bombe.jar.ClassProvider;
 
 import java.io.IOException;
 import java.util.Collection;
