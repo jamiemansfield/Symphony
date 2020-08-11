@@ -140,6 +140,7 @@ public final class Symphony extends Application {
         {
             this.mainMenu.file.closeJar.setDisable(!opening);
             this.mainMenu.file.loadMappings.setDisable(!opening);
+            this.mainMenu.file.mergeMappings.setDisable(!opening);
             this.mainMenu.file.saveMappings.setDisable(true);
             this.mainMenu.file.saveMappingsAs.setDisable(!opening);
             this.mainMenu.file.exportRemappedJar.setDisable(!opening);

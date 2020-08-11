@@ -54,6 +54,7 @@ public class FileMenu extends Menu {
     public final MenuItem openJar;
     public final MenuItem closeJar;
     public final MenuItem loadMappings;
+    public final MenuItem mergeMappings;
     public final MenuItem saveMappings;
     public final MenuItem saveMappingsAs;
     public final MenuItem exportRemappedJar;
@@ -92,6 +93,11 @@ public class FileMenu extends Menu {
             this.loadMappings.setOnAction(this::loadMappings);
             this.loadMappings.setAccelerator(new KeyCodeCombination(KeyCode.L, KeyCombination.CONTROL_DOWN));
             this.getItems().add(this.loadMappings);
+
+            this.mergeMappings = new MenuItem(LocaleHelper.get("menu.file.merge_mappings"));
+            this.mergeMappings.setDisable(true);
+            this.mergeMappings.setOnAction(this::mergeMappings);
+            this.getItems().add(this.mergeMappings);
 
             this.saveMappings = new MenuItem(LocaleHelper.get("menu.file.save_mappings"));
             this.saveMappings.setDisable(true);
@@ -189,6 +195,13 @@ public class FileMenu extends Menu {
 
     private void loadMappings(final ActionEvent event) {
         if (MappingsHelper.loadMappings(this.symphony.getStage(), this.symphony.getJar().getMappings())) {
+            // Update views
+            this.symphony.update();
+        }
+    }
+
+    private void mergeMappings(final ActionEvent event) {
+        if (MappingsHelper.mergeMappings(this.symphony.getStage(), this.symphony.getJar().getMappings())) {
             // Update views
             this.symphony.update();
         }

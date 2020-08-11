@@ -105,6 +105,39 @@ public final class MappingsHelper {
     }
 
     /**
+     * Merges the user-selected mappings into the given {@link MappingSet mapping set}.
+     *
+     * @param window The parent window
+     * @param mappings The mappings
+     * @return {@code true} if the mappings were read successfully;
+     *         {@code false} otherwise
+     */
+    public static boolean mergeMappings(final Window window, final MappingSet mappings) {
+        // Setup the file chooser appropriately for the operation being done
+        FILE_CHOOSER.setTitle("Merge Mappings");
+
+        // Gets the mappings
+        final File mappingsPath = FILE_CHOOSER.showOpenDialog(window);
+        if (mappingsPath == null) return false;
+
+        // Reads from file
+        final MappingSet tmp = new MappingSet();
+        final MappingFormat format = FORWARD.get(FILE_CHOOSER.getSelectedExtensionFilter());
+        try {
+            format.read(tmp, mappingsPath.toPath());
+        }
+        catch (final IOException ex) {
+            ex.printStackTrace();
+            return false;
+        }
+
+        // Merge temp mappings into mappings
+        mappings.merge(tmp, mappings);
+
+        return true;
+    }
+
+    /**
      * Saves mappings from the given {@link MappingSet}, in the {@link Window}.
      *
      * @param window The parent window
