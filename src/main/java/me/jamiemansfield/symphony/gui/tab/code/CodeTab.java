@@ -28,6 +28,7 @@ import me.jamiemansfield.symphony.gui.util.TextFlowBuilder;
 import me.jamiemansfield.symphony.jar.Jar;
 import me.jamiemansfield.symphony.util.LocaleHelper;
 import org.cadixdev.lorenz.model.TopLevelClassMapping;
+import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 
@@ -103,7 +104,8 @@ public class CodeTab extends Tab {
                     break;
             }
 
-            root.setCenter(code);
+            final VirtualizedScrollPane<CodeArea> scrollPane = new VirtualizedScrollPane<>(code);
+            root.setCenter(scrollPane);
         });
         decompileService.start();
 
@@ -149,7 +151,7 @@ public class CodeTab extends Tab {
 
         @Override
         protected Task<String> createTask() {
-            return TaskManager.INSTANCE.new TrackedTask<String>() {
+            return TaskManager.INSTANCE.new TrackedTask<>() {
                 {
                     this.updateTitle("decompile: " + DecompileService.this.klass.getSimpleDeobfuscatedName());
                 }
