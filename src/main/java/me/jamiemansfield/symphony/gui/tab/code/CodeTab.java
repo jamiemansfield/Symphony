@@ -105,6 +105,7 @@ public class CodeTab extends Tab {
             }
 
             final VirtualizedScrollPane<CodeArea> scrollPane = new VirtualizedScrollPane<>(code);
+            scrollPane.scrollToPixel(0, 0);
             root.setCenter(scrollPane);
         });
         decompileService.start();
