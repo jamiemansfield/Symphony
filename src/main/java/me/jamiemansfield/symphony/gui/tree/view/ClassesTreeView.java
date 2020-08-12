@@ -10,6 +10,7 @@ package me.jamiemansfield.symphony.gui.tree.view;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 import me.jamiemansfield.symphony.gui.Symphony;
 import me.jamiemansfield.symphony.gui.tree.ClassElement;
 import me.jamiemansfield.symphony.gui.tree.PackageElement;
@@ -45,7 +46,7 @@ public class ClassesTreeView extends TreeView<TreeElement> {
         this.setShowRoot(false);
         this.setCellFactory(view -> new SymphonyTreeCell());
         this.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) { // isDoubleClick
+            if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) { // isDoubleClick
                 this.open();
             }
         });
