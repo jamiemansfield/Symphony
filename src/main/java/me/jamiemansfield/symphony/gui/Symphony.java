@@ -226,7 +226,9 @@ public final class Symphony extends Application {
     public void updateClassesPane() {
         final Set<String> expanded = this.classesPane.clear();
         this.setClassesPane();
-        this.classesPane.initialise(this.jar, expanded);
+        if (this.jar != null) {
+            this.classesPane.initialise(this.jar, expanded);
+        }
     }
 
     private static ClassesPane createClassesPane(final Symphony symphony) {

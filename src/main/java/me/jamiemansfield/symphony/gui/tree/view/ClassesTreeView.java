@@ -33,7 +33,6 @@ import java.util.function.Predicate;
  * @author Jamie Mansfield
  * @since 0.1.0
  */
-// TODO: Search bar
 public class ClassesTreeView extends TreeView<TreeElement> {
 
     private final Symphony symphony;

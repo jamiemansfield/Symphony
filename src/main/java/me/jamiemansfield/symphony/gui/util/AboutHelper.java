@@ -24,7 +24,7 @@ public final class AboutHelper {
         ALERT.setTitle("About Symphony");
         ALERT.setHeaderText("Symphony v" + SharedConstants.VERSION);
         ALERT.getDialogPane().setContent(TextFlowBuilder.create()
-                .text("Copyright (c) 2018-2019 Jamie Mansfield <https://www.jamiemansfield.me/>").newline().newline()
+                .text("Copyright (c) 2018-2020 Jamie Mansfield <https://www.jamiemansfield.me/>").newline().newline()
                 // The following is adapted from a similar statement Mozilla make for Firefox
                 // See about:rights
                 .text("Symphony is made available under the terms of the Mozilla Public License, giving").newline()
