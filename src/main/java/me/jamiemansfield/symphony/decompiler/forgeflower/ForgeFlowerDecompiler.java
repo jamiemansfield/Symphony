@@ -7,10 +7,10 @@
 
 package me.jamiemansfield.symphony.decompiler.forgeflower;
 
-import me.jamiemansfield.symphony.source.SourceFileType;
 import me.jamiemansfield.symphony.decompiler.AbstractDecompiler;
 import me.jamiemansfield.symphony.decompiler.Decompiler;
 import me.jamiemansfield.symphony.decompiler.WrappedBytecode;
+import me.jamiemansfield.symphony.source.SourceFileType;
 import org.cadixdev.bombe.jar.ClassProvider;
 import org.jetbrains.java.decompiler.main.Fernflower;
 import org.jetbrains.java.decompiler.main.extern.IFernflowerPreferences;
@@ -29,7 +29,7 @@ public class ForgeFlowerDecompiler extends AbstractDecompiler {
 
     private static final String ID = "forgeflower";
     private static final String NAME = "ForgeFlower";
-    private static final Map<String, Object> DECOMPILER_OPTIONS = new HashMap<String, Object>(){
+    private static final Map<String, Object> DECOMPILER_OPTIONS = new HashMap<>() {
         {
             this.put(IFernflowerPreferences.DECOMPILE_GENERIC_SIGNATURES, "1");
             this.put(IFernflowerPreferences.ASCII_STRING_CHARACTERS, "1");

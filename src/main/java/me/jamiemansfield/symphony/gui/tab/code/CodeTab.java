@@ -104,6 +104,9 @@ public class CodeTab extends Tab {
                     break;
             }
 
+            final SourceDecoratorService decoratorService = new SourceDecoratorService(symphony, code);
+            decoratorService.start();
+
             final VirtualizedScrollPane<CodeArea> scrollPane = new VirtualizedScrollPane<>(code);
             scrollPane.scrollToPixel(0, 0);
             root.setCenter(scrollPane);

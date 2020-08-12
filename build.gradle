@@ -49,9 +49,12 @@ dependencies {
 
     // Decompilers
     compile 'net.minecraftforge:forgeflower:1.5.380.24'
-    compile 'org.bitbucket.mstrobel:procyon-compilertools:0.5.35'
-    compile 'org.benf:cfr:0.148'
+    compile 'org.bitbucket.mstrobel:procyon-compilertools:0.5.36'
+    compile 'org.benf:cfr:0.150'
     compile "org.ow2.asm:asm-util:$asmVersion"
+
+    // Spoon (Java AST)
+    compile 'fr.inria.gforge.spoon:spoon-core:8.2.0'
 
     // RichTextFX (syntax highlighting)
     compile 'org.fxmisc.richtext:richtextfx:0.10.5'
